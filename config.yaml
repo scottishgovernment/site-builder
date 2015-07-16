@@ -1,0 +1,4 @@
+application:
+  name: site-builder
+buildapi:
+  endpoint: "http://localhost:8085/build-api/"

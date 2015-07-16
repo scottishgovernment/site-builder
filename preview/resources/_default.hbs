@@ -1,0 +1,29 @@
+{{>head}} {{>header-with-search}}
+<div class="container">
+    <div class="row">
+        <article class="col-md-8">
+            <h1>{{contentItem.title}}</h1> {{> attribution}} {{#markdown}} {{body}} {{/markdown}}
+            <i>Preview may not be not supported for {{contentItem.format.name}}</i>
+        </article>
+
+        <div class="col-md-4 col-sm-12 enlarged-gutter">
+            {{> related-items}}
+        </div>
+    </div>
+</div>
+
+<div id="body-wrapper">
+    <div class="category-list-container">
+        {{>category-list}}
+        <br class="clearfix" />
+    </div>
+</div>
+
+<script>
+	var app = app || {};
+	app.format = 'index';
+</script>
+<!-- End status -->
+{{>footer}}
+{{>footer-scripts}}
+

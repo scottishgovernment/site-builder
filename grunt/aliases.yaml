@@ -1,0 +1,8 @@
+test:
+  description: 'Run tests'
+  tasks:
+    - copy:test
+    - instrument
+    - 'jasmine_node:preview'
+    - storeCoverage
+    - makeReport
