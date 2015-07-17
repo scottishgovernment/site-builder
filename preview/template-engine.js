@@ -56,22 +56,28 @@ function registerPartials(dir) {
  */
 
 function compileLayouts(dir) {
+    var precompiled,
+        callback,
+        i;
     var layouts = fs.readdirSync(dir);
-    for (var i = 0; i < layouts.length; i++) {
-        var precompiled = fs.readFileSync(dir + layouts[i], 'UTF-8');
-        assemble.compile(precompiled, {}, function(ex, tmpl) {
-            templates[layouts[i]] = tmpl;
-        });
+
+    callback = function(ex, tmpl) {
+        templates[layouts[i]] = tmpl;
+    };
+    for (i = 0; i < layouts.length; i++) {
+        precompiled = fs.readFileSync(dir + layouts[i], 'UTF-8');
+        assemble.compile(precompiled, {}, callback);
     }
     // custom layouts (i.e error, default)
     // they don't override existing templates
     var customLayouts = fs.readdirSync(customLayoutDir);
-    for (var i = 0; i < customLayouts.length; i++) {
+    callback = function(ex, tmpl) {
+        templates[customLayouts[i]] = tmpl;
+    };
+    for (i = 0; i < customLayouts.length; i++) {
         if (!templates[customLayouts[i]]) {
-            var precompiled = fs.readFileSync(customLayoutDir + customLayouts[i], 'UTF-8');
-            assemble.compile(precompiled, {}, function(ex, tmpl) {
-                templates[customLayouts[i]] = tmpl;
-            });
+            precompiled = fs.readFileSync(customLayoutDir + customLayouts[i], 'UTF-8');
+            assemble.compile(precompiled, {}, callback);
         }
     }
 }

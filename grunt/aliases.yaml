@@ -6,3 +6,11 @@ test:
     - 'jasmine_node:preview'
     - storeCoverage
     - makeReport
+sonar:
+  description: 'Run SonarQube in preview mode'
+  tasks:
+    - sonarRunner:preview
+sonar-ci:
+  description: 'Run SonarQube and publish results'
+  tasks:
+    - sonarRunner:analysis

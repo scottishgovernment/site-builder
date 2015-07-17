@@ -4,7 +4,7 @@ function doLogin(url, cred, restler, callback) {
             var error = {
                 status: response.statusCode,
                 message: 'Failed to login: ' + data
-            }
+            };
             callback(error, null);
         } else {
             var auth = JSON.parse(data);
@@ -34,7 +34,7 @@ module.exports = function(config, restler) {
             }
         },
         toHeader: function(session) {
-            return authHeader = {
+            return {
                 headers: {
                     'Authorization': 'Bearer ' + session
                 }

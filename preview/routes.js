@@ -61,7 +61,7 @@ module.exports = exports = function(contentSource, engine) {
     function screenshot(req, res) {
         var phantom = require('phantom-render-stream')();
         var extend = require('node.extend');
-        var base64 = require('base64-stream')
+        var base64 = require('base64-stream');
 
         var opts = extend({}, req.query);
         var url = 'http://localhost:3000' + req.path;
@@ -93,5 +93,5 @@ module.exports = exports = function(contentSource, engine) {
                 }
             });
         }
-    }
+    };
 };

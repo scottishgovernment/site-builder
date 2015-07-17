@@ -1,4 +1,5 @@
 node_modules
 *.iml
 out
+.sonar
 npm-debug.log

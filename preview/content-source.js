@@ -18,7 +18,7 @@ function loadContent(restler, source, auth, visibility, callback) {
             var error = {
                 status: response ? response.statusCode : 500,
                 message: 'Failed to fetch item: ' + source + ' ' + data
-            }
+            };
             callback(error);
         } else {
             var item = formatter.format(JSON.parse(data));
