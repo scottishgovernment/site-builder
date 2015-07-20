@@ -7,4 +7,4 @@
          var task = new GwwwuntTask(this);
          task.run();
      });
- }
+ };
