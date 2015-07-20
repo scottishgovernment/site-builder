@@ -55,7 +55,7 @@ app.route('*').all(function(req, res) {
         status: 404,
         message: "Not Found"
     });
-});    
+});
 
 app.use(function(err, req, res, next) {
     console.log(err);

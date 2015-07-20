@@ -3,6 +3,7 @@
 module.exports = function(grunt) {
 
     require('load-grunt-config')(grunt);
+    grunt.loadTasks('tasks');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-jasmine-node');
     grunt.loadNpmTasks('grunt-istanbul');
@@ -25,7 +26,7 @@ module.exports = function(grunt) {
                 projectName: "Site Builder",
                 projectVersion: grunt.package.version,
                 projectDescription: grunt.package.description,
-                sources: ['item-formatter.js','preview'].join(','),
+                sources: ['item-formatter.js','preview', 'gwwwunt', 'tasks'].join(','),
                 language: 'js',
                 sourceEncoding: 'UTF-8',
                 javascript: {
@@ -57,7 +58,12 @@ module.exports = function(grunt) {
         },
 
         instrument: {
-            files: ['item-formatter.js', 'preview/*.js', 'gwwwunt/**/*.js'],
+            files: [
+                'item-formatter.js',
+                'preview/*.js',
+                'gwwwunt/**/*.js',
+                'tasks/**/*.js'
+            ],
             options: {
                 lazy: true,
                 basePath: 'out/instrument'

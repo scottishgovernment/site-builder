@@ -33,7 +33,7 @@ function loadContent(restler, source, auth, visibility, callback) {
  * @param guidePageSlug, the leaf slug, which is presumably the guide page (sub guide item)
  */
 
-function guidify(item, guidePageSlug, callback) {
+function guidify(item, guidePageSlug) {
     var html = require('marked')(item.contentItem.content);
     var $ = require('cheerio').load(html);
     // iterate guide headers
@@ -60,7 +60,7 @@ module.exports = function(restler) {
                     } else {
                         if (item.layout === 'guide.hbs') {
                             // prepare guide page to serve
-                            guidify(item, path.leaf, callback);
+                            guidify(item, path.leaf);
                             callback(null, item);
                         } else {
                             loadContent(restler, path.leaf, auth, visibility, function(error, item) {
