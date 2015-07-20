@@ -57,7 +57,7 @@ module.exports = function(grunt) {
         },
 
         instrument: {
-            files: ['item-formatter.js', 'preview/*.js'],
+            files: ['item-formatter.js', 'preview/*.js', 'gwwwunt/**/*.js'],
             options: {
                 lazy: true,
                 basePath: 'out/instrument'
@@ -66,8 +66,8 @@ module.exports = function(grunt) {
 
         jasmine_node: {
             preview: {
-                all: ['test/preview'],
-                src: 'src/preview/*.js',
+                all: ['test'],
+                src: '*.js',
                 options: {
                     specs: 'test/*_spec.js',
                     helpers: 'test/*_helper.js',
