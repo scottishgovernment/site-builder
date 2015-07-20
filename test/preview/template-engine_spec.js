@@ -1,4 +1,4 @@
-var sutPath = '../out/instrument/preview/template-engine';
+var sutPath = '../../out/instrument/preview/template-engine';
 describe('template-engine', function() {
     var helpers = __dirname + '/samples/helper/';
     var layouts = __dirname + '/samples/layout/';

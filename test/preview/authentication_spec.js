@@ -1,4 +1,4 @@
-var sutPath = '../out/instrument/preview/authentication';
+var sutPath = '../../out/instrument/preview/authentication';
 describe('authentication', function() {
 
     it('Can login', function(done) {

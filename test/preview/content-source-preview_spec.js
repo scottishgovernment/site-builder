@@ -1,4 +1,4 @@
-var sutPath = '../out/instrument/preview/content-source';
+var sutPath = '../../out/instrument/preview/content-source';
 describe('Content source, preview', function() {
 
     var guideItem = {

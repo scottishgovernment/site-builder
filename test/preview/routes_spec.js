@@ -1,4 +1,4 @@
-var sutPath = '../out/instrument/preview/routes';
+var sutPath = '../../out/instrument/preview/routes';
 describe('routes', function() {
 
     var source = {
