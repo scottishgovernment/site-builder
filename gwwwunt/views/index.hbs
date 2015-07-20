@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <script>
+    document.write("<base href="+'//'+document.location.host +'/'+ location.href.split('/')[3]+'/'+" />");
+    </script>
+    
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+<body>
+<div class="container">
+	<div class="row">
+	
+	<div class="col-sm-12">
+		<h1>Grunt automate web site</h1>
+		<p>
+		Use this web page to triggger a grunt task on the server.<br/>
+		When you click on a task, it will open in a new window and display a shell log
+		</p>
+	</div>
+	<div class="card col-sm-4">
+	<h2>Choose a grunt task</h2>
+	<ul class="list-group">
+	{{#tasks}}
+	<li class="list-group-item"><a target="_blank"href="{{{name}}}">{{detail.description}}</a>
+
+	<ul>
+		{{#detail.tasks}}
+			<li><a target="_blank"href="task/{{.}}">{{.}}</a></li>
+		{{/detail.tasks}}
+	</ul>
+	</li>
+	{{/tasks}}
+	</ul>
+	</card>
+
+	</div
+</div>
+
+</body>
+</html>
