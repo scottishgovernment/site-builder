@@ -26,7 +26,13 @@ module.exports = function(grunt) {
                 projectName: "Site Builder",
                 projectVersion: grunt.package.version,
                 projectDescription: grunt.package.description,
-                sources: ['item-formatter.js','preview', 'gwwwunt', 'tasks'].join(','),
+                sources: [
+                    'item-formatter.js',
+                    'decommission',
+                    'gwwwunt',
+                    'preview',
+                    'tasks'
+                ].join(','),
                 language: 'js',
                 sourceEncoding: 'UTF-8',
                 javascript: {
@@ -52,6 +58,11 @@ module.exports = function(grunt) {
                         expand: true,
                         src: ['preview/*.txt'],
                         dest: 'out/instrument/'
+                    },
+                    {
+                        expand: true,
+                        src: ['decommission/*.hbs'],
+                        dest: 'out/instrument/'
                     }
                 ],
             },
@@ -60,8 +71,9 @@ module.exports = function(grunt) {
         instrument: {
             files: [
                 'item-formatter.js',
-                'preview/*.js',
+                'decommission/*.js',
                 'gwwwunt/**/*.js',
+                'preview/*.js',
                 'tasks/**/*.js'
             ],
             options: {
