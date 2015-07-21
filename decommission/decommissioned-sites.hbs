@@ -1,0 +1,37 @@
+# Nginx virtual host configuration for {{name}}
+
+## http vhost for {{host}} ##
+server {
+
+    listen 80;
+    server_name {{host}};
+
+{{#pages}}
+    rewrite {{source}}
+            {{../config/siteUrl}}{{target}}?via=$scheme://$host$uri permanent;
+{{/pages}}
+
+    # catch all redirect to the home page
+    location / {
+        rewrite ^ {{config/siteUrl}}/?via=$scheme://$host$uri break;
+    }
+
+}
+
+## https vhost for {{host}} ##
+server {
+
+    listen 443;
+    server_name {{host}};
+
+{{#pages}}
+    rewrite {{source}}
+            {{../config/siteUrl}}{{target}}?via=$scheme://$host$uri permanent;
+{{/pages}}
+
+    # catch all redirect to the home page
+    location / {
+        rewrite ^ {{config/siteUrl}}/?via=$scheme://$host$uri break;
+    }
+
+}

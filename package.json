@@ -30,13 +30,15 @@
   },
   "devDependencies": {
     "base64-stream": "^0.1.2",
+    "body-parser": "^1.10.2",
     "grunt": "^0.4.5",
     "grunt-contrib-copy": "^0.8.0",
     "grunt-istanbul": "^0.6.1",
     "grunt-jasmine-node": "^0.3.1",
     "grunt-sonar-runner": "^2.3.1",
     "load-grunt-config": "^0.17.2",
-    "phantom-render-stream": "^1.7.1"
+    "phantom-render-stream": "^1.7.1",
+    "temp": "^0.8.1"
   },
   "publishConfig": {
     "registry": "http://repo.digital.gov.uk/nexus/content/repositories/npm/"
