@@ -57,7 +57,7 @@ module.exports = function (config) {
     function fetchPagesForSites(done) {
 
         if (sites._embedded && sites._embedded.sites) {
-        async.each(sites._embedded.sites, fetchPageForSite,
+        async.forEach(sites._embedded.sites, fetchPageForSite,
             function (err) {
                 if (err !== undefined) {
                     done('Error fetching pages: '+JSON.stringify(err));
@@ -133,7 +133,6 @@ module.exports = function (config) {
                 callback();
             } else {
                 async.series([login, fetchSites, fetchPagesForSites, logout], callback);
-
             }
         }
     };

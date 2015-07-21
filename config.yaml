@@ -2,3 +2,14 @@ application:
   name: site-builder
 buildapi:
   endpoint: "http://localhost:8085/build-api/"
+healthcheck:
+  enable: true
+  crawlUrl: "http://localhost:9000/"
+  repoUrl: "http://localhost:8088/healthcheck/"
+  crawlTimeoutMins: 5
+sitemaps:
+  exclude_formats:
+    - STRUCTURAL_CATEGORY_LIST
+    - STATUS
+  exclude_slugs:
+    - search-results

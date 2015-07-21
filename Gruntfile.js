@@ -51,17 +51,22 @@ module.exports = function(grunt) {
                 files: [
                     {
                         expand: true,
+                        src: ['build/*.hbs'],
+                        dest: 'out/instrument/'
+                    },
+                    {
+                        expand: true,
+                        src: ['decommission/*.hbs'],
+                        dest: 'out/instrument/'
+                    },
+                    {
+                        expand: true,
                         src: ['preview/resources/**'],
                         dest: 'out/instrument/'
                     },
                     {
                         expand: true,
                         src: ['preview/*.txt'],
-                        dest: 'out/instrument/'
-                    },
-                    {
-                        expand: true,
-                        src: ['decommission/*.hbs'],
                         dest: 'out/instrument/'
                     }
                 ],
@@ -71,6 +76,7 @@ module.exports = function(grunt) {
         instrument: {
             files: [
                 'item-formatter.js',
+                'build/*.js',
                 'decommission/*.js',
                 'gwwwunt/**/*.js',
                 'preview/*.js',
