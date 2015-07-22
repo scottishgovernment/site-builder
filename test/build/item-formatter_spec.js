@@ -1,4 +1,4 @@
-var sut = require('../../out/instrument/item-formatter')();
+var sut = require('../../out/instrument/build/item-formatter')();
 
 describe('item-formatter', function() {
 

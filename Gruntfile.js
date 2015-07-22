@@ -27,7 +27,7 @@ module.exports = function(grunt) {
                 projectVersion: grunt.package.version,
                 projectDescription: grunt.package.description,
                 sources: [
-                    'item-formatter.js',
+                    'build',
                     'decommission',
                     'gwwwunt',
                     'preview',
@@ -75,12 +75,11 @@ module.exports = function(grunt) {
 
         instrument: {
             files: [
-                'item-formatter.js',
                 'build/*.js',
                 'decommission/*.js',
                 'gwwwunt/**/*.js',
                 'preview/*.js',
-                'tasks/**/*.js'
+                'tasks/*.js'
             ],
             options: {
                 lazy: true,
