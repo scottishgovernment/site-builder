@@ -1622,6 +1622,14 @@
         }
       }
     },
+    "json-stable-stringify": {
+      "version": "1.0.0",
+      "dependencies": {
+        "jsonify": {
+          "version": "0.0.0"
+        }
+      }
+    },
     "load-grunt-config": {
       "version": "0.17.2",
       "dependencies": {
