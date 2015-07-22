@@ -76,6 +76,7 @@ function shrinkwrap() {
             if (stderr) {
                 console.log(stderr);
             }
+            process.exit(1);
         }
     });
 }
