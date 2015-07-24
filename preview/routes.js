@@ -3,6 +3,7 @@ module.exports = exports = function(contentSource, engine) {
     var handleError = function(res, error) {
         console.log(error);
         var item = {
+            body: 'There was an error',
             layout : '_error.hbs',
             statusCode : 400,
             message : error
@@ -51,7 +52,6 @@ module.exports = exports = function(contentSource, engine) {
                 'Authorization': 'Bearer ' + token
             }
         };
-
 
         contentSource.fetch(getPath(req), auth, visibility, function(error, item) {
             callback(error, item);

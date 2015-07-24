@@ -66,6 +66,9 @@ function compileLayouts(dir) {
     };
     for (i = 0; i < layouts.length; i++) {
         precompiled = fs.readFileSync(dir + layouts[i], 'UTF-8');
+        // this is a hack to make custom helpers to work in preview
+        precompiled = precompiled.replace('{{body}}', '{{{body}}}');
+
         assemble.compile(precompiled, {}, callback);
     }
     // custom layouts (i.e error, default)
@@ -89,19 +92,32 @@ module.exports = function() {
          * finds compiled template using item.layout property.
          */
         render: function(item, callback) {
-            // if template for the format (layout) does not exist, default layout is used
-            // default layout resides in preview
-            var tmpl = templates[item.layout] || templates['_default.hbs'];
-            assemble.render(tmpl, item, function(ex, renderedContent) {
+
+            // hack to allow custom helpers to work in preview - we compile the body as a template and apply it to
+            // the object.  This causes the helpers to be applied.  We then take the result and put it into the content
+            // item before applying the actual template.
+            assemble.compile(item.body, {}, function(ex, bodyTemplate) {
                 if (ex) {
-                    callback(ex, {message: "Unable to render content", status: 400});
-                } else {
-                    if (renderedContent !== undefined) {
-                        callback(ex, renderedContent);
-                    }
+                    callback(ex, {message: "Unable to compile body as template", status: 400});
+                    return;
                 }
+
+                assemble.render(bodyTemplate, item, function(ex, renderedBody) {
+
+                    if (ex) {
+                        callback(ex, {message: "Unable to render content", status: 400});
+                        return;
+                    }
+                    item.body = renderedBody;
+
+                    var tmpl = templates[item.layout] || templates['_default.hbs'];
+                    assemble.render(tmpl, item, function(ex, renderedContent) {
+                        callback(ex, renderedContent);
+                    });
+                });
             });
         },
+
         /**
          * Creates handlebars context, this method is called by watch monitor
          * if any change dedected under layouts folder.
