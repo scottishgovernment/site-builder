@@ -99,7 +99,7 @@ module.exports = function() {
             var body = '';
 
             if (item.body) {
-                body - item.body;
+                body = item.body;
             }
 
             assemble.compile(body, {}, function(ex, bodyTemplate) {
