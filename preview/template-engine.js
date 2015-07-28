@@ -96,7 +96,13 @@ module.exports = function() {
             // hack to allow custom helpers to work in preview - we compile the body as a template and apply it to
             // the object.  This causes the helpers to be applied.  We then take the result and put it into the content
             // item before applying the actual template.
-            assemble.compile(item.body, {}, function(ex, bodyTemplate) {
+            var body = '';
+
+            if (item.body) {
+                body - item.body;
+            }
+
+            assemble.compile(body, {}, function(ex, bodyTemplate) {
                 if (ex) {
                     callback(ex, {message: "Unable to compile body as template", status: 400});
                     return;
