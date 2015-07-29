@@ -3,30 +3,76 @@
 //
 // Currently we assign a layout and group descendants for ORG_LIST's
 //
-module.exports = exports = function() {
+module.exports = exports = function(layoutstrategy) {
 
     // Assign layout based on the format.
     //
     // For most formats this is done by making it lowercase, replacing -'s with _'s and then adding .hbs
     //
-    // The exception to this is that category lists are assigne a differne layout depending on how deep in the
-    // tree they are.
+    // The exception to this is that category lists are assign a different layout 
+    // depending on the 'layoutstrategy' passed in.  We currently have 
+    // 2 strategies:
+    //    depth: assigns a layout depending on how deep in the tree the item is.
+    //    distanceToContent: descides on a 'jumpofpage' if we either 1 or 2 steps away form 'content'
     function layout(item) {
         var format = item.contentItem._embedded.format.name.toLowerCase();
         var layout;
+
         if (format === 'category_list') {
-            // we have category list layouts for depths 0 - 3.  If we are deeper
-            // than that then default to 2
-            if (item.ancestors.length < 4) {
-                layout = 'category-list-' + item.ancestors.length + '.hbs';
+            // assign a layout 
+
+            if (layoutstrategy === 'distanceToContent') {
+                return assignCategoryLayoutBasedOnDistanceToContent(item);
             } else {
-                layout = 'category-list-2.hbs';
+                return assignCategoryLayoutBasedOnDepth(item);
             }
         } else {
             layout = format + '.hbs';
             layout = layout.replace(/_/g, '-');
         }
         return layout;
+    }
+
+    function assignCategoryLayoutBasedOnDepth(item) {
+
+        if (item.ancestors.length > 3) {
+            return 'category-list-2.hbs';
+        } else {
+            return 'category-list-' + item.ancestors.length + '.hbs';
+        }
+    }
+
+    function assignCategoryLayoutBasedOnDistanceToContent(item) {
+        // determine the layout depoending on the distance to reach a non navigational content item
+        switch (distanceToContent(item, 1)) {
+            case 1: return 'jumpoff.hbs';
+            case 2: return 'jumpoff-with-sub-categories.hbs';
+            default: 
+                return assignCategoryLayoutBasedOnDepth(item);
+        }
+    }
+
+    function distanceToContent(item, i) {
+
+        // if there are no descendants then we do not know how far the content is
+        if (item.descendants.length === 0) {
+            return 100;
+        }
+
+        // if one of the children is a non-navigational item then we have found our 
+        // level
+        for ( var j = 0; j < item.descendants.length; j++ ){
+            if (!item.descendants[j].navigational) {
+                return i;
+            }
+        }
+
+        // calculate the distance vfrom each child and then return th minimum distance
+        var childDistances = [];
+        item.descendants.forEach(function (descendant) {
+            childDistances.push(distanceToContent(descendant, i+1));
+        });
+        return Math.min.apply(null, childDistances);
     }
 
     // create an array containing descendants grouped by the first letter of their title
@@ -107,7 +153,7 @@ module.exports = exports = function() {
         format : function (item) {
             // assign a layout based up the format
             item.layout = layout(item);
-
+console.log('layout '+item.layout);
             // redact any info we do not want
             redactLinks(item);
 

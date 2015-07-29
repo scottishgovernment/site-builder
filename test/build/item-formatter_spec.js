@@ -1,4 +1,5 @@
-var sut = require('../../out/instrument/build/item-formatter')();
+var sut = require('../../out/instrument/build/item-formatter')('depth');
+var sutDistanceToContent = require('../../out/instrument/build/item-formatter')('distanceToContent');
 
 describe('item-formatter', function() {
 
@@ -247,6 +248,56 @@ describe('item-formatter', function() {
         var actual = sut.format(input);
         expect(actual.layout).toEqual(expectedLayout);
     });
+
+    it('correct layout assigned by distance to content strategy when one away from content', function() {
+        var input = {
+            "contentItem": {
+                "title": "title",
+                "_embedded": {
+                    "format": { "name": "CATEGORY_LIST"}
+                }
+            },
+            ancestors: [{}, {}],
+            descendants: [{navigational: false}]
+        };
+        var expectedLayout = "jumpoff.hbs"
+        var actual = sutDistanceToContent.format(input);
+        expect(actual.layout).toEqual(expectedLayout);
+    });
+
+    it('correct layout assigned by distance to content strategy when two away from content', function() {
+        var input = {
+            "contentItem": {
+                "title": "title",
+                "_embedded": {
+                    "format": { "name": "CATEGORY_LIST"}
+                }
+            },
+            ancestors: [{}, {}],
+            descendants: [{navigational: true, descendants: [{navigational: false}]}]
+        };
+        var expectedLayout = "jumpoff-with-sub-categories.hbs"
+        var actual = sutDistanceToContent.format(input);
+        expect(actual.layout).toEqual(expectedLayout);
+    });
+
+
+    it('correct layout assigned by distance to content strategy when more than two away from content', function() {
+        var input = {
+            "contentItem": {
+                "title": "title",
+                "_embedded": {
+                    "format": { "name": "CATEGORY_LIST"}
+                }
+            },
+            ancestors: [{}, {}],
+            descendants: [{navigational: true, descendants: [{navigational: true, descendants: []}]}]
+        };
+        var expectedLayout = "category-list-2.hbs"
+        var actual = sutDistanceToContent.format(input);
+        expect(actual.layout).toEqual(expectedLayout);
+    });
+
 
     it('la service finder descendant sorted by service provider', function() {
         
