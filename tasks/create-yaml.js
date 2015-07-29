@@ -51,7 +51,7 @@ module.exports = function(grunt) {
             var contentHandler = require('../build/composite-content-handler')(handlers);
 
             // create the formatter
-            var contentFormatter = require('../build/item-formatter')();
+            var contentFormatter = require('../build/item-formatter')(config.layoutstrategy);
 
             // create the contentsource
             var contentSource = require('../build/content-source')(config, contentFormatter, contentHandler);
