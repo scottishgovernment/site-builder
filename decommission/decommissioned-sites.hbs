@@ -8,12 +8,12 @@ server {
 
 {{#pages}}
     rewrite {{source}}
-            {{../config/siteUrl}}{{target}}?via=$scheme://$host$uri permanent;
+            {{../url}}{{target}}?via=$scheme://$host$uri permanent;
 {{/pages}}
 
     # catch all redirect to the home page
     location / {
-        rewrite ^ {{config/siteUrl}}/?via=$scheme://$host$uri break;
+        rewrite ^ {{url}}?via=$scheme://$host$uri break;
     }
 
 }
@@ -26,12 +26,12 @@ server {
 
 {{#pages}}
     rewrite {{source}}
-            {{../config/siteUrl}}{{target}}?via=$scheme://$host$uri permanent;
+            {{../url}}{{target}}?via=$scheme://$host$uri permanent;
 {{/pages}}
 
     # catch all redirect to the home page
     location / {
-        rewrite ^ {{config/siteUrl}}/?via=$scheme://$host$uri break;
+        rewrite ^ {{url}}?via=$scheme://$host$uri break;
     }
 
 }
