@@ -19,8 +19,6 @@ module.exports = exports = function(layoutstrategy) {
         var layout;
 
         if (format === 'category_list') {
-            // assign a layout 
-
             if (layoutstrategy === 'distanceToContent') {
                 return assignCategoryLayoutBasedOnDistanceToContent(item);
             } else {
@@ -43,6 +41,12 @@ module.exports = exports = function(layoutstrategy) {
     }
 
     function assignCategoryLayoutBasedOnDistanceToContent(item) {
+        // if this item only has one ancestor then use category-list-1, otherwise 
+        // determine by distance to the content
+        if (item.ancestors.length == 1) {
+            return 'category-list-1.hbs';
+        }
+
         // determine the layout depoending on the distance to reach a non navigational content item
         switch (distanceToContent(item, 1)) {
             case 1: return 'jumpoff.hbs';
@@ -153,7 +157,7 @@ module.exports = exports = function(layoutstrategy) {
         format : function (item) {
             // assign a layout based up the format
             item.layout = layout(item);
-console.log('layout '+item.layout);
+
             // redact any info we do not want
             redactLinks(item);
 

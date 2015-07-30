@@ -1,6 +1,6 @@
 var config = require('config-weaver').config();
 var path = require('path');
-var formatter = require('../build/item-formatter')();
+var formatter = require('../build/item-formatter')(config.layoutstrategy);
 
 function url(source, visibility) {
     var endpoint = config.buildapi.endpoint.replace(/\/$/, '');
