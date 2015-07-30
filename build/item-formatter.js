@@ -9,8 +9,8 @@ module.exports = exports = function(layoutstrategy) {
     //
     // For most formats this is done by making it lowercase, replacing -'s with _'s and then adding .hbs
     //
-    // The exception to this is that category lists are assign a different layout 
-    // depending on the 'layoutstrategy' passed in.  We currently have 
+    // The exception to this is that category lists are assign a different layout
+    // depending on the 'layoutstrategy' passed in.  We currently have
     // 2 strategies:
     //    depth: assigns a layout depending on how deep in the tree the item is.
     //    distanceToContent: descides on a 'jumpofpage' if we either 1 or 2 steps away form 'content'
@@ -41,9 +41,9 @@ module.exports = exports = function(layoutstrategy) {
     }
 
     function assignCategoryLayoutBasedOnDistanceToContent(item) {
-        // if this item only has one ancestor then use category-list-1, otherwise 
+        // if this item only has one ancestor then use category-list-1, otherwise
         // determine by distance to the content
-        if (item.ancestors.length == 1) {
+        if (item.ancestors.length === 1) {
             return 'category-list-1.hbs';
         }
 
@@ -51,7 +51,7 @@ module.exports = exports = function(layoutstrategy) {
         switch (distanceToContent(item, 1)) {
             case 1: return 'jumpoff.hbs';
             case 2: return 'jumpoff-with-sub-categories.hbs';
-            default: 
+            default:
                 return assignCategoryLayoutBasedOnDepth(item);
         }
     }
@@ -63,7 +63,7 @@ module.exports = exports = function(layoutstrategy) {
             return 100;
         }
 
-        // if one of the children is a non-navigational item then we have found our 
+        // if one of the children is a non-navigational item then we have found our
         // level
         for ( var j = 0; j < item.descendants.length; j++ ){
             if (!item.descendants[j].navigational) {
