@@ -1,4 +1,4 @@
-var sutPath = '../../decommission/decommissioner';
+var sutPath = '../../out/instrument/decommission/decommissioner';
 
 describe('decommissioner', function() {
 
