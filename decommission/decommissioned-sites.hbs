@@ -6,6 +6,8 @@ server {
     listen 80;
     server_name {{host}};
 
+    set $args '';
+
 {{#pages}}
     rewrite {{source}}
             {{../url}}{{target}}?via=$scheme://$host$uri permanent;
@@ -23,6 +25,8 @@ server {
 
     listen 443;
     server_name {{host}};
+
+    set $args '';
 
 {{#pages}}
     rewrite {{source}}
