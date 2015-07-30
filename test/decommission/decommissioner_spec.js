@@ -1,4 +1,4 @@
-var sutPath = '../../out/instrument/decommission/decommissioner';
+var sutPath = '../../decommission/decommissioner';
 
 describe('decommissioner', function() {
 
@@ -93,7 +93,8 @@ describe('decommissioner', function() {
             nginx: tempDir,
             decommissionTool : {
                 enabled: true,
-                url: "http://localhost:"+testPort+"/"
+                url: "http://localhost:"+testPort+"/",
+                siteUrl: "http://www.mygov.scot/"
             }
         };
         test(config, testPort, sites, pages, done);
@@ -150,7 +151,8 @@ describe('decommissioner', function() {
             nginx: tempDir,
             decommissionTool : {
                 enabled: true,
-                url: "http://localhost:"+testPort+"/"
+                url: "http://localhost:"+testPort+"/",
+                siteUrl: "http://www.mygov.scot/"
             }
         };
         require('./test-auth-server')().startAuthServer(authPort);
