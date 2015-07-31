@@ -33,7 +33,7 @@ module.exports = exports = function(layoutstrategy) {
 
     function assignCategoryLayoutBasedOnDepth(item) {
 
-        if (item.ancestors.length > 3) {
+        if (item.ancestors.length >= 3) {
             return 'category-list-2.hbs';
         } else {
             return 'category-list-' + item.ancestors.length + '.hbs';

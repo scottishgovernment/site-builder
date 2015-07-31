@@ -228,7 +228,7 @@ describe('item-formatter', function() {
             },
             ancestors: [{}, {}, {}]
         };
-        var expectedLayout = "category-list-3.hbs"
+        var expectedLayout = "category-list-2.hbs"
         var actual = sut.format(input);
         expect(actual.layout).toEqual(expectedLayout);
     });
