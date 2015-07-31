@@ -1,9 +1,10 @@
 module.exports = function (config) {
 
-    var restler = require('restler');
-    var handlebars = require('assemble-handlebars');
-    var async = require('async');
-    var fs = require('fs-extra');
+    var restler = require('restler'),
+        handlebars = require('assemble-handlebars'),
+        async = require('async'),
+        fs = require('fs-extra'),
+        url = require('url');
 
     var pagesTemplate;
     var pagesTemplateSrc = fs.readFileSync(__dirname + '/decommissioned-sites.hbs', 'UTF-8');
@@ -99,10 +100,13 @@ module.exports = function (config) {
                     });
                 }
 
+                // Ensure site URL has no trailing slash:
+                var siteUrl = url.parse(config.decommissionTool.siteUrl).href.slice(0,-1);
+
                 var srcDoc = {
                     name: site.name,
                     host: site.host,
-                    config: config.decommissionTool,
+                    url: siteUrl,
                     pages: pages
                 };
 
