@@ -138,7 +138,7 @@ GwwwuntTask.prototype.run = function () {
 
 
         // Perform the task
-        var child = exec('export LC_ALL="en_US.UTF-8"; export LANG="en_US.UTF-8"; grunt ' + task, {
+        var child = exec('. /etc/profile; grunt ' + task, {
             silent: false,
             async: true
         });
