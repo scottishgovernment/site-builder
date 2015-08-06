@@ -78,6 +78,16 @@ module.exports = function (config) {
         return '(?i)^' + url + (endsWithSlash ? '?' : '/?') + '$';
     }
 
+    // if the target url is a fully qualified url then just use it as the target url.
+    // Otherwise add the base usrl to the front.
+    function targetUrl(target, base) {
+        if (target.indexOf('http') === 0) {
+            return target;
+        } else {
+            return base+target;
+        }
+    }
+
     function fetchPageForSite(site, callback) {
         restler.get(site._links.pages.href, headers()).on('complete',
             function (data, response) {
@@ -91,18 +101,19 @@ module.exports = function (config) {
                     return;
                 }
 
+                // Ensure site URL has no trailing slash:
+                var siteUrl = url.parse(config.decommissionTool.siteUrl).href.slice(0,-1);
+
                 var pages = [];
                 for (var i = 0; i < pagesJSON._embedded.pages.length; i++) {
                     var page = pagesJSON._embedded.pages[i];
                     pages.push({
                         source: sourceUrlToRegex(page.srcUrl),
-                        target: page.targetUrl
+                        target: targetUrl(page.targetUrl, siteUrl)
                     });
                 }
 
-                // Ensure site URL has no trailing slash:
-                var siteUrl = url.parse(config.decommissionTool.siteUrl).href.slice(0,-1);
-
+                
                 var srcDoc = {
                     name: site.name,
                     host: site.host,

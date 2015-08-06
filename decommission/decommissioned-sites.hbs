@@ -10,7 +10,7 @@ server {
 
 {{#pages}}
     rewrite {{source}}
-            {{../url}}{{target}}?via=$scheme://$host$uri permanent;
+            {{target}}?via=$scheme://$host$uri permanent;
 {{/pages}}
 
     # catch all redirect to the home page
@@ -30,7 +30,7 @@ server {
 
 {{#pages}}
     rewrite {{source}}
-            {{../url}}{{target}}?via=$scheme://$host$uri permanent;
+            {{target}}?via=$scheme://$host$uri permanent;
 {{/pages}}
 
     # catch all redirect to the home page
