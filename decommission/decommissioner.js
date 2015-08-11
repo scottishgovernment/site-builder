@@ -58,14 +58,14 @@ module.exports = function (config) {
     function fetchPagesForSites(done) {
 
         if (sites._embedded && sites._embedded.sites) {
-        async.forEach(sites._embedded.sites, fetchPageForSite,
-            function (err) {
-                if (err !== undefined) {
-                    done('Error fetching pages: '+JSON.stringify(err));
+            async.forEach(sites._embedded.sites, fetchPageForSite,
+                function (err) {
+                    if (err !== undefined) {
+                        done('Error fetching pages: '+JSON.stringify(err));
+                    }
+                    done();
                 }
-                done();
-            }
-        );
+            );
 
         } else {
             done();
@@ -73,9 +73,20 @@ module.exports = function (config) {
 
     }
 
-    function sourceUrlToRegex(url) {
+    function escapeRegExpChars(str) {
+        return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    }
+
+    function sourceUrl(page) {
+
+        var url = page.srcUrl;
+
+        if (page.type === 'EXACT') {
+            url = escapeRegExpChars(url);
+        }
+
         var endsWithSlash = url.charAt(url.length - 1) === '/';
-        return '(?i)^' + url + (endsWithSlash ? '?' : '/?') + '$';
+        return '(?i)^' + url + (endsWithSlash ? '?' : '/?') + '$'; 
     }
 
     // if the target url is a fully qualified url then just use it as the target url.
@@ -104,16 +115,31 @@ module.exports = function (config) {
                 // Ensure site URL has no trailing slash:
                 var siteUrl = url.parse(config.decommissionTool.siteUrl).href.slice(0,-1);
 
+                // sort the pages so that exact mathces come first followed by 
+                // regexps
+                pagesJSON._embedded.pages = 
+                    pagesJSON._embedded.pages.sort(function (a, b) {
+
+                        if (a.type === b.type) {
+                            return a.srcUrl.localeCompare(b.srcUrl);
+                        }
+
+                        if (a.type === 'EXACT') {
+                            return -1;
+                        }
+
+                        return 1;
+                    });
+
                 var pages = [];
                 for (var i = 0; i < pagesJSON._embedded.pages.length; i++) {
                     var page = pagesJSON._embedded.pages[i];
                     pages.push({
-                        source: sourceUrlToRegex(page.srcUrl),
+                        source: sourceUrl(page),
                         target: targetUrl(page.targetUrl, siteUrl)
                     });
                 }
 
-                
                 var srcDoc = {
                     name: site.name,
                     host: site.host,
