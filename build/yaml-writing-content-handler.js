@@ -17,21 +17,22 @@ module.exports = function(rootDir) {
         }
     };
 
-    var writeYamlAndJson = function(item, slug) {
+    var writeYamlAndJson = function(item) {
 
         var yamlData = '~~~\n' + yaml.dump(item) + '~~~\n';
         yamlData = yamlData + item.contentItem.content;
         // write the YAML into a directory based upon its URL
         var dir = rootDir + item.url;
-        if (slug) {
-            dir = dir + slug;
-        }
+
+        // if (slug) {
+        //     dir = dir + slug;
+        // }
         fs.mkdirsSync(dir);
 
-        var yamlFilename = dir + '/index.yaml';
-        var jsonFilename = dir + '/index.json';
+        var yamlFilename = dir + 'index.yaml';
+        var jsonFilename = dir + 'index.json';
 
-
+console.log(yamlFilename);
         fs.writeFileSync(yamlFilename, yamlData);
         fs.writeFileSync(jsonFilename, JSON.stringify(item, null, '\t'));
 
@@ -94,17 +95,22 @@ module.exports = function(rootDir) {
         GUIDE: function(item) {
             var html = require('marked')(item.contentItem.content);
             var $ = require('cheerio').load(html);
+            var url = item.url;
+            item.canonicalurl = url;
+            writeYamlAndJson(item);
+
             $('h1').each(function(index, element) {
                 var slug = $(element).text().toLowerCase().replace(/[^\w]+/g, '-');
                 item.contentItem['guidepage'] = $(element).text();
                 item.contentItem['guidepageslug'] = slug;
-                // turn it into yaml data
+                item.url = url + slug + '/';
+                if (index === 0) {
+                    item.canonicalurl = url;
+                } else {
+                    item.canonicalurl = item.url;
+                }
                 writeYamlAndJson(item, slug);
             });
-            // turn it into yaml data
-            delete item.contentItem['guidepage'];
-            delete item.contentItem['guidepageslug'];
-            writeYamlAndJson(item);
         }
     };
 
