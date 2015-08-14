@@ -41,13 +41,13 @@ describe('yaml-writing-content-handler', function() {
         // ARRANGE
         var items = [
             // should be ignored
-            item('/ignore/me', 'STRUCTURAL_CATEGORY_LIST'),
-            item('/multi/segement/url', 'CATEGORY_LIST'),
-            item('/single-segment-url', 'ARTICLE'),
-            item('/organisations', 'ORG_LIST'),
-            item('/guide', 'GUIDE', '#Page One\n#Page Two\n#Page Three'),
-            item('/single-segment-url', 'FUNDING_OPPORTUNITY'),
-            item('/single-segment-url', 'FUNDING_LIST')
+            item('/ignore/me/', 'STRUCTURAL_CATEGORY_LIST'),
+            item('/multi/segement/url/', 'CATEGORY_LIST'),
+            item('/single-segment-url/', 'ARTICLE'),
+            item('/organisations/', 'ORG_LIST'),
+            item('/guide/', 'GUIDE', '#Page One\n#Page Two\n#Page Three'),
+            item('/single-segment-url/', 'FUNDING_OPPORTUNITY'),
+            item('/single-segment-url/', 'FUNDING_LIST')
         ];
 
         var rootDir = tempDir + '/contentitems';
