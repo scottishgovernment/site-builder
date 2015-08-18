@@ -23,16 +23,11 @@ module.exports = function(rootDir) {
         yamlData = yamlData + item.contentItem.content;
         // write the YAML into a directory based upon its URL
         var dir = rootDir + item.url;
-
-        // if (slug) {
-        //     dir = dir + slug;
-        // }
         fs.mkdirsSync(dir);
 
         var yamlFilename = dir + 'index.yaml';
         var jsonFilename = dir + 'index.json';
 
-console.log(yamlFilename);
         fs.writeFileSync(yamlFilename, yamlData);
         fs.writeFileSync(jsonFilename, JSON.stringify(item, null, '\t'));
 
@@ -58,6 +53,19 @@ console.log(yamlFilename);
     };
 
     var customHandlers = {
+
+        CATEGORY_LIST : function (item) {
+            // number grandchildren by index (this is used by the data-gtm attribs)
+            var i = 0;
+            item.descendants.forEach(function (child) {
+                child.descendants.forEach(function (grandChild) {
+                    grandChild.indexInGrandparent = i;
+                    i++;
+                });
+            });
+
+            writeYamlAndJson(item);
+        },
 
         STRUCTURAL_CATEGORY_LIST: function() {
             // ignore structural category lists
@@ -96,8 +104,6 @@ console.log(yamlFilename);
             var html = require('marked')(item.contentItem.content);
             var $ = require('cheerio').load(html);
             var url = item.url;
-            item.canonicalurl = url;
-            writeYamlAndJson(item);
 
             $('h1').each(function(index, element) {
                 var slug = $(element).text().toLowerCase().replace(/[^\w]+/g, '-');
@@ -111,6 +117,11 @@ console.log(yamlFilename);
                 }
                 writeYamlAndJson(item, slug);
             });
+            
+            // return the item to its original state
+            item.canonicalurl = url;
+            item.url = url;
+            writeYamlAndJson(item);
         }
     };
 
