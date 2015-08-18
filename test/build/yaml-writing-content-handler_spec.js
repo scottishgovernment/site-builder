@@ -19,8 +19,9 @@ describe('yaml-writing-content-handler', function() {
                 }, {
                     name: 'r1'
                 }],
-                fundingBusinessStage: 'stage'
-            }
+                fundingBusinessStage: 'stage',
+            },
+            descendants: [ { descendants : []}]
         }
     }
 
