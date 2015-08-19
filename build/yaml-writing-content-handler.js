@@ -136,6 +136,9 @@ module.exports = function(rootDir) {
 
         // called for each content item provided by the content source
         handleContentItem: function(item, callback) {
+            // set the canonical url
+            item.canonicalUrl = item.url;
+
             var customHandler = customHandlers[item.contentItem._embedded.format.name];
             if (customHandler) {
                 customHandler(item);
