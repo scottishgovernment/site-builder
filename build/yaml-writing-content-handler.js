@@ -105,6 +105,10 @@ module.exports = function(rootDir) {
             var $ = require('cheerio').load(html);
             var url = item.url;
 
+            item.canonicalurl = url;
+            item.url = url;
+            writeYamlAndJson(item);
+
             $('h1').each(function(index, element) {
                 var slug = $(element).text().toLowerCase().replace(/[^\w]+/g, '-');
                 item.contentItem['guidepage'] = $(element).text();
@@ -116,12 +120,7 @@ module.exports = function(rootDir) {
                     item.canonicalurl = item.url;
                 }
                 writeYamlAndJson(item, slug);
-            });
-            
-            // return the item to its original state
-            item.canonicalurl = url;
-            item.url = url;
-            writeYamlAndJson(item);
+            });    
         }
     };
 
