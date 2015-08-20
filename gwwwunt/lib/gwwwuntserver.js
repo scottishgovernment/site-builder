@@ -9,7 +9,7 @@ var yaml = require('js-yaml');
 var fs = require('fs');
 var config = require('config-weaver').config();
 var shelljs = require('shelljs/global');
-var allowedTasks = ['build', 'compass'];
+var allowedTasks = ['publish', 'publish-redirects', 'build'];
 var grunt = require('grunt');
 
 var GwwwuntTask = function (task) {
