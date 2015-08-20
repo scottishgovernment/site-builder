@@ -120,7 +120,11 @@ module.exports = function(rootDir) {
                     item.canonicalurl = item.url;
                 }
                 writeYamlAndJson(item, slug);
-            });    
+            });
+
+            // reset the 
+            item.canonicalurl = url;
+            item.url = url;
         }
     };
 
