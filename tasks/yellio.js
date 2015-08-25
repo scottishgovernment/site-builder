@@ -90,9 +90,7 @@ module.exports = function(grunt) {
     }
 
     grunt.registerMultiTask('yellio', 'Broadcasts message', function() {
-
         var release = this.async();
-        var fileCount;
 
         //Record the build time
         if (this.target === 'buildStart') {
@@ -100,7 +98,7 @@ module.exports = function(grunt) {
             release(true);
         } else if (this.target === 'buildComplete') {
             buildDone(release);
-        } else if (this.target = 'redirectsComplete') {
+        } else if (this.target === 'redirectsComplete') {
             redirectsDone(release);
         }
     });
