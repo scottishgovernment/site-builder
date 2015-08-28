@@ -1,0 +1,75 @@
+#!/bin/bash -el
+# copy-redirects  - copies the redirects
+BASEDIR="${PWD}"
+FROM=${BASEDIR}/out/nginx/
+SSH_OPTS="-o StrictHostKeyChecking=no -o PasswordAuthentication=no"
+targets="$@"
+export RSYNC_RSH="ssh ${SSH_OPTS}"
+
+# Duplicate stdout/stderr to log (redirection requires bash)
+exec > >(tee /var/log/site/copy_redirects.log)
+exec 2>&1
+
+rsync_copy() {
+  local target="$1"
+  rsync -aqz --delete-after "${FROM}" "${target}"
+}
+
+ssh_copy() {
+  local target="$1"
+  local dir=${target#*:}
+  local host=${target%%:*}
+  ssh ${SSH_OPTS} $host "sudo -s <<EOF
+    mkdir -p "${dir}" && \
+    chown devops.devops "${dir}"
+EOF" && rsync_copy "${target}" && \
+  printf "\n" && \
+  ssh ${SSH_OPTS} ${host} "sudo nginx -t && sudo service nginx reload"
+}
+
+s3_copy() {
+  local target="$1"
+  aws s3 sync --delete "${FROM}" "${target}"
+}
+
+copy_target() {
+  local target="$1"
+  case "${target}" in
+    s3:*)
+      s3_copy "${target}";;
+    *:*)
+      ssh_copy "${target}";;
+    *)
+      rsync_copy "${target}";;
+  esac
+}
+
+copy_targets() {
+  local targets="$1"
+  for target in ${targets}; do
+    status=0
+    printf "INFO: Copying redirects to ${target} ... "
+    set +e
+    copy_target "${target}"
+    result=$?
+    if [ ${result} != 0 ]; then
+      status=${result}
+      printf "failed.\n"
+    else
+      printf "done.\n"
+    fi
+    set -e
+  done
+}
+
+if [ ! -f "${FROM}/urlAliases.txt" ]; then
+  echo "No urlAliases.txt found - not copying redirects."
+  exit 1
+fi
+
+if [ -z "${targets}" ]; then
+  echo "No targets specified for copy."
+  exit 1
+fi
+
+copy_targets "${targets}"
