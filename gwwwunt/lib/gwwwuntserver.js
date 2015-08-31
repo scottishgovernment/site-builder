@@ -138,7 +138,9 @@ GwwwuntTask.prototype.run = function () {
 
 
         // Perform the task
-        var child = exec('. /etc/profile; grunt ' + task, {
+        // Source configuration in case it has changed since this server was started.
+        // Set LANG to prevent compass failing on characters not in US-ASCII.
+        var child = exec('. /etc/profile; LANG=en_GB.UTF-8; grunt ' + task, {
             silent: false,
             async: true
         });
