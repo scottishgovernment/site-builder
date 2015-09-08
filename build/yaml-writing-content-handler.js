@@ -56,8 +56,14 @@ module.exports = function(rootDir) {
 
         CATEGORY_LIST : function (item) {
             // number grandchildren by index (this is used by the data-gtm attribs)
-            var i = 0;
+
+            var i = 0,
+                j = 0;
+
             item.descendants.forEach(function (child) {
+                child.indexInParent = j;
+                j++;
+
                 child.descendants.forEach(function (grandChild) {
                     grandChild.indexInGrandparent = i;
                     i++;

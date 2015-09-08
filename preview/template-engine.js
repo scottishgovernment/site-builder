@@ -1,4 +1,3 @@
-var config = require('config-weaver').config();
 var fs = require('fs-extra');
 var assemble = require('assemble-handlebars');
 

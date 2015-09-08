@@ -2,6 +2,7 @@ module.exports = exports = function(contentSource, engine) {
 
     var async = require('async');
     var yamlWriter = require('../build/yaml-writing-content-handler')('out/contentitems');
+    var config = require('config-weaver').config();
 
     var handleError = function(res, error) {
         console.log(error);
@@ -111,6 +112,7 @@ module.exports = exports = function(contentSource, engine) {
                     if (visibility === 'factChecking') {
                         item.stagingEnvironment = true;
                     }
+                    item.config = config;
                     render(item, res);
                 }
             });
