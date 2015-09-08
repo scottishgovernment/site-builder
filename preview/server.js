@@ -34,7 +34,6 @@ app.use(function(req, res, next) {
 });
 
 app.use(cookieParser());
-
 app.use('/robots.txt',
   express.static(__dirname + '/robots.txt'));
 

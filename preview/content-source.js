@@ -58,7 +58,7 @@ module.exports = function(restler) {
                     if (error) {
                         callback(error);
                     } else {
-                        if (item.layout === 'guide.hbs') {
+                       if (item.layout === 'guide.hbs') {
                             // prepare guide page to serve
                             guidify(item, path.leaf);
                             callback(null, item);
