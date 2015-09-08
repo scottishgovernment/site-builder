@@ -1,5 +1,8 @@
 module.exports = exports = function(contentSource, engine) {
 
+    var async = require('async');
+    var yamlWriter = require('../build/yaml-writing-content-handler')('out/contentitems');
+
     var handleError = function(res, error) {
         console.log(error);
         var item = {
@@ -52,9 +55,28 @@ module.exports = exports = function(contentSource, engine) {
                 'Authorization': 'Bearer ' + token
             }
         };
-
         contentSource.fetch(getPath(req), auth, visibility, function(error, item) {
-            callback(error, item);
+            if (item ) {
+                // write any extra files that are needed                
+                var relsToFetch = [];
+                if (item.relatedItems) {
+                    relsToFetch = relsToFetch.concat(item.relatedItems.hasIncumbent);
+                    relsToFetch = relsToFetch.concat(item.inverseRelatedItems.hasIncumbent);
+                }
+                async.each(relsToFetch, 
+                    function (rel, cb) {
+                        var req = getPath({ path: rel.url });
+                        contentSource.fetch(req, auth, visibility, function (error, relItem) {
+                            yamlWriter.handleContentItem(relItem, cb);    
+                        });
+                    },
+
+                    function(err) {
+                        callback(error, item);
+                    });
+            } else {
+                callback(error, item);
+            }
         });
     }
 

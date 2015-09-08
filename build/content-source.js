@@ -14,7 +14,6 @@ module.exports = function (config, contentFormatter, contentHandler) {
     // fetch the item with this id
     function fetchItem(id, callback) {
         var itemUrl = url(id);
-
         restler
             .get(itemUrl)
                 .on("complete", function(data, response) {
@@ -57,12 +56,17 @@ module.exports = function (config, contentFormatter, contentHandler) {
     }
 
     return {
-         getContent: function (callback,contentItems) {
+
+        getContentItem : function (id, callback) {
+            fetchItem(id, callback);
+        },
+
+        getContent: function (callback) {
              // tell the content Handler we are starting so that it can perform
             contentHandler.start(
                 function () {
                     // start by fetching the published IDs
-                    fetchIDs(callback,contentItems);
+                    fetchIDs(callback);
                 });
         }
     };
