@@ -1,7 +1,7 @@
 {
   "name": "site-builder",
   "version": "0.0.0",
-  "description": "Static site builder",
+  "description": "Static site builder for mygov.scot",
   "main": "index.js",
   "scripts": {
     "test": "grunt test"
