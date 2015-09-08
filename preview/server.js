@@ -1,9 +1,7 @@
 var express = require('express');
 var app = express();
 var logger = require('express-logger');
-var config = require('config-weaver');
 var cookieParser = require('cookie-parser');
-var appConfig = config.config();
 
 // create content-source to fetch item
 var restler = require('restler');

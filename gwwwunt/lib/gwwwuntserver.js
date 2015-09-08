@@ -9,7 +9,7 @@ var yaml = require('js-yaml');
 var fs = require('fs');
 var config = require('config-weaver').config();
 var shelljs = require('shelljs/global');
-var allowedTasks = ['build', 'compass'];
+var allowedTasks = ['publish', 'publish-redirects', 'build'];
 var grunt = require('grunt');
 
 var GwwwuntTask = function (task) {
@@ -138,7 +138,9 @@ GwwwuntTask.prototype.run = function () {
 
 
         // Perform the task
-        var child = exec('. /etc/profile; grunt ' + task, {
+        // Source configuration in case it has changed since this server was started.
+        // Set LANG to prevent compass failing on characters not in US-ASCII.
+        var child = exec('. /etc/profile; export LANG=en_GB.UTF-8; grunt ' + task, {
             silent: false,
             async: true
         });
