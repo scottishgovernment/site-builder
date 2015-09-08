@@ -1,5 +1,7 @@
 module.exports = exports = function(contentSource, engine) {
 
+    var config = require('config-weaver').config();
+
     var handleError = function(res, error) {
         console.log(error);
         var item = {
@@ -89,6 +91,7 @@ module.exports = exports = function(contentSource, engine) {
                     if (visibility === 'factChecking') {
                         item.stagingEnvironment = true;
                     }
+                    item.config = config;
                     render(item, res);
                 }
             });
