@@ -16,17 +16,18 @@ describe('sitemap-handler', function() {
         });
         return {
             url: url,
-            contentItem: {
-                dateModified: dateModified
-            },
             ancestors: ancestors,
             contentItem: {
                 title: url,
+                dateModified: dateModified,
                 _embedded: {
                     format: {
                         name: format
                     }
-                }
+                },
+                content: '#section one\ncontent of first section\n' 
+                    + '#section two\ncontent of second section\n'
+                    + '#section three\ncontent of third section\n'
             }
         }
     }
@@ -60,6 +61,8 @@ describe('sitemap-handler', function() {
                 '2014-12-03T00:00:00Z', ['/', '/benefits/'], 'ARTICLE'),
             item('/benefits/subcat/benefits-item2/',
                 '2014-12-03T01:00:00Z', ['/', '/benefits/', '/benefits/subcat/'], 'ARTICLE'),
+            item('/guide/',
+                '2014-12-03T00:00:00Z', ['/', '/benefits/'], 'GUIDE'),
 
             // orgs sitemap
             item('/organisations/aberdeen-city-council/',
@@ -105,10 +108,29 @@ describe('sitemap-handler', function() {
                         function(callback) {
                             fs.readFile(dir + 'sitemap.benefits.xml', function(err, data) {
                                 parser.parseString(data, function(err, result) {
+
+                                    expect(result.urlset.url.length).toEqual(6);
+
                                     expect(result.urlset.url[0].loc[0])
                                         .toEqual('https://www.mygov.scot/benefits/benefits-item1/');
                                     expect(result.urlset.url[1].loc[0])
                                         .toEqual('https://www.mygov.scot/benefits/subcat/benefits-item2/');
+                                    expect(result.urlset.url[2].loc[0])
+                                        .toEqual('https://www.mygov.scot/guide/');
+                                    expect(result.urlset.url[3].loc[0])
+                                        .toEqual('https://www.mygov.scot/guide/section-one/');
+                                    expect(result.urlset.url[4].loc[0])
+                                        .toEqual('https://www.mygov.scot/guide/section-two/');
+                                    expect(result.urlset.url[5].loc[0])
+                                        .toEqual('https://www.mygov.scot/guide/section-three/');
+                                    
+// <url><loc>https://www.mygov.scot/benefits/benefits-item1/</loc><lastmod>2014-12-03</lastmod></url>
+// <url><loc>https://www.mygov.scot/benefits/subcat/benefits-item2/</loc><lastmod>2014-12-03</lastmod></url>
+// <url><loc>https://www.mygov.scot/guide/</loc><lastmod>2014-12-03</lastmod></url>
+// <url><loc>https://www.mygov.scot/guide/section-one/</loc><lastmod>2014-12-03</lastmod></url>
+// <url><loc>https://www.mygov.scot/guide/section-two/</loc><lastmod>2014-12-03</lastmod></url>
+// <url><loc>https://www.mygov.scot/guide/section-three/</loc><lastmod>2014-12-03</lastmod></url>
+
                                     callback();
                                 });
                             });
