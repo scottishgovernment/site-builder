@@ -7,6 +7,7 @@ module.exports = function(root) {
     var df = require('dateformat');
     var del = require('del');
     var yaml = require('js-yaml');
+    var marked = require('marked');
 
     var sitemaps = {};
 
@@ -31,11 +32,8 @@ module.exports = function(root) {
        }
     };
 
-    var appendToSitemap = function(item) {
-        var url = item.url;
-        var lastModified = df(Date.parse(item.contentItem.dateModified), 'yyyy-mm-dd');
-        fs.appendFileSync(root + getFilename(item), '<url><loc>https://www.mygov.scot'+addSlash(url)+'</loc><lastmod>'+lastModified+'</lastmod></url>\n');
-
+    var appendToSitemap = function(filename, lastModified, url) {
+        fs.appendFileSync(root + filename, '<url><loc>https://www.mygov.scot'+addSlash(url)+'</loc><lastmod>'+lastModified+'</lastmod></url>\n');
     };
 
     var prepareFile = function(item) {
@@ -80,7 +78,21 @@ module.exports = function(root) {
         handleContentItem: function(item, callback) {
             if (isIncluded(item)) {
                 prepareFile(item);
-                appendToSitemap(item);
+
+                var lastModified = df(Date.parse(item.contentItem.dateModified), 'yyyy-mm-dd');
+                var filename = getFilename(item);
+                appendToSitemap(filename, lastModified, item.url);
+
+                // if it is a guide then also add its sub-pages
+                if (item.contentItem._embedded.format.name === 'GUIDE') {
+                    var html = marked(item.contentItem.content);
+                    var $ = require('cheerio').load(html);
+                    $('h1').each(function(index, element) {
+                        var slug = $(element).text().toLowerCase().replace(/[^\w]+/g, '-');
+                        var url = item.url + slug + '/';
+                        appendToSitemap(filename, lastModified, url);
+                    });
+                }
             }
             callback();
         },

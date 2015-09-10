@@ -1,6 +1,8 @@
 var config = require('config-weaver').config();
 var path = require('path');
 var formatter = require('../build/item-formatter')(config.layoutstrategy);
+var async = require('async');
+var yamlWriter = require('../build/yaml-writing-content-handler')('out/contentitems');
 
 function url(source, visibility) {
     var endpoint = config.buildapi.endpoint.replace(/\/$/, '');
@@ -11,8 +13,9 @@ function url(source, visibility) {
 /**
 * @param source, the contentitem uuid or slug of the contentitem
 */
-function loadContent(restler, source, auth, visibility, callback) {
+function loadContent(restler, source, auth, visibility, seen, callback) {
     var contentUrl = url(source, visibility);
+
     restler.get(contentUrl, auth).on('complete', function(data, response) {
         if (data instanceof Error || (response && response.statusCode !== 200)) {
             var error = {
@@ -51,37 +54,83 @@ function guidify(item, guidePageSlug) {
 }
 
 module.exports = function(restler) {
-    return {
-        fetch: function(path, auth, visibility, callback) {
-            if (path.parent) {
-                loadContent(restler, path.parent, auth, visibility, function(error, item) {
-                    if (error) {
-                        callback(error);
-                    } else {
-                       if (item.layout === 'guide.hbs') {
-                            // prepare guide page to serve
-                            guidify(item, path.leaf);
-                            callback(null, item);
-                        } else {
-                            loadContent(restler, path.leaf, auth, visibility, function(error, item) {
-                                if (error) {
-                                    callback(error);
-                                } else {
-                                    callback(null, item);
-                                }
-                            });
-                        }
-                    }
-                });
-            } else {
-                loadContent(restler, path.leaf, auth, visibility, function(error, item) {
-                    if (error) {
-                        callback(error);
-                    } else {
+
+    function fetchItem(req, auth, visibility, seen, callback) {
+        var route = req.path.replace(/\/$/, '').split('/');
+        var parent = route.length > 1 ? route[route.length - 2] : undefined;
+        var leaf = route[route.length - 1] ? route[route.length - 1] : '/home';
+
+        if (!parent) {
+            loadContent(restler, leaf, auth, visibility, seen, function(error, item) {
+                if (error) {
+                    callback(error);
+                } else {
+                    fetchRelatedItems(item, auth, visibility, seen, function (relatederr, relateditems) {
+                        callback(error, item);
+                    });
+                }
+            });
+            return;
+        }
+
+        // if there is a parent then fetch it to see if it is a guide
+        if (parent) {
+            loadContent(restler, parent, auth, visibility, seen, function(error, item) {
+                if (error) {
+                    callback(error);
+                } else {
+                   if (item.layout === 'guide.hbs') {
+                        // its a guide page, transform it into a guide
+                        guidify(item, leaf);
                         callback(null, item);
+                    } else {
+                        
+                        loadContent(restler, leaf, auth, visibility, seen, function(error, item) {
+                            if (error) {
+                                callback(error);
+                            } else {
+                                fetchRelatedItems(item, auth, visibility, seen, callback);
+                            }
+                        });
                     }
+                }
+            });
+        }
+    }
+
+    function fetchRelatedItems(item, auth, visibility, seen, callback) {
+        var relsToFetch = [];
+        seen[item.uuid] = item;
+        if (item.relatedItems) {
+            relsToFetch = relsToFetch.concat(item.relatedItems.hasIncumbent);
+            relsToFetch = relsToFetch.concat(item.relatedItems.hasOrganisationalRole);
+            relsToFetch = relsToFetch.concat(item.relatedItems.hasSecondaryOrganisationalRole);
+            relsToFetch = relsToFetch.concat(item.inverseRelatedItems.hasIncumbent);
+
+            // remove any we have already seen
+            relsToFetch = relsToFetch.filter(function (rel) {
+                var hasBeenSeen = seen[rel.uuid];
+                return !hasBeenSeen;
+            });
+        }
+        
+        async.each(relsToFetch, 
+            function (rel, cb) {
+                var req = { path: rel.url };
+                fetchItem(req, auth, visibility, seen, function (error, relItem) {
+                    yamlWriter.handleContentItem(relItem, cb);
                 });
-            }
+            },
+
+            function(err) {
+                callback(err, item);
+            });
+    }
+
+    return {
+        fetch: function(req, auth, visibility, callback) {
+            var seen = {};
+            fetchItem(req, auth, visibility, seen, callback);
         }
     };
 };

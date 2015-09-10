@@ -36,10 +36,7 @@ describe('Content source, preview', function() {
         };
 
         var sut = require(sutPath)(restler);
-        sut.fetch({
-            leaf: 'slug2',
-            parent: 'guide'
-        }, {}, 'siteBuild', function(error, item) {
+        sut.fetch({path: '/guide/slug2/'}, {}, 'siteBuild', function(error, item) {
             expect('guide.hbs').toEqual(item.layout);
             expect(guideItem.contentItem.content).toEqual(item.body);
             expect('slug2').toEqual(item.contentItem.guidepageslug);
@@ -60,9 +57,7 @@ describe('Content source, preview', function() {
         };
 
         var sut = require(sutPath)(restler);
-        sut.fetch({
-            leaf: 'any',
-        }, {}, 'siteBuild', function(error, item) {
+        sut.fetch({ path: '/any/'}, {}, 'siteBuild', function(error, item) {
             expect('any.hbs').toEqual(item.layout);
             expect(anyItem.contentItem.content).toEqual(item.body);
             expect(item.contentItem.guidepageslug).toBeUndefined();
@@ -84,10 +79,7 @@ describe('Content source, preview', function() {
         };
 
         var sut = require(sutPath)(restler);
-        sut.fetch({
-            leaf: 'any',
-            parent: 'parent'
-        }, {}, 'siteBuild', function(error, item) {
+        sut.fetch({ path: '/parent/any/' }, {}, 'siteBuild', function(error, item) {
             expect('any.hbs').toEqual(item.layout);
             expect(anyItem.contentItem.content).toEqual(item.body);
             expect(item.contentItem.guidepageslug).toBeUndefined();
@@ -111,9 +103,7 @@ describe('Content source, preview', function() {
         };
 
         var sut = require(sutPath)(restler);
-        sut.fetch({
-            leaf: 'any',
-        }, {}, 'siteBuild', function(error, item) {
+        sut.fetch({ path: '/any/' }, {}, 'siteBuild', function(error, item) {
             expect(item).toBeUndefined();
             expect(error.message.indexOf('Failed') > -1).toBe(true);
             done();
@@ -136,17 +126,12 @@ describe('Content source, preview', function() {
         };
 
         var sut = require(sutPath)(restler);
-        sut.fetch({
-            leaf: 'any',
-        }, {}, 'siteBuild', function(error, item) {
+        sut.fetch({ path: '/any/' }, {}, 'siteBuild', function(error, item) {
             expect(item).toBeUndefined();
             expect(error.message.indexOf('_connection_refused') > -1).toBe(true);
             done();
         });
-        sut.fetch({
-            leaf: 'any',
-            parent: 'parent'
-        }, {}, 'siteBuild', function(error, item) {
+        sut.fetch({ path: '/parent/any/'}, {}, 'siteBuild', function(error, item) {
             expect(item).toBeUndefined();
             expect(error.message.indexOf('_connection_refused') > -1).toBe(true);
             done();

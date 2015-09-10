@@ -27,25 +27,6 @@ module.exports = exports = function(contentSource, engine) {
         });
     }
 
-    function getPath(req) {
-        // Remove trailing '/' if present.
-        var route = req.path.replace(/\/$/, '').split('/');
-
-        // leaf is used for retrieving item, it can be either id or slug (asuming slug is unique, which may not)
-        // parent is previous item on the full slug
-        // if leaf can not be found
-        // parent is loaded and checked whether is guide, if it is guide, leaf is used to serve specific guide page
-        // and parent is used to retrive guide
-        // url and route is for descritpion only, they are currently not used by content source,
-        // only leaf and parent (when content not found) is used
-        return {
-            url: req.path,
-            route: route,
-            leaf: route[route.length - 1] ? route[route.length - 1] : '/home',
-            parent: route.length > 1 ? route[route.length - 2] : ''
-        };
-    }
-
     function fetch(req, res, visibility, callback) {
         // find authorisation token
         // using preview_token as cookie name
@@ -56,28 +37,9 @@ module.exports = exports = function(contentSource, engine) {
                 'Authorization': 'Bearer ' + token
             }
         };
-        contentSource.fetch(getPath(req), auth, visibility, function(error, item) {
-            if (item ) {
-                // write any extra files that are needed                
-                var relsToFetch = [];
-                if (item.relatedItems) {
-                    relsToFetch = relsToFetch.concat(item.relatedItems.hasIncumbent);
-                    relsToFetch = relsToFetch.concat(item.inverseRelatedItems.hasIncumbent);
-                }
-                async.each(relsToFetch, 
-                    function (rel, cb) {
-                        var req = getPath({ path: rel.url });
-                        contentSource.fetch(req, auth, visibility, function (error, relItem) {
-                            yamlWriter.handleContentItem(relItem, cb);    
-                        });
-                    },
 
-                    function(err) {
-                        callback(error, item);
-                    });
-            } else {
-                callback(error, item);
-            }
+        contentSource.fetch(req, auth, visibility, function(error, item) {
+            callback(error, item);
         });
     }
 
