@@ -16,6 +16,11 @@ if (myArgs.ids) {
 
 module.exports = function(grunt) {
 
+    var path = require('path');
+
+    function module(name) {
+        return require(path.join('../publish', name));
+    }
 
     grunt.registerTask('create-yaml', 'generate content in the resources dir',
         function() {
@@ -29,32 +34,32 @@ module.exports = function(grunt) {
 
             var handlers = [
                 // handler to index content
-                require('../build/logger-handler')(grunt),
+                module('logger-handler')(grunt),
 
                 // handler to create redirects
-                require('../build/redirect-writing-content-handler')(nginx),
+                module('redirect-writing-content-handler')(nginx),
 
                 // handler to write yaml files to disk
-                require('../build/yaml-writing-content-handler')(target),
+                module('yaml-writing-content-handler')(target),
 
                 // handler to write sitemap.xml files
-                require('../build/sitemap-handler')(sitemap),
+                module('sitemap-handler')(sitemap),
 
                 // handler to write search results yaml to disk
-                require('../build/search-page-creating-content-handler')(target),
+                module('search-page-creating-content-handler')(target),
 
                 // handler to index content
-                require('../build/indexing-content-handler')(searchUrl)
+                module('indexing-content-handler')(searchUrl)
             ];
 
             // create a composite content handler to marshal the tasks that need to happen
-            var contentHandler = require('../build/composite-content-handler')(handlers);
+            var contentHandler = module('composite-content-handler')(handlers);
 
             // create the formatter
-            var contentFormatter = require('../build/item-formatter')(config.layoutstrategy);
+            var contentFormatter = module('item-formatter')(config.layoutstrategy);
 
             // create the contentsource
-            var contentSource = require('../build/content-source')(config, contentFormatter, contentHandler);
+            var contentSource = module('content-source')(config, contentFormatter, contentHandler);
             contentSource.getContent(
                  function() {
                     release(true);

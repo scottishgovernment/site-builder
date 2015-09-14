@@ -1,8 +1,8 @@
 var config = require('config-weaver').config();
 var path = require('path');
-var formatter = require('../build/item-formatter')(config.layoutstrategy);
 var async = require('async');
-var yamlWriter = require('../build/yaml-writing-content-handler')('out/contentitems');
+var formatter = require('../publish/item-formatter')(config.layoutstrategy);
+var yamlWriter = require('../publish/yaml-writing-content-handler')('out/contentitems');
 
 function url(source, visibility) {
     var endpoint = config.buildapi.endpoint.replace(/\/$/, '');

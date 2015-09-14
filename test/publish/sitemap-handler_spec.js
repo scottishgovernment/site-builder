@@ -1,4 +1,4 @@
-var sutPath = '../../out/instrument/build/sitemap-handler';
+var sutPath = '../../out/instrument/publish/sitemap-handler';
 describe('sitemap-handler', function() {
 
     var fs = require('fs-extra'),

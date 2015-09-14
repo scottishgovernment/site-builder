@@ -1,5 +1,5 @@
-var sut = require('../../out/instrument/build/item-formatter')('depth');
-var sutDistanceToContent = require('../../out/instrument/build/item-formatter')('distanceToContent');
+var sut = require('../../out/instrument/publish/item-formatter')('depth');
+var sutDistanceToContent = require('../../out/instrument/publish/item-formatter')('distanceToContent');
 
 describe('item-formatter', function() {
 
