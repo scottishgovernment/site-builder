@@ -1,4 +1,4 @@
-var sutPath = '../../out/instrument/build/content-source';
+var sutPath = '../../out/instrument/publish/content-source';
 
 xdescribe('content-source', function() {
 
