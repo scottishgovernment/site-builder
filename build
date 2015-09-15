@@ -1,0 +1,42 @@
+#!/bin/sh -el
+CHECKSUM=node_modules/package.json.sha1
+
+if ! test -t 1; then
+  grunt_opts="--no-color"
+fi
+
+while test $# -gt 0; do
+  case "$1" in
+    -v)
+      VERSION=$2;;
+    --ci)
+      ci=true;;
+  esac
+  shift
+done
+
+VERSION=${VERSION:-0.$(date +%Y%m%d%H%M)}
+PREVIOUS=$(test -f "$CHECKSUM" && cat "$CHECKSUM" || true)
+CURRENT=$(shasum -a1 package.json | awk '{print $1}')
+if [ "$PREVIOUS" != "$CURRENT" ]; then
+  if [ -d node_modules ]; then
+    echo "Pruning old node modules"
+    npm prune
+  fi
+  echo "Installing new node modules"
+  npm install
+  echo "$CURRENT" > "$CHECKSUM"
+fi
+
+grunt --no-color test
+if [ -z "$ci" ]; then
+  grunt $grunt_opts sonar
+else
+  grunt $grunt_opts sonar-ci
+fi
+
+rm -f debian/changelog
+dch --create --package site-builder -v $VERSION ""
+./debian/rules clean
+./debian/rules build
+fakeroot ./debian/rules binary OUTDIR=.

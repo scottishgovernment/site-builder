@@ -1,0 +1,8 @@
+decommission     /usr/lib/node_modules/site-builder
+grunt            /usr/lib/node_modules/site-builder
+gwwwunt          /usr/lib/node_modules/site-builder
+preview          /usr/lib/node_modules/site-builder
+publish          /usr/lib/node_modules/site-builder
+scripts          /usr/lib/node_modules/site-builder
+tasks            /usr/lib/node_modules/site-builder
+package.json     /usr/lib/node_modules/site-builder
