@@ -1,0 +1,11 @@
+Source: site-builder
+Section: mygov
+Priority: optional
+Maintainer: Martin Ellis <martin.ellis@scotland.gsi.gov.uk>
+Build-Depends: debhelper (>= 8.0.0), rsync
+Standards-Version: 3.9.4
+
+Package: site-builder
+Architecture: all
+Depends: ${misc:Depends}
+Description: mygov.scot site builder.

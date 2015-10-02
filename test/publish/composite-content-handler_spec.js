@@ -1,4 +1,4 @@
-var sutPath = '../../out/instrument/build/composite-content-handler';
+var sutPath = '../../out/instrument/publish/composite-content-handler';
 
 describe('composite-content-handler', function() {
 

@@ -1,4 +1,4 @@
-var sutPath = '../../out/instrument/build/redirect-writing-content-handler';
+var sutPath = '../../out/instrument/publish/redirect-writing-content-handler';
 describe('redirect-writing-content-handler', function() {
 
     var fs = require('fs-extra');

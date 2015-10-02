@@ -27,10 +27,10 @@ module.exports = function(grunt) {
                 projectVersion: grunt.package.version,
                 projectDescription: grunt.package.description,
                 sources: [
-                    'build',
                     'decommission',
                     'gwwwunt',
                     'preview',
+                    'publish',
                     'tasks'
                 ].join(','),
                 language: 'js',
@@ -51,7 +51,7 @@ module.exports = function(grunt) {
                 files: [
                     {
                         expand: true,
-                        src: ['build/*.hbs'],
+                        src: ['publish/*.hbs'],
                         dest: 'out/instrument/'
                     },
                     {
@@ -75,7 +75,7 @@ module.exports = function(grunt) {
 
         instrument: {
             files: [
-                'build/*.js',
+                'publish/*.js',
                 'decommission/*.js',
                 'gwwwunt/**/*.js',
                 'preview/*.js',
