@@ -1,0 +1,49 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+#export DH_VERBOSE=1
+MODULES=usr/lib/node_modules
+NPM=/usr/local/bin/npm
+
+override_dh_auto_build:
+	test -d node_modules || npm install
+
+override_dh_auto_test:
+#	PATH=/usr/local/bin:$$PATH \
+#	  grunt $(test -t 1 && echo --no-color) test
+
+override_dh_install:
+	dh_install
+	$(NPM) ls --parseable | \
+	  sed "s@$$PWD/node_modules/@@" | \
+	  sort \
+	  > out/deps-all.txt
+	$(NPM) ls --parseable --production | \
+	sed "s@$$PWD/node_modules/@@" | \
+	  sort \
+	  > out/deps-prod.txt
+	comm -23 out/deps-all.txt out/deps-prod.txt > out/deps-test.txt
+	mkdir -p debian/site-builder/$(MODULES)/site-builder
+	rsync -a \
+	  --delete \
+	  --delete-excluded \
+	  --exclude-from=out/deps-test.txt \
+	  node_modules/ debian/site-builder/$(MODULES)/site-builder/node_modules/
+
+override_dh_fixperms:
+	find debian/site-builder -print0 2>/dev/null | xargs -0r chown --no-dereference 0:0
+	find debian/site-builder ! -type l  -print0 2>/dev/null | xargs -0r chmod go=rX,u+rw,a-s
+	find debian/site-builder/usr/share/doc -type f  ! -regex 'debian/site-builder/usr/share/doc/[^/]*/examples/.*' -print0 2>/dev/null | xargs -0r chmod 644
+	find debian/site-builder/usr/share/doc -type d  -print0 2>/dev/null | xargs -0r chmod 755
+
+override_dh_builddeb:
+	dpkg-deb -b debian/site-builder $(OUTDIR)
+build %:
+	dh $@
+
+# Skip these debhelper targets
+override_dh_auto_configure:
+override_dh_auto_install:
+override_dh_link:
+override_dh_perl:
+.PHONY: build

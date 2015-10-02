@@ -1,4 +1,4 @@
-var sutPath = '../../out/instrument/build/indexing-content-handler';
+var sutPath = '../../out/instrument/publish/indexing-content-handler';
 
 describe('indexing-content-handler', function() {
 

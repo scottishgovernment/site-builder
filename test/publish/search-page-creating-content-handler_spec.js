@@ -1,4 +1,4 @@
-var sutPath = '../../out/instrument/build/search-page-creating-content-handler';
+var sutPath = '../../out/instrument/publish/search-page-creating-content-handler';
 
 describe('search-page-creating-content-handler', function() {
 
