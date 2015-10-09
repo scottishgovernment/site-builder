@@ -45,9 +45,6 @@ module.exports = function(grunt) {
                 // handler to write sitemap.xml files
                 module('sitemap-handler')(sitemap),
 
-                // handler to write search results yaml to disk
-                module('search-page-creating-content-handler')(target),
-
                 // handler to index content
                 module('indexing-content-handler')(searchUrl)
             ];
