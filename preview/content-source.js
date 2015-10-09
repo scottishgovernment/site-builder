@@ -102,6 +102,7 @@ module.exports = function(restler) {
         var relsToFetch = [];
         seen[item.uuid] = item;
         if (item.relatedItems) {
+            relsToFetch = relsToFetch.concat(item.relatedItems.hasResponsibleRole);
             relsToFetch = relsToFetch.concat(item.relatedItems.hasParent);
             relsToFetch = relsToFetch.concat(item.relatedItems.hasIncumbent);
             relsToFetch = relsToFetch.concat(item.relatedItems.hasOrganisationalRole);
