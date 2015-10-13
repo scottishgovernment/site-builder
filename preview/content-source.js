@@ -103,11 +103,15 @@ module.exports = function(restler) {
         seen[item.uuid] = item;
         if (item.relatedItems) {
             relsToFetch = relsToFetch.concat(item.relatedItems.hasResponsibleRole);
-            relsToFetch = relsToFetch.concat(item.relatedItems.hasParent);
             relsToFetch = relsToFetch.concat(item.relatedItems.hasIncumbent);
             relsToFetch = relsToFetch.concat(item.relatedItems.hasOrganisationalRole);
             relsToFetch = relsToFetch.concat(item.relatedItems.hasSecondaryOrganisationalRole);
             relsToFetch = relsToFetch.concat(item.inverseRelatedItems.hasIncumbent);
+
+            // policy detail pages need their parent
+            if (item.layout === 'policy-detail.hbs') {
+                relsToFetch = relsToFetch.concat(item.relatedItems.hasParent);
+            }
 
             // remove any we have already seen
             relsToFetch = relsToFetch.filter(function (rel) {
@@ -120,7 +124,6 @@ module.exports = function(restler) {
             function (rel, cb) {
                 var req = { path: rel.url };
                 fetchItem(req, auth, visibility, seen, function (error, relItem) {
-                    console.log(error);
                     yamlWriter.handleContentItem(relItem, cb);
                 });
             },
