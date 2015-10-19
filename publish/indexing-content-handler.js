@@ -29,11 +29,12 @@ module.exports = function (searchURL) {
             contentItem.url = item.url;
             contentItem._embedded.format.name = contentItem._embedded.format.name.toLowerCase();
 
-            // Hack for topics ...
-            contentItem.topicNames = [];
-            contentItem._embedded.topics.forEach(function (t) {
-                contentItem.topicNames.push(t.name);
-            });
+            // Hack for topics...
+            if (contentItem._embedded.topics) {
+                contentItem._embedded.topics.forEach(function (t) {
+                    contentItem.topicNames.push(t.name);
+                });
+            }
 
             restler.putJson(searchURL, contentItem)
                 .on('complete', function() {
