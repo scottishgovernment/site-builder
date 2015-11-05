@@ -68,20 +68,23 @@ module.exports = function (config, contentFormatter, contentHandler) {
                                 } else
                                 {
                                     processJson(data, callback);
-                                }
+                                }//
                             });
 
     }
 
     function processStaticFiles(callback) {
         console.log("Starting to doctor files....");
-        fs.readdir('resources/doctor/', function(err, files){
-            async.each(files,  processStaticFile,
-                            function(err) {
-                                console.log(err);
-                                callback(err);
-                            });
-        });
+        if ( fs.existsSync('resources/doctor/')){
+            fs.readdir('resources/doctor/', function(err, files){
+                async.each(files,  processStaticFile,
+                                function(err) {
+                                    callback(err);
+                                });
+            });
+        } else {
+            callback();
+        }
     }
 
     return {
