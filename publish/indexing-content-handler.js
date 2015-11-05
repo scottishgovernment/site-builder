@@ -38,9 +38,9 @@ module.exports = function (searchURL) {
             }
 
             restler.putJson(searchURL, contentItem)
-                .on('complete', function() {
+                .on('complete', function(err) {
                      //Should log the failure to index
-                     callback();
+                     callback(err);
                 });
         },
 
