@@ -6,7 +6,7 @@ var yamlWriter = require('../publish/yaml-writing-content-handler')('out/content
 
 function url(source, visibility) {
     var endpoint = config.buildapi.endpoint.replace(/\/$/, '');
-    var url = endpoint + '/' + source + '?visibility=' + visibility;
+    var url = endpoint + '/urlOrId' + source + '?visibility=' + visibility;
     return url;
 }
 
@@ -56,46 +56,32 @@ function guidify(item, guidePageSlug) {
 module.exports = function(restler) {
 
     function fetchItem(req, auth, visibility, seen, callback) {
-        var route = req.path.replace(/\/$/, '').split('/');
-        var parent = route.length > 1 ? route[route.length - 2] : undefined;
-        var leaf = route[route.length - 1] ? route[route.length - 1] : '/home';
 
-        if (!parent) {
-            loadContent(restler, leaf, auth, visibility, seen, function(error, item) {
-                if (error) {
-                    callback(error);
-                } else {
-                    fetchRelatedItems(item, auth, visibility, seen, function (relatederr, relateditems) {
-                        callback(error, item);
-                    });
-                }
-            });
-            return;
-        }
+        loadContent(restler, req.path, auth, visibility, seen, function(error, item) {
+            if (!error) {
+                fetchRelatedItems(item, auth, visibility, seen, function (relatederr, relateditems) {
+                    callback(error, item);
+                });
+                return;
+            }
 
-        // if there is a parent then fetch it to see if it is a guide
-        if (parent) {
-            loadContent(restler, parent, auth, visibility, seen, function(error, item) {
-                if (error) {
-                    callback(error);
-                } else {
-                   if (item.layout === 'guide.hbs') {
-                        // its a guide page, transform it into a guide
+            // fetch the parent in order to guidify
+            var route = req.path.replace(/\/$/, '').split('/');
+            if (route.length > 1) {
+                var parentUrl = req.path.substring(0, req.path.indexOf(route[route.length - 1]))
+                loadContent(restler, parentUrl, auth, visibility, seen, function(error, item) {
+                    if (error) {
+                        callback(error);
+                        return;
+                    }
+                    if (item.layout === 'guide.hbs') {
+                        var leaf = route[route.length - 1];
                         guidify(item, leaf);
                         callback(null, item);
-                    } else {
-                        
-                        loadContent(restler, leaf, auth, visibility, seen, function(error, item) {
-                            if (error) {
-                                callback(error);
-                            } else {
-                                fetchRelatedItems(item, auth, visibility, seen, callback);
-                            }
-                        });
                     }
-                }
-            });
-        }
+                });
+            }
+        });          
     }
 
     function fetchRelatedItems(item, auth, visibility, seen, callback) {
