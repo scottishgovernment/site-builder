@@ -1,4 +1,5 @@
-var sutPath = '../../out/instrument/preview/content-source';
+//var sutPath = '../../out/instrument/preview/content-source';
+var sutPath = '../../preview/content-source';
 describe('Content source, preview', function() {
 
     var guideItem = {
@@ -29,7 +30,12 @@ describe('Content source, preview', function() {
             get: function(url, cred) {
                 return {
                     on: function(event, callback) {
-                        callback(JSON.stringify(guideItem));
+                        if (url.indexOf('/guide/slug2/') !== -1){
+                            var err = new Error({status: 404});
+                            callback(err);
+                        } else {   
+                            callback(JSON.stringify(guideItem));
+                        }
                     }
                 }
             }
