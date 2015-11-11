@@ -42,6 +42,7 @@ module.exports = function(rootDir) {
                 return;
             }
             var val = (property ? element[property] : element);
+
             for (var i = 0; i < array.length; i++) {
                 if (array[i] === val) {
                     return;
@@ -146,17 +147,19 @@ module.exports = function(rootDir) {
 
         // called for each content item provided by the content source
         handleContentItem: function(item, callback) {
+
             // set the canonical url
             item.canonicalurl = item.url;
 
             var customHandler = customHandlers[item.contentItem._embedded.format.name];
             if (customHandler) {
                 customHandler(item);
-                callback();
             } else {
                 writeYamlAndJson(item);
-                callback();
             }
+
+            callback();
+
         },
 
         // called when the content source will provide no more items

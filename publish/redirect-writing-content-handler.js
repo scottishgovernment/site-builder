@@ -20,7 +20,8 @@ module.exports = function (dir) {
 
         // called for each content item provided by the content source
         handleContentItem: function(item, callback) {
-            if (item.contentItem._embedded.urlaliases.length) {
+
+            if (item.contentItem._embedded.urlaliases) {
                 item.contentItem._embedded.urlaliases.forEach(
                     function(alias) {
                         var redirect = {
