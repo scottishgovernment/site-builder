@@ -6,9 +6,10 @@ module.exports = function (config, path) {
     var restler = require('restler');
     var async = require('async');
     var fs = require('fs');
+    var authtoken;
 
     function fetchList(memo, item, callback) {
-        restler.get(item.links[0].href, { headers: { Accept: "application/hal+json"}})
+        restler.get(item.links[0].href, { headers: { Accept: 'application/hal+json', 'Authorization': 'Bearer ' + authtoken}})
                 .on('complete', function(data, response) {
                     if (data instanceof Error || response.statusCode !== 200) {
                         callback(data);
@@ -33,20 +34,39 @@ module.exports = function (config, path) {
                         }
                     }
                 });
-   }
+    }
 
-    return {
+    function headers(authtoken) {
+        return {
+            headers: {
+                'Authorization': 'Bearer ' + authtoken               
+            }
+        };
+    }
 
-        writeReferenceData : function (callback) {
+    function login(callback) {
+        restler.postJson(config.authentication.endpoint,
+            {
+                "userName": config.authentication.user,
+                "plainPassword": config.authentication.password
+            })
+        .on('complete', function(data) {
+            if (data instanceof Error) {
+                throw data;
+            } else {
+                authtoken = JSON.parse(data).sessionId;
+                callback(null, authtoken);
+            }
+        });
+    }
 
-            var url = config.publishing.endpoint + 'lists';
-            restler.get(url)
+    function fetchReferenceData(callback) {
+        var url = config.publishing.endpoint + 'lists';
+        restler.get(url, headers(authtoken))
                 .on('complete', function(data, response) {
-                
                     if (data instanceof Error || response.statusCode !== 200) {
                         callback(data);
                     } else {
-                        
                         try {
                             var lists = JSON.parse(data);
                             async.reduce(lists.lists, {}, fetchList, 
@@ -54,10 +74,19 @@ module.exports = function (config, path) {
                                     fs.writeFile(path, JSON.stringify(result, null, '\t'), callback);
                                 });
                         } catch (error) {
-                            
                             callback(error);
                         }
                     }
+                });          
+    }
+
+    return {
+
+        writeReferenceData : function (callback) {
+            login(
+                function() {
+                    console.log(authtoken);
+                    fetchReferenceData(callback)
                 });
         }
     };
