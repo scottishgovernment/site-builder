@@ -6,6 +6,7 @@ module.exports = function (config, contentFormatter, contentHandler) {
     var restler = require('restler');
     var async = require('async');
     var fs = require('fs');
+    var referenceDataSource = require('./referenceDataSource')(config, 'out/referenceData.json');
 
     // return a url for this item (if empty then will return the url for all items)
     function url(id) {
@@ -95,6 +96,7 @@ module.exports = function (config, contentFormatter, contentHandler) {
 
         getContent: function (callback) {
                     async.series([
+                            referenceDataSource.writeReferenceData,
                             contentHandler.start,
                             processContentItems, 
                             processStaticFiles
