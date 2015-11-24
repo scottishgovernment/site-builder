@@ -2,13 +2,11 @@ module.exports = function (dir) {
 
     var redirects = [];
 
-    var handlebars = require('assemble-handlebars');
+    var handlebars = require('handlebars');
     var fs = require('fs-extra');
-    var f = fs.readFileSync(__dirname + '/redirects.hbs', 'UTF-8');
-    var template;
-    handlebars.compile(f, {}, function(ex, tmpl) {
-        template = tmpl;
-    });
+
+    var templateText = fs.readFileSync(__dirname + '/redirects.hbs', 'UTF-8');
+    var template = handlebars.compile(templateText);
 
     return {
 

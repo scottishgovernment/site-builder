@@ -1,16 +1,13 @@
 module.exports = function (config) {
 
     var restler = require('restler'),
-        handlebars = require('assemble-handlebars'),
+        handlebars = require('handlebars'),
         async = require('async'),
         fs = require('fs-extra'),
         url = require('url');
 
-    var pagesTemplate;
     var pagesTemplateSrc = fs.readFileSync(__dirname + '/decommissioned-sites.hbs', 'UTF-8');
-    handlebars.compile(pagesTemplateSrc, {}, function(ex, tmpl) {
-        pagesTemplate = tmpl;
-    });
+    var pagesTemplate = handlebars.compile(pagesTemplateSrc);
 
     var authtoken;
 
@@ -86,7 +83,7 @@ module.exports = function (config) {
         }
 
         var endsWithSlash = url.charAt(url.length - 1) === '/';
-        return '(?i)^' + url + (endsWithSlash ? '?' : '/?') + '$'; 
+        return '(?i)^' + url + (endsWithSlash ? '?' : '/?') + '$';
     }
 
     // if the target url is a fully qualified url then just use it as the target url.
@@ -115,9 +112,9 @@ module.exports = function (config) {
                 // Ensure site URL has no trailing slash:
                 var siteUrl = url.parse(config.decommissionTool.siteUrl).href.slice(0,-1);
 
-                // sort the pages so that exact mathces come first followed by 
+                // sort the pages so that exact mathces come first followed by
                 // regexps
-                pagesJSON._embedded.pages = 
+                pagesJSON._embedded.pages =
                     pagesJSON._embedded.pages.sort(function (a, b) {
 
                         if (a.type === b.type) {

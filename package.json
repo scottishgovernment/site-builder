@@ -8,12 +8,11 @@
   },
   "author": {
     "name": "mygov.scot team",
-    "email": "martin.ellis@scotland.gsi.gov.uk",
+    "email": "martin.ellis@gov.scot",
     "url": "http://inside.mygovscot.org/"
   },
   "license": "MIT",
   "dependencies": {
-    "assemble-handlebars": "^0.3.0",
     "async": "^0.9.0",
     "cheerio": "^0.19.0",
     "config-weaver": "0.0.15",
@@ -24,10 +23,12 @@
     "express-handlebars": "^2.0.0",
     "express-logger": "0.0.3",
     "fs-extra": "^0.22.1",
+    "glob": "^5.0.15",
     "grunt": "^0.4.5",
+    "handlebars": "^3.0.3",
     "js-yaml": "3.0.2",
     "json-stable-stringify": "^1.0.0",
-    "marked": "0.3.3",
+    "marked": "^0.3.3",
     "needle": "^0.9.1",
     "node-watch": "^0.3.4",
     "node.extend": "^1.1.5",
@@ -35,7 +36,8 @@
     "restler": "^3.3.0",
     "shelljs": "^0.4.0",
     "simplecrawler-referrer-filter": "^0.3.1-1.1",
-    "xml2js": "^0.4.5"
+    "xml2js": "^0.4.5",
+    "yfm": "^0.2.0"
   },
   "devDependencies": {
     "base64-stream": "^0.1.2",

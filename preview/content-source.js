@@ -15,13 +15,8 @@ function url(source, visibility) {
 */
 function loadContent(restler, source, auth, visibility, seen, callback) {
     var contentUrl = url(source, visibility);
-
-console.log(contentUrl);
-
     restler.get(contentUrl, auth).on('complete', function(data, response) {
-
         if (data instanceof Error || (response && response.statusCode !== 200)) {
-
             var error = {
                 status: response ? response.statusCode : 500,
                 message: 'Failed to fetch item: ' + source + ' ' + data
