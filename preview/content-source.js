@@ -81,14 +81,17 @@ module.exports = function(restler) {
                     }
                 });
             }
-        });          
+        });
     }
 
     function fetchRelatedItems(item, auth, visibility, seen, callback) {
         var relsToFetch = [];
         seen[item.uuid] = item;
         if (item.relatedItems) {
+            relsToFetch = relsToFetch.concat(item.relatedItems.hasResponsibleDirectorate);
+            relsToFetch = relsToFetch.concat(item.relatedItems.hasSecondaryResponsibleDirectorate);
             relsToFetch = relsToFetch.concat(item.relatedItems.hasResponsibleRole);
+            relsToFetch = relsToFetch.concat(item.relatedItems.hasSecondaryResponsibleRole);
             relsToFetch = relsToFetch.concat(item.relatedItems.hasIncumbent);
             relsToFetch = relsToFetch.concat(item.relatedItems.hasOrganisationalRole);
             relsToFetch = relsToFetch.concat(item.relatedItems.hasSecondaryOrganisationalRole);
@@ -105,8 +108,8 @@ module.exports = function(restler) {
                 return !hasBeenSeen;
             });
         }
-        
-        async.each(relsToFetch, 
+
+        async.each(relsToFetch,
             function (rel, cb) {
                 var req = { path: rel.url };
                 fetchItem(req, auth, visibility, seen, function (error, relItem) {
