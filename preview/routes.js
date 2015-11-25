@@ -1,9 +1,8 @@
-module.exports = exports = function(contentSource, engine) {
+module.exports = exports = function(referenceDataSource, contentSource, engine) {
 
     var config = require('config-weaver').config();
 
     // fetch and savereference data
-    var referenceDataSource = require('../publish/referenceDataSource')(config, 'out/referenceData.json');
     var referenceDataFetched = false;
 
     var handleError = function(res, error) {

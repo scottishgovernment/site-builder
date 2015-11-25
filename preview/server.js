@@ -22,9 +22,11 @@ watch([layouts,partials,helpers],function(){
 });
 
 // create routes
-var routes = require('./routes')(contentSource, engine);
+var config = require('config-weaver').config();
+var referenceDataSource = require('../publish/referenceDataSource')(config, 'out/referenceData.json');
+var routes = require('./routes')(referenceDataSource, contentSource, engine);
 
-// fetch the reference data 
+// fetch the reference data
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
