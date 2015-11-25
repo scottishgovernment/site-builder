@@ -1,6 +1,12 @@
 var sutPath = '../../out/instrument/preview/routes';
 describe('routes', function() {
 
+    var referenceDataSource = {
+      writeReferenceData : function (callback) {
+        callback();
+      }
+    };
+
     var source = {
         fetch: function(path, auth, visibility, callback) {
             callback(null, 'content-item');
@@ -53,17 +59,17 @@ describe('routes', function() {
     };
 
     it('Preview', function(done) {
-        var sut = require(sutPath)(source, engine);
+        var sut = require(sutPath)(referenceDataSource, source, engine);
         sut.preview(req, res(done, 'rendered-"content-item"'));
     });
 
     it('Preview with source error', function(done) {
-        var sut = require(sutPath)(sourceBad, engine);
+        var sut = require(sutPath)(referenceDataSource, sourceBad, engine);
         sut.preview(req, res(done, 'rendered-{\"body\":\"There was an error\",\"layout\":\"_error.hbs\",\"statusCode\":400,\"message\":\"bad source\"}'));
     });
 
     it('Preview with template error', function(done) {
-        var sut = require(sutPath)(source, engineBad);
+        var sut = require(sutPath)(referenceDataSource, source, engineBad);
         sut.preview(req, res(done, null));
     });
 });
