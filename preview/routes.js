@@ -2,6 +2,10 @@ module.exports = exports = function(contentSource, engine) {
 
     var config = require('config-weaver').config();
 
+    // fetch and savereference data
+    var referenceDataSource = require('../publish/referenceDataSource')(config, 'out/referenceData.json');
+    var referenceDataFetched = false;
+
     var handleError = function(res, error) {
         console.log(error);
         var item = {
@@ -56,25 +60,40 @@ module.exports = exports = function(contentSource, engine) {
         }
     }
 
+    function ensureReferenceDataPresent(callback) {
+      if (referenceDataFetched === false) {
+        referenceDataSource.writeReferenceData(function () {
+            console.log('Fetched reference Data.');
+            referenceDataFetched = true;
+            callback();
+        });
+      } else {
+        callback();
+      }
+    }
+
     return {
         preview: function(req, res) {
-            if (req.headers['accept'] && req.headers['accept'].indexOf('image/png') !== -1) {
-                screenshot(req, res);
-                return;
-            }
 
-            var visibility = req.headers['x-visibility'] || 'siteBuild';
-            fetch(req, res, visibility, function(error, item) {
-                if (error) {
-                    handleError(res, error);
-                } else {
-                    // Display a banner to warn that this is not the real version of the site.
-                    if (visibility === 'factChecking') {
-                        item.stagingEnvironment = true;
-                    }
-                    item.config = config;
-                    render(item, res);
-                }
+            ensureReferenceDataPresent( function () {
+              if (req.headers['accept'] && req.headers['accept'].indexOf('image/png') !== -1) {
+                  screenshot(req, res);
+                  return;
+              }
+
+              var visibility = req.headers['x-visibility'] || 'siteBuild';
+              fetch(req, res, visibility, function(error, item) {
+                  if (error) {
+                      handleError(res, error);
+                  } else {
+                      // Display a banner to warn that this is not the real version of the site.
+                      if (visibility === 'factChecking') {
+                          item.stagingEnvironment = true;
+                      }
+                      item.config = config;
+                      render(item, res);
+                  }
+              });
             });
         }
     };
