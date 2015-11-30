@@ -25,7 +25,7 @@ describe('sitemap-handler', function() {
                         name: format
                     }
                 },
-                content: '#section one\ncontent of first section\n' 
+                content: '#section one\ncontent of first section\n'
                     + '#section two\ncontent of second section\n'
                     + '#section three\ncontent of third section\n'
             }
@@ -71,7 +71,7 @@ describe('sitemap-handler', function() {
                 '2014-12-03T01:00:00Z', ['/', '/organisations/'], 'ARTICLE'),
         ];
 
-        var sut = require(sutPath)(dir);
+        var sut = require(sutPath)(dir, 'http://www.mygov.scot');
 
         // ACT - manually drive the handler
         var cb = function() {};
@@ -123,7 +123,7 @@ describe('sitemap-handler', function() {
                                         .toEqual('https://www.mygov.scot/guide/section-two/');
                                     expect(result.urlset.url[5].loc[0])
                                         .toEqual('https://www.mygov.scot/guide/section-three/');
-                                    
+
 // <url><loc>https://www.mygov.scot/benefits/benefits-item1/</loc><lastmod>2014-12-03</lastmod></url>
 // <url><loc>https://www.mygov.scot/benefits/subcat/benefits-item2/</loc><lastmod>2014-12-03</lastmod></url>
 // <url><loc>https://www.mygov.scot/guide/</loc><lastmod>2014-12-03</lastmod></url>
