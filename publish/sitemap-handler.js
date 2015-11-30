@@ -1,7 +1,7 @@
 // ContentHandler that writes sitemap xml files to the web doc root
 //
 // The ContentSource will call the method of this object as it fetched the content.
-module.exports = function(root) {
+module.exports = function(root, baseUrl) {
 
     var fs = require('fs-extra');
     var df = require('dateformat');
@@ -33,7 +33,7 @@ module.exports = function(root) {
     };
 
     var appendToSitemap = function(filename, lastModified, url) {
-        fs.appendFileSync(root + filename, '<url><loc>https://www.mygov.scot'+addSlash(url)+'</loc><lastmod>'+lastModified+'</lastmod></url>\n');
+        fs.appendFileSync(root + filename, '<url><loc>'+addSlash(baseUrl + url)+'</loc><lastmod>'+lastModified+'</lastmod></url>\n');
     };
 
     var prepareFile = function(item) {
@@ -50,7 +50,7 @@ module.exports = function(root) {
         for (var sitemap in sitemaps) {
             if (sitemaps.hasOwnProperty(sitemap)) {
                 fs.appendFileSync(root + sitemap, '</urlset>\n' );
-                fs.appendFileSync(rootSitemap, '<sitemap><loc>https://www.mygov.scot'+addSlash(sitemap)+'</loc></sitemap>\n');
+                fs.appendFileSync(rootSitemap, '<sitemap><loc>'+addSlash(baseUrl + sitemap)+'</loc></sitemap>\n');
             }
         }
         fs.appendFileSync(rootSitemap, '</sitemapindex>\n' );
