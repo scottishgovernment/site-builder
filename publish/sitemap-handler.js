@@ -33,7 +33,9 @@ module.exports = function(root, baseUrl) {
     };
 
     var appendToSitemap = function(filename, lastModified, url) {
-        fs.appendFileSync(root + filename, '<url><loc>'+addSlash(baseUrl + url)+'</loc><lastmod>'+lastModified+'</lastmod></url>\n');
+        fs.appendFileSync(root + filename, '<url><loc>'+
+          baseUrl + addSlash(url) +
+          '</loc><lastmod>'+lastModified+'</lastmod></url>\n');
     };
 
     var prepareFile = function(item) {
@@ -50,7 +52,7 @@ module.exports = function(root, baseUrl) {
         for (var sitemap in sitemaps) {
             if (sitemaps.hasOwnProperty(sitemap)) {
                 fs.appendFileSync(root + sitemap, '</urlset>\n' );
-                fs.appendFileSync(rootSitemap, '<sitemap><loc>'+addSlash(baseUrl + sitemap)+'</loc></sitemap>\n');
+                fs.appendFileSync(rootSitemap, '<sitemap><loc>' + baseUrl + addSlash(sitemap) + '</loc></sitemap>\n');
             }
         }
         fs.appendFileSync(rootSitemap, '</sitemapindex>\n' );
