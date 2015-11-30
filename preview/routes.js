@@ -61,11 +61,16 @@ module.exports = exports = function(referenceDataSource, contentSource, engine) 
 
     function ensureReferenceDataPresent(callback) {
       if (referenceDataFetched === false) {
-        referenceDataSource.writeReferenceData(function () {
-            console.log('Fetched reference Data.');
-            referenceDataFetched = true;
-            callback();
-        });
+        try {
+          referenceDataSource.writeReferenceData(function () {
+              console.log('Fetched reference Data.');
+              referenceDataFetched = true;
+              callback();
+          });
+        } catch (e) {
+          console.log('Failed to fetch referenceData');
+          callback();
+        }
       } else {
         callback();
       }
