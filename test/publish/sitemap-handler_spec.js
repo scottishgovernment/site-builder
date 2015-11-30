@@ -71,7 +71,7 @@ describe('sitemap-handler', function() {
                 '2014-12-03T01:00:00Z', ['/', '/organisations/'], 'ARTICLE'),
         ];
 
-        var sut = require(sutPath)(dir, 'http://www.mygov.scot');
+        var sut = require(sutPath)(dir, 'https://www.mygov.scot');
 
         // ACT - manually drive the handler
         var cb = function() {};
