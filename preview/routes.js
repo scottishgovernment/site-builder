@@ -1,6 +1,7 @@
 module.exports = exports = function(referenceDataSource, contentSource, engine) {
 
     var config = require('config-weaver').config();
+    var fs = require('fs');
 
     // fetch and savereference data
     var referenceDataFetched = false;
@@ -86,18 +87,28 @@ module.exports = exports = function(referenceDataSource, contentSource, engine) 
               }
 
               var visibility = req.headers['x-visibility'] || 'siteBuild';
-              fetch(req, res, visibility, function(error, item) {
-                  if (error) {
-                      handleError(res, error);
-                  } else {
-                      // Display a banner to warn that this is not the real version of the site.
-                      if (visibility === 'factChecking') {
-                          item.stagingEnvironment = true;
-                      }
-                      item.config = config;
-                      render(item, res);
-                  }
-              });
+
+              var slug = req.path;
+              if ( slug != '/' && fs.existsSync('resources/doctor'+slug)){
+                var filename = 'resources/doctor'+slug+'/index.json';
+                console.log(filename);
+                var item = JSON.parse(fs.readFileSync(filename, 'utf8'));
+                item.config = config;
+                render(item, res);
+              } else {
+                fetch(req, res, visibility, function(error, item) {
+                    if (error) {
+                        handleError(res, error);
+                    } else {
+                        // Display a banner to warn that this is not the real version of the site.
+                        if (visibility === 'factChecking') {
+                            item.stagingEnvironment = true;
+                        }
+                        item.config = config;
+                        render(item, res);
+                    }
+                });
+              }
             });
         }
     };
