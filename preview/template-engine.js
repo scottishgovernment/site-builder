@@ -115,6 +115,10 @@ module.exports = function() {
                     }
                     item.body = renderedBody;
 
+
+console.log('Looking for template '+item.signpostUrl);
+
+
                     var tmpl = templates[item.layout] || templates['_default.hbs'];
                     assemble.render(tmpl, item, function(ex, renderedContent) {
                         callback(ex, renderedContent);
