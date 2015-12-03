@@ -16,13 +16,17 @@ function url(source, visibility) {
 function loadContent(restler, source, auth, visibility, seen, callback) {
     var contentUrl = url(source, visibility);
 
+console.log(contentUrl);
+
     restler.get(contentUrl, auth).on('complete', function(data, response) {
+
         if (data instanceof Error || (response && response.statusCode !== 200)) {
+
             var error = {
                 status: response ? response.statusCode : 500,
                 message: 'Failed to fetch item: ' + source + ' ' + data
             };
-            callback(error);
+            callback(error, null);
         } else {
             var item = formatter.format(JSON.parse(data));
             item.body = item.contentItem.content;
@@ -68,19 +72,26 @@ module.exports = function(restler) {
             // fetch the parent in order to guidify
             var route = req.path.replace(/\/$/, '').split('/');
             if (route.length > 1) {
-                var parentUrl = req.path.substring(0, req.path.indexOf(route[route.length - 1]))
-                loadContent(restler, parentUrl, auth, visibility, seen, function(error, item) {
-                    if (error) {
-                        callback(error);
+                var parentUrl = req.path.substring(0, req.path.indexOf(route[route.length - 1]));
+
+                loadContent(restler, parentUrl, auth, visibility, seen, function(guideError, guideItem) {
+                    if (guideError) {
+                        callback(guideError);
                         return;
                     }
-                    if (item.layout === 'guide.hbs') {
+                    if (guideItem.layout === 'guide.hbs') {
                         var leaf = route[route.length - 1];
-                        guidify(item, leaf);
-                        callback(null, item);
+                        guidify(guideItem, leaf);
+                        callback(null, guideItem);
+                    } else {
+                      // if it is not a guide then return the original error
+                      callback(error);
                     }
                 });
+            } else {
+              callback(error, item);
             }
+
         });
     }
 
