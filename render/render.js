@@ -1,6 +1,7 @@
+/**
+ * Generates HTML for content items by instantiating Handlebars templates.
+ */
 'use strict';
-
-
 var path = require('path');
 var fs = require('fs-extra');
 var hb = require('handlebars');
@@ -15,7 +16,12 @@ var frontMatterDelimiter = ['~~~', '~~~'];
 var fileOptions = {encoding: 'utf-8'};
 
 var layoutsDir;
+
+/**
+ * Compiled templates indexed by name of the layout file.
+ */
 var templates = {};
+
 var callbacks = {
     'render': function(src, dst, item) {
         console.log(dst);
@@ -28,6 +34,7 @@ function init(layouts, partials, helpers) {
     registerPartials(hb, partials);
     registerHelpers(hb, helpers);
 
+    // Helper to convert body from markdown to HTML, and render shortcodes.
     hb.registerHelper('markdown', function (options) {
         var body = options.fn(this);
         var bodyTemplate = hb.compile(body);
@@ -36,6 +43,9 @@ function init(layouts, partials, helpers) {
         return new hb.SafeString(html);
     });
 
+    // Helper to expand shortcodes in the body.
+    // Used for guides, because the helpers convert from markdown,
+    // but they don't render shortcodes.
     hb.registerHelper('shortcodes', function (options) {
         var body = options.fn(this);
         var bodyTemplate = hb.compile(body);
@@ -62,6 +72,9 @@ function registerHelpers(handlebars, dir) {
     }
 }
 
+/**
+ * Returns the given layout as a template, loading it if necessary.
+ */
 function loadTemplate(format) {
     var template = templates[format];
     if (!template) {
