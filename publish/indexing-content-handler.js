@@ -21,6 +21,11 @@ module.exports = function (searchURL) {
 
         // called for each content item provided by the content source
         handleContentItem : function(item, callback) {
+            if (item.noindex) {
+                callback();
+                return;
+            }
+
             // index the item using the search service
 
             // we only want to index the content item (not andcestors etc.)
@@ -50,4 +55,3 @@ module.exports = function (searchURL) {
         }
     };
 };
-
