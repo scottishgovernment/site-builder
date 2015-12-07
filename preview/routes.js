@@ -94,6 +94,7 @@ module.exports = exports = function(referenceDataSource, contentSource, engine) 
                 console.log(filename);
                 var item = JSON.parse(fs.readFileSync(filename, 'utf8'));
                 item.config = config;
+                item.stagingEnvironment = true;
                 render(item, res);
               } else {
                 fetch(req, res, visibility, function(error, item) {
