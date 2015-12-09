@@ -9,8 +9,8 @@ server {
     set $args '';
 
 {{#pages}}
-    rewrite {{source}}
-            {{target}}?via=$scheme://$host$uri permanent;
+    rewrite {{{source}}}
+            {{{target}}}?via=$scheme://$host$uri permanent;
 {{/pages}}
 
     # catch all redirect to the home page
@@ -29,13 +29,13 @@ server {
     set $args '';
 
 {{#pages}}
-    rewrite {{source}}
-            {{target}}?via=$scheme://$host$uri permanent;
+    rewrite {{{source}}}
+            {{{target}}}?via=$scheme://$host$uri permanent;
 {{/pages}}
 
     # catch all redirect to the home page
     location / {
-        rewrite ^ {{url}}?via=$scheme://$host$uri break;
+        rewrite ^ {{{url}}}?via=$scheme://$host$uri break;
     }
 
 }
