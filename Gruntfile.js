@@ -31,6 +31,7 @@ module.exports = function(grunt) {
                     'gwwwunt',
                     'preview',
                     'publish',
+                    'render',
                     'tasks'
                 ].join(','),
                 language: 'js',
@@ -79,6 +80,7 @@ module.exports = function(grunt) {
                 'decommission/*.js',
                 'gwwwunt/**/*.js',
                 'preview/*.js',
+                'render/*.js',
                 'tasks/*.js'
             ],
             options: {

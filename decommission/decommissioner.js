@@ -1,16 +1,13 @@
 module.exports = function (config) {
 
     var restler = require('restler'),
-        handlebars = require('assemble-handlebars'),
+        handlebars = require('handlebars'),
         async = require('async'),
         fs = require('fs-extra'),
         url = require('url');
 
-    var pagesTemplate;
     var pagesTemplateSrc = fs.readFileSync(__dirname + '/decommissioned-sites.hbs', 'UTF-8');
-    handlebars.compile(pagesTemplateSrc, {}, function(ex, tmpl) {
-        pagesTemplate = tmpl;
-    });
+    var pagesTemplate = handlebars.compile(pagesTemplateSrc);
 
     var authtoken;
 

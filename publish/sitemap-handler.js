@@ -8,10 +8,9 @@ module.exports = function(root, baseUrl) {
     var del = require('del');
     var yaml = require('js-yaml');
     var marked = require('marked');
+    var config = require('config-weaver').config();
 
     var sitemaps = {};
-
-    var config = yaml.safeLoad(fs.readFileSync('config.yaml', 'utf8'));
 
     var addSlash = function(uri) {
         if ( uri.indexOf('/') === 0 ) {
