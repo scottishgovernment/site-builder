@@ -129,7 +129,7 @@ module.exports = function(rootDir) {
                 writeYamlAndJson(item, slug);
             });
 
-            // reset the 
+            // reset the
             item.canonicalurl = url;
             item.url = url;
         }
