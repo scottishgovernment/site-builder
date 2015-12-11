@@ -2,6 +2,7 @@ var express = require('express');
 var app = express();
 var logger = require('express-logger');
 var cookieParser = require('cookie-parser');
+var path = require('path');
 
 // create content-source to fetch item
 var restler = require('restler');
@@ -10,14 +11,14 @@ var contentSource = require('./content-source')(restler);
 // create template engine to render fetched item
 var layouts = './resources/templates/_layouts/';
 var partials = './resources/templates/_partials/';
-var helpers = './resources/_helpers/';
+var helpers = path.join(process.cwd(), 'resources/_helpers');
 var engine = require('./template-engine')();
 engine.compile(layouts, partials, helpers);
 
 var watch = require('node-watch');
 
-watch([layouts,partials,helpers],function(){
-    console.log('Layouts, partials or helpers changed, registering partials and helpers, compiled layouts');
+watch([layouts, partials, helpers], function() {
+    console.log('Layouts, partials or helpers changed');
     engine.compile(layouts, partials, helpers);
 });
 
