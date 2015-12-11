@@ -82,11 +82,11 @@ module.exports = function (config) {
         var url = page.srcUrl;
 
         if (page.type === 'EXACT') {
-            url = escapeRegExpChars(url);
+            url = escapeRegExpChars(decodeURI(url));
         }
 
         var endsWithSlash = url.charAt(url.length - 1) === '/';
-        return '(?i)^' + url + (endsWithSlash ? '?' : '/?') + '$'; 
+        return '(?i)^' + url + (endsWithSlash ? '?' : '/?') + '$';
     }
 
     // if the target url is a fully qualified url then just use it as the target url.
@@ -115,9 +115,9 @@ module.exports = function (config) {
                 // Ensure site URL has no trailing slash:
                 var siteUrl = url.parse(config.decommissionTool.siteUrl).href.slice(0,-1);
 
-                // sort the pages so that exact mathces come first followed by 
+                // sort the pages so that exact mathces come first followed by
                 // regexps
-                pagesJSON._embedded.pages = 
+                pagesJSON._embedded.pages =
                     pagesJSON._embedded.pages.sort(function (a, b) {
 
                         if (a.type === b.type) {
