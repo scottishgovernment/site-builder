@@ -71,7 +71,7 @@ module.exports = function (config) {
     }
 
     function escapeRegExpChars(str) {
-        return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        return str.replace(/['-\/\\^$*+?.()|[\]{}]/g, '\\$&');
     }
 
     function sourceUrl(page) {
