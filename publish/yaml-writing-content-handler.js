@@ -6,6 +6,8 @@ module.exports = function(rootDir) {
     var fs = require('fs-extra');
     var yaml = require('js-yaml');
 
+    var slugify = require('./slugify');
+    
     var context = {
         funding: {
             businessTypes: [],
@@ -30,6 +32,7 @@ module.exports = function(rootDir) {
 
         fs.writeFileSync(yamlFilename, yamlData);
         fs.writeFileSync(jsonFilename, JSON.stringify(item, null, '\t'));
+        console.log(JSON.stringify(item, null, '\t'));
 
     };
 
@@ -117,7 +120,8 @@ module.exports = function(rootDir) {
             writeYamlAndJson(item);
 
             $('h1').each(function(index, element) {
-                var slug = $(element).text().toLowerCase().replace(/[^\w]+/g, '-');
+                //var slug = $(element).text().toLowerCase().replace(/[^\w|\']+/g, '-');
+                var slug = slugify($(element).text());
                 item.contentItem['guidepage'] = $(element).text();
                 item.contentItem['guidepageslug'] = slug;
                 item.url = url + slug + '/';

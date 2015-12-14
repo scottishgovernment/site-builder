@@ -4,6 +4,8 @@ var async = require('async');
 var formatter = require('../publish/item-formatter')(config.layoutstrategy);
 var yamlWriter = require('../publish/yaml-writing-content-handler')('out/contentitems');
 
+var slugify = require('../publish/slugify');
+
 function url(source, visibility) {
     var endpoint = config.buildapi.endpoint.replace(/\/$/, '');
     var url = endpoint + '/urlOrId' + source + '?visibility=' + visibility;
@@ -43,7 +45,7 @@ function guidify(item, guidePageSlug) {
     // enrich item with guidepage/guidepageslug fields and return
     // handlebars helper will deal with the presentation
     $('h1').each(function(index, element) {
-        var slug = $(element).text().toLowerCase().replace(/[^\w]+/g, '-');
+        var slug = slugify($(element).text());
         if (slug === guidePageSlug) {
             item.contentItem['guidepage'] = $(element).text();
             item.contentItem['guidepageslug'] = slug;
