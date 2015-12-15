@@ -7,7 +7,7 @@ module.exports = function(rootDir) {
     var yaml = require('js-yaml');
 
     var slugify = require('./slugify');
-    
+
     var context = {
         funding: {
             businessTypes: [],
@@ -32,8 +32,6 @@ module.exports = function(rootDir) {
 
         fs.writeFileSync(yamlFilename, yamlData);
         fs.writeFileSync(jsonFilename, JSON.stringify(item, null, '\t'));
-        console.log(JSON.stringify(item, null, '\t'));
-
     };
 
     var addElement = function(array, element, property) {
