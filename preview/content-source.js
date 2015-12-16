@@ -57,7 +57,6 @@ function guidify(item, guidePageSlug) {
 module.exports = function(restler) {
 
     function fetchItem(req, auth, visibility, seen, callback) {
-
         loadContent(restler, req.path, auth, visibility, seen, function(error, item) {
             if (!error) {
                 fetchRelatedItems(item, auth, visibility, seen, function (relatederr, relateditems) {
@@ -70,6 +69,7 @@ module.exports = function(restler) {
             var route = req.path.replace(/\/$/, '').split('/');
             if (route.length > 1) {
                 var parentUrl = req.path.substring(0, req.path.indexOf(route[route.length - 1]));
+
 
                 loadContent(restler, parentUrl, auth, visibility, seen, function(guideError, guideItem) {
                     if (guideError) {
@@ -105,6 +105,13 @@ module.exports = function(restler) {
             relsToFetch = relsToFetch.concat(item.relatedItems.hasSecondaryOrganisationalRole);
             relsToFetch = relsToFetch.concat(item.inverseRelatedItems.hasIncumbent);
 
+            // if this is a policy then ensure that the policy details pages are available
+            if (item.layout === 'policy.hbs') {
+              relsToFetch = relsToFetch.concat(
+                item.descendants.map(function (d) { return { url: d.url}; })
+              );
+            }
+
             // policy detail pages need their parent
             if (item.layout === 'policy-detail.hbs') {
                 relsToFetch = relsToFetch.concat(item.relatedItems.hasParent);
@@ -116,7 +123,6 @@ module.exports = function(restler) {
                 return !hasBeenSeen;
             });
         }
-
         async.each(relsToFetch,
             function (rel, cb) {
                 var req = { path: rel.url };
