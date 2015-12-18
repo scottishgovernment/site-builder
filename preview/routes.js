@@ -7,15 +7,17 @@ module.exports = exports = function(referenceDataSource, contentSource, engine) 
     var referenceDataFetched = false;
 
     var handleError = function(res, error) {
-        console.log(error);
         var item = {
+            url: '/error',
             body: 'There was an error',
+            title: 'Error',
+            contentItem: { summary: 'Error'},
             layout : '_error.hbs',
-            statusCode : 400,
+            statusCode : error.status | 400,
             message : error
         };
         engine.render(item, function(ex, renderedItem) {
-            res.status(400).send(renderedItem);
+            res.status(error.status | 400).send(renderedItem);
         });
     };
 
@@ -91,7 +93,6 @@ module.exports = exports = function(referenceDataSource, contentSource, engine) 
               var slug = req.path;
               if ( slug != '/' && fs.existsSync('resources/doctor'+slug)){
                 var filename = 'resources/doctor'+slug+'/index.json';
-                console.log(filename);
                 var item = JSON.parse(fs.readFileSync(filename, 'utf8'));
                 item.config = config;
                 item.stagingEnvironment = true;
