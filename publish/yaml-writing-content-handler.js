@@ -16,6 +16,10 @@ module.exports = function(rootDir) {
             fundingBusinessSectors: [],
             fundingBusinessPurpose: [],
             fundingOpportunityType: []
+        },
+
+        lists: {
+            pressRelease: {}
         }
     };
 
@@ -32,6 +36,7 @@ module.exports = function(rootDir) {
 
         fs.writeFileSync(yamlFilename, yamlData);
         fs.writeFileSync(jsonFilename, JSON.stringify(item, null, '\t'));
+
     };
 
     var addElement = function(array, element, property) {
@@ -95,6 +100,29 @@ module.exports = function(rootDir) {
             writeYamlAndJson(item);
         },
 
+        PRESS_RELEASE: function (item) {
+            var pressReleaseDateTime = new Date(item.contentItem.pressReleaseDateTime),
+                compareDate;
+
+            if (context.lists.pressRelease.minDateTime) {
+                compareDate = context.lists.pressRelease.minDateTime;
+            } else {
+                compareDate = new Date();
+            }
+
+            if (pressReleaseDateTime.getTime() < compareDate.getTime()) {
+                context.lists.pressRelease.minDateTime = new Date(item.contentItem.pressReleaseDateTime);
+            }
+
+            writeYamlAndJson(item);
+        },
+
+        PRESS_RELEASE_LANDING_PAGE: function (item) {
+            item.contentItem.minDateTime = context.lists.pressRelease.minDateTime;
+
+            context.lists.pressRelease.landing = item;
+        },
+
         FUNDING_LIST: function(item) {
             // enrich funding list for the rhs dropdown menu items
             item.contentItem.businessTypes = context.funding.businessTypes;
@@ -131,7 +159,7 @@ module.exports = function(rootDir) {
                 writeYamlAndJson(item, slug);
             });
 
-            // reset the
+            // reset the 
             item.canonicalurl = url;
             item.url = url;
         }
@@ -166,8 +194,15 @@ module.exports = function(rootDir) {
 
         // called when the content source will provide no more items
         end: function(err, callback) {
+            // special cases:
+            // 1. Funding list
             if (context.funding.list) {
                 writeYamlAndJson(context.funding.list);
+            }
+
+            // 2. Press release landing
+            if (context.lists.pressRelease.landing) {
+                writeYamlAndJson(context.lists.pressRelease.landing);
             }
             callback(err);
         }
