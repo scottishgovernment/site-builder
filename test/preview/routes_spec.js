@@ -65,7 +65,7 @@ describe('routes', function() {
 
     it('Preview with source error', function(done) {
         var sut = require(sutPath)(referenceDataSource, sourceBad, engine);
-        sut.preview(req, res(done, 'rendered-{\"body\":\"There was an error\",\"layout\":\"_error.hbs\",\"statusCode\":400,\"message\":\"bad source\"}'));
+        sut.preview(req, res(done, 'rendered-{\"url\":\"/error\",\"body\":\"There was an error\","title":\"Error\",\"contentItem\":{\"summary\":\"Error\"},\"layout\":\"_error.hbs\",\"statusCode\":400,\"message\":\"bad source\"}'));
     });
 
     it('Preview with template error', function(done) {
