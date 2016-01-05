@@ -18,6 +18,5 @@ To modify dependencies:
   package.json.
 * Run `npm install` to install modules listed in package.json which are
   not already installed.
-* Run `./scripts/shrinkwrap' to update the npm-shrinkwrap.json file.
+* Run `./scripts/shrinkwrap` to update the npm-shrinkwrap.json file.
 * Commit changes to package.json and npm-shrinkwrap.json together.
-
