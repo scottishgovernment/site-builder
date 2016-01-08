@@ -1,0 +1,33 @@
+#!/bin/sh
+# postinst script for site-builder
+#
+# see: dh_installdeb(1)
+
+set -e
+
+configure() {
+  . /etc/profile
+  cd /usr/local/lib/node_modules/site-builder
+  mkdir -p /var/log/site
+  chown devops:devops /var/log/site
+  couchdb-push http://localhost:5984/publish couch \
+    > /var/log/site/couchdb-push.log
+}
+
+case "$1" in
+    configure)
+      configure
+    ;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
+
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
+esac
+
+#DEBHELPER#
+
+exit 0
