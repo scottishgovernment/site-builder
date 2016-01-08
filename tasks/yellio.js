@@ -10,43 +10,40 @@ module.exports = function(grunt) {
         url = require('url');
 
     var startTime,
-        endTime,
-        buildTime;
+        endTime;
 
-    function post(content, release) {
-        var postURL = url.parse(config.crud.endpoint);
-        var payload = JSON.stringify(content);
+    function post(content, callback) {
+      var postURL = url.parse('http://localhost:5984/publish');
+      var payload = JSON.stringify(content);
 
-        //Record the publishing job
-        var options = {
-            host: postURL.hostname,
-            port: postURL.port,
-            path: path.join(postURL.pathname, '/api/pub'),
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Content-Length': payload.length
-            }
-        };
+      //Record the publishing job
+      var options = {
+          host: postURL.hostname,
+          port: postURL.port,
+          path: postURL.path,
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'Content-Length': payload.length
+          }
+      };
 
-        var req = http.request(options, function (res) {
-            res.setEncoding('utf8');
-            res.on('data', function (chunk) {
-                release(true);
-            });
-        });
-        req.on('error', function (e) {
-            console.log('Could not log publish: ' + content + '\n', e);
-            release(true);
-        });
-        req.write(payload);
-        req.end();
+      var req = http.request(options, function (res) {
+          res.setEncoding('utf8');
+          res.on('data', function (chunk) {
+              callback(true);
+          });
+      });
+      req.on('error', function (e) {
+          console.log('Could not log publish: ' + content + '\n', e);
+          callback(true);
+      });
+      req.write(payload);
+      req.end();
     }
 
     function buildDone(release) {
         endTime = new Date();
-        buildTime = endTime - startTime;
-
         var dir = grunt.config('site.contentitems');
 
         fs.readdir(dir, function (err, files) {
@@ -62,31 +59,27 @@ module.exports = function(grunt) {
 
             var fileCount = files.length;
 
-            //Build up the message to save to CRUD
-            var content = {
-                pub: {
-                    createdby: config.authentication.user,
-                    itemcount: fileCount,
-                    buildTime: buildTime,
-                    type: 'site'
-                }
-            };
-            post(content, release);
+            post({
+                type: 'publish',
+                what: 'site',
+                user: config.authentication.user,
+                start: startTime.toISOString(),
+                end: endTime.toISOString(),
+                items: fileCount
+            }, release);
         });
 
     }
 
     function redirectsDone(release) {
         endTime = new Date();
-        buildTime = endTime - startTime;
-        var content = {
-            pub: {
-                createdby: config.authentication.user,
-                buildTime: buildTime,
-                type: 'redirects'
-            }
-        };
-        post(content, release);
+        post({
+          type: 'publish',
+          what: 'redirects',
+          user: config.authentication.user,
+          start: startTime.toISOString(),
+          end: endTime.toISOString(),
+        }, release);
     }
 
     grunt.registerMultiTask('yellio', 'Broadcasts message', function() {

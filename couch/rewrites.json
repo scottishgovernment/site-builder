@@ -1,0 +1,10 @@
+[
+   {
+       "method": "GET",
+       "from": "/api/pubs",
+       "to": "_list/publish/publish",
+       "query": {
+         "descending": "true"
+       }
+   }
+]
