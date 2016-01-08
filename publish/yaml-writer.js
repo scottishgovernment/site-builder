@@ -6,8 +6,9 @@ module.exports = function(rootDir) {
     var path = require('path');
     var fs = require('fs-extra');
     var yaml = require('js-yaml');
-
     var slugify = require('./slugify');
+    var config = require('config-weaver').config();
+    var restler = require('restler');
 
     var context = {
         funding: {
@@ -174,7 +175,31 @@ module.exports = function(rootDir) {
 
             item.canonicalurl = url;
             item.url = url;
-        }
+        },
+
+		PDF_COVER_PAGE: function(item, callback) {
+
+			//go get meta data
+			jsonurl = config.doctor.jsonurl.replace('{uuid}', item.contentItem.pdfUUID);
+			console.log('-------------------'+jsonurl);
+
+			//somthing with restler to get the json
+			restler
+	            .get(jsonurl)
+	                .on("complete", function(data, response) {
+	                    if (data instanceof Error || response.statusCode !== 200) {
+	                        callback(data);
+	                    } else {
+	                    	console.log(JSON.stringify(data, null, '\t'));
+	                    	item.contentItem.pageCount=data.pages;
+	                    	item.contentItem.size=data.size;
+                			writeYamlAndJson(item);
+
+                			// save jpg and pdf to dist
+	                    }
+	                });
+
+		}
     };
 
     return {
@@ -194,7 +219,7 @@ module.exports = function(rootDir) {
 
             var customHandler = customHandlers[item.contentItem._embedded.format.name];
             if (customHandler) {
-                customHandler(item);
+                customHandler(item, callback);
             } else {
                 writeYamlAndJson(item);
             }
