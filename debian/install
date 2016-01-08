@@ -1,3 +1,4 @@
+couch            /usr/lib/node_modules/site-builder
 decommission     /usr/lib/node_modules/site-builder
 grunt            /usr/lib/node_modules/site-builder
 gwwwunt          /usr/lib/node_modules/site-builder
