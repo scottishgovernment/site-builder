@@ -12,7 +12,7 @@ module.exports = {
     "createdby": {
       "type": "string",
       "format": "email"
-    }
+    },
     "itemcount": {
       "type": "number"
 		},
