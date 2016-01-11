@@ -1,27 +1,33 @@
 module.exports = {
   "title": "Publish",
-	"type": "object",
-	"properties": {
+  "type": "object",
+  "properties": {
     "type": {
       "type": "string",
-		},
-		"start": {
+    },
+    "what": {
+      "type": "string",
+    },
+    "start": {
       "type": "string",
       "format": "date-time"
     },
-    "createdby": {
+    "end": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "user": {
       "type": "string",
       "format": "email"
     },
-    "itemcount": {
+    "items": {
       "type": "number"
-		},
-    "buildTime": {
-      "type": "number"
-		}
-	},
-	"required": [
+    }
+  },
+  "required": [
+    "type",
+    "what",
     "start",
-    "createdby"
+    "user"
   ]
 };
