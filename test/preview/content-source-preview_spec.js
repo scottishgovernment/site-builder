@@ -4,10 +4,15 @@ describe('Content source, preview', function() {
 
     var guideItem = {
         contentItem: {
-            _embedded : {
-                format: {
-                    name: 'GUIDE'
+          _embedded : {
+              format: {
+                name: 'GUIDE',
+                _embedded : {
+                  format: {
+                    structural: false
+                  }
                 }
+              }
             },
 
             content: '<h1>slug1</h1><h1>slug2</h1>'
@@ -17,9 +22,14 @@ describe('Content source, preview', function() {
     var anyItem = {
         contentItem: {
             _embedded : {
-                format: {
-                    name: 'ANY'
+              format: {
+                name: 'ANY',
+                _embedded : {
+                    format: {
+                      structural: false
+                    }
                 }
+              }
             },
             content: 'content'
         }
@@ -33,7 +43,7 @@ describe('Content source, preview', function() {
                         if (url.indexOf('/guide/slug2/') !== -1){
                             var err = new Error({status: 404});
                             callback(err);
-                        } else {   
+                        } else {
                             callback(JSON.stringify(guideItem));
                         }
                     }

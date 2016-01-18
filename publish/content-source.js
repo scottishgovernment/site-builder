@@ -50,7 +50,7 @@ module.exports = function (config, contentFormatter, contentHandler) {
                     try {
                         var ids = JSON.parse(data);
 
-                        async.each(ids, fetchItem, callback );
+                        async.eachSeries(ids, fetchItem, callback );
                     } catch (error) {
                         callback(error);
                     }
@@ -95,15 +95,15 @@ module.exports = function (config, contentFormatter, contentHandler) {
         },
 
         getContent: function (callback) {
-                    async.series([
-                            referenceDataSource.writeReferenceData,
-                            contentHandler.start,
-                            processContentItems, 
-                            processStaticFiles
-                        ], 
-                        function(err){
-                            contentHandler.end(err, callback);
-                        });
+            async.series([
+                referenceDataSource.writeReferenceData,
+                contentHandler.start,
+                processContentItems,
+                processStaticFiles
+            ],
+            function(err){
+                contentHandler.end(err, callback);
+            });
         }
     };
 };
