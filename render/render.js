@@ -114,7 +114,7 @@ function renderFile(src, dst, cb) {
 
 function processYamlFile(src, cb) {
     var dest = src.replace('out/contentitems/', 'out/pages/')
-                   .replace(/.yaml$/, '.html')
+                   .replace(/.yaml$/, '.html');
     renderFile(src, dest, cb);
 }
 
@@ -124,7 +124,12 @@ function run(cb) {
             console.log(err);
             cb(err);
         } else {
-            async.eachSeries(files, processYamlFile, function(err) {
+          // filter out any structural items
+          files = files.filter(function (file) {
+              var item = yfm(fs.readFileSync(file, fileOptions), frontMatterDelimiter).context;
+              return item.contentItem._embedded.format._embedded.structural === false;
+            });
+          async.eachSeries(files, processYamlFile, function(err) {
                 cb(err);
             });
         }

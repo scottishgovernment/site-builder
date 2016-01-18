@@ -27,7 +27,17 @@ function loadContent(restler, source, auth, visibility, seen, callback) {
         } else {
             var item = formatter.format(JSON.parse(data));
             item.body = item.contentItem.content;
-            callback(null, item);
+
+            // if the item is structural then return a 404
+            if (item.contentItem._embedded.format._embedded.structural === true) {
+              var error = {
+                  status: 404,
+                  message: 'Not found: ' + source
+              };
+              callback(error, null);
+            } else {
+              callback(null, item);
+            }
         }
     });
 }

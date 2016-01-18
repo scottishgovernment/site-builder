@@ -80,10 +80,6 @@ module.exports = function(rootDir) {
             writeYamlAndJson(item);
         },
 
-        STRUCTURAL_CATEGORY_LIST: function() {
-            // ignore structural category lists
-        },
-
         FUNDING_OPPORTUNITY: function(item) {
             item.contentItem.fundingBusinessRegions = [];
             item.contentItem.businessTypes = [];
@@ -159,7 +155,7 @@ module.exports = function(rootDir) {
                 writeYamlAndJson(item, slug);
             });
 
-            // reset the 
+            // reset the
             item.canonicalurl = url;
             item.url = url;
         }
@@ -177,7 +173,6 @@ module.exports = function(rootDir) {
 
         // called for each content item provided by the content source
         handleContentItem: function(item, callback) {
-
             // set the canonical url
             item.canonicalurl = item.url;
 
