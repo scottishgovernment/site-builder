@@ -24,10 +24,14 @@ module.exports = exports = function(layoutstrategy) {
             } else {
                 return assignCategoryLayoutBasedOnDepth(item);
             }
-        } else {
-            layout = format + '.hbs';
-            layout = layout.replace(/_/g, '-');
         }
+
+        if (item.contentItem._embedded.format._embedded.category.id === 'publications-non-aps') {
+          return 'non-aps-publication.hbs';
+        }
+
+        layout = format + '.hbs';
+        layout = layout.replace(/_/g, '-');
         return layout;
     }
 

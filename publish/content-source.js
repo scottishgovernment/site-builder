@@ -42,6 +42,7 @@ module.exports = function (config, contentFormatter, contentHandler) {
     // fetch all published IDs then fetch each item in turn
     function processContentItems(callback) {
         var publishedIDsURL = url('');
+        console.log('processContentItems ', publishedIDsURL);
         restler.get(publishedIDsURL)
             .on('complete', function(data, response) {
                 if (data instanceof Error || response.statusCode !== 200) {
@@ -49,7 +50,6 @@ module.exports = function (config, contentFormatter, contentHandler) {
                 } else {
                     try {
                         var ids = JSON.parse(data);
-
                         async.eachSeries(ids, fetchItem, callback );
                     } catch (error) {
                         callback(error);
