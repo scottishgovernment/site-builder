@@ -12,7 +12,14 @@ describe('item-formatter', function() {
                 "url": "/url/",
                 "title": "item",
                 "_embedded": {
-                    "format": { "name": "ORG_LIST"}
+                    "format": {
+                      "name": "ORG_LIST",
+                      "_embedded": {
+                        "category" : {
+                          "id": ""
+                        }
+                      }
+                    }
                 },
                 "summary": "item"
             },
@@ -56,7 +63,14 @@ describe('item-formatter', function() {
                     "url": "/url/",
                     "title": "item",
                     "_embedded": {
-                        "format": { "name" : "org_list"},
+                        "format": {
+                          "name" : "org_list",
+                          "_embedded": {
+                            "category" : {
+                              "id": ""
+                            }
+                          }
+                        },
                     },
                     "summary": "item"
                 },
@@ -140,7 +154,7 @@ describe('item-formatter', function() {
                         "sector": "Sector One",
                         "sectorDescription": "Sector One Description",
                         "sectorCount": 2,
-                        
+
                         "items": [
                             {
                                 "id": "id1",
@@ -191,9 +205,16 @@ describe('item-formatter', function() {
     it('correct layout assigned to non-category lists', function() {
         var input = {
             "contentItem": {
-                "title": "title",                
+                "title": "title",
                 "_embedded": {
-                    "format": { "name": "MADE_UP_FORMAT"}
+                    "format": {
+                      "name": "MADE_UP_FORMAT",
+                      "_embedded": {
+                        "category" : {
+                          "id": ""
+                        }
+                      }
+                    }
                 }
             }
         };
@@ -208,7 +229,14 @@ describe('item-formatter', function() {
             "contentItem": {
                 "title": "title",
                 "_embedded": {
-                    "format": { "name": "CATEGORY_LIST"}
+                  "format": {
+                    "name": "CATEGORY_LIST",
+                    "_embedded": {
+                      "category" : {
+                        "id": ""
+                      }
+                    }
+                  }
                 }
             },
             ancestors: [{}]
@@ -223,7 +251,14 @@ describe('item-formatter', function() {
             "contentItem": {
                 "title": "title",
                 "_embedded": {
-                    "format": { "name": "CATEGORY_LIST"}
+                  "format": {
+                    "name": "CATEGORY_LIST",
+                    "_embedded": {
+                      "category" : {
+                        "id": ""
+                      }
+                    }
+                  }
                 }
             },
             ancestors: [{}, {}, {}]
@@ -239,7 +274,14 @@ describe('item-formatter', function() {
             "contentItem": {
                 "title": "title",
                 "_embedded": {
-                    "format": { "name": "CATEGORY_LIST"}
+                  "format": {
+                    "name": "CATEGORY_LIST",
+                    "_embedded": {
+                      "category" : {
+                        "id": ""
+                      }
+                    }
+                  }
                 }
             },
             ancestors: [{}, {}, {}, {}, {}]
@@ -254,7 +296,14 @@ describe('item-formatter', function() {
             "contentItem": {
                 "title": "title",
                 "_embedded": {
-                    "format": { "name": "CATEGORY_LIST"}
+                  "format": {
+                    "name": "CATEGORY_LIST",
+                    "_embedded": {
+                      "category" : {
+                        "id": ""
+                      }
+                    }
+                  }
                 }
             },
             ancestors: [{}, {}],
@@ -270,7 +319,14 @@ describe('item-formatter', function() {
             "contentItem": {
                 "title": "title",
                 "_embedded": {
-                    "format": { "name": "CATEGORY_LIST"}
+                    "format": {
+                      "name": "CATEGORY_LIST",
+                      "_embedded": {
+                        "category" : {
+                          "id": ""
+                        }
+                      }
+                    }
                 }
             },
             ancestors: [{}, {}],
@@ -287,7 +343,14 @@ describe('item-formatter', function() {
             "contentItem": {
                 "title": "title",
                 "_embedded": {
-                    "format": { "name": "CATEGORY_LIST"}
+                    "format": {
+                      "name": "CATEGORY_LIST",
+                      "_embedded": {
+                        "category" : {
+                          "id": ""
+                        }
+                      }
+                    }
                 }
             },
             ancestors: [{}, {}],
@@ -300,12 +363,19 @@ describe('item-formatter', function() {
 
 
     it('la service finder descendant sorted by service provider', function() {
-        
+
         var input = {
             "contentItem": {
                 "title": "title",
                 "_embedded": {
-                    "format": { "name": "LA_SERVICE_FINDER"}
+                    "format": {
+                      "name": "LA_SERVICE_FINDER",
+                      "_embedded": {
+                        "category" : {
+                          "id": ""
+                        }
+                      }
+                    }
                 }
             },
             ancestors: [],
@@ -326,7 +396,7 @@ describe('item-formatter', function() {
 
         };
         var expectedDescendants = [
-            {serviceProvider : 'aaa'}, {serviceProvider : 'aaa'}, 
+            {serviceProvider : 'aaa'}, {serviceProvider : 'aaa'},
             {serviceProvider : 'bbb'}, {serviceProvider: 'zzz'}
         ];
         var actual = sut.format(input);
@@ -346,9 +416,9 @@ describe('item-formatter', function() {
             },
             ancestors: [{}, {}, {}, {}, {}]
         };
-        
+
         var actual = sut.format(input);
-        expect(actual.contentItem.links).not.toBeDefined(); 
+        expect(actual.contentItem.links).not.toBeDefined();
         expect(actual.contentItem._embedded.links).not.toBeDefined();
     });
 });

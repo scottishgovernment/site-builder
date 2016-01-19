@@ -5,30 +5,32 @@ describe('Content source, preview', function() {
     var guideItem = {
         contentItem: {
           _embedded : {
-              format: {
-                name: 'GUIDE',
-                _embedded : {
-                  format: {
-                    structural: false
-                  }
-                }
-              }
-            },
 
-            content: '<h1>slug1</h1><h1>slug2</h1>'
+            "format": {
+              "name": "GUIDE",
+              "_embedded": {
+                "category" : {
+                  "id": ""
+                }
+              },
+              structural: false
+            }
+          },
+          content: '<h1>slug1</h1><h1>slug2</h1>'
         }
     };
 
     var anyItem = {
         contentItem: {
             _embedded : {
-              format: {
-                name: 'ANY',
-                _embedded : {
-                    format: {
-                      structural: false
-                    }
-                }
+              "format": {
+                "name": "ANY",
+                "_embedded": {
+                  "category" : {
+                    "id": ""
+                  }
+                },
+                structural: false
               }
             },
             content: 'content'
