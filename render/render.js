@@ -127,7 +127,9 @@ function run(cb) {
           // filter out any structural items
           files = files.filter(function (file) {
               var item = yfm(fs.readFileSync(file, fileOptions), frontMatterDelimiter).context;
-              return item.contentItem._embedded.format._embedded.structural === false;
+              return
+                item.contentItem._embedded.format._embedded &&
+                item.contentItem._embedded.format._embedded.structural === false;
             });
           async.eachSeries(files, processYamlFile, function(err) {
                 cb(err);
