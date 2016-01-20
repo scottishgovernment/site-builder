@@ -26,7 +26,12 @@ module.exports = exports = function(layoutstrategy) {
             }
         }
 
-        if (item.contentItem._embedded.format._embedded.category.id === 'publications-non-aps') {
+        // Assign the non aps format depending on format category.
+        //
+        // the doctor files do not have a _embedded.category property so we have to guard for this.
+        if (item.contentItem._embedded.format._embedded &&
+          item.contentItem._embedded.format._embedded.category &&
+          item.contentItem._embedded.format._embedded.category.id === 'publications-non-aps') {
           return 'non-aps-publication.hbs';
         }
 
