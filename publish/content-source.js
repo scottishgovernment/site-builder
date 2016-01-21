@@ -28,9 +28,11 @@ module.exports = function (config, contentFormatter, contentHandler) {
     // fetch the item with this id
     function fetchItem(id, callback) {
         var itemUrl = url(id);
+        var now = new Date();
         restler
             .get(itemUrl)
                 .on("complete", function(data, response) {
+                  console.log(new Date() - now);
                     if (data instanceof Error || response.statusCode !== 200) {
                         callback(data);
                     } else {
@@ -50,7 +52,7 @@ module.exports = function (config, contentFormatter, contentHandler) {
                 } else {
                     try {
                         var ids = JSON.parse(data);
-                        async.eachSeries(ids, fetchItem, callback );
+                        async.eachLimit(ids, 1000, fetchItem, callback );
                     } catch (error) {
                         callback(error);
                     }
