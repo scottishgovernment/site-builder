@@ -28,11 +28,9 @@ module.exports = function (config, contentFormatter, contentHandler) {
     // fetch the item with this id
     function fetchItem(id, callback) {
         var itemUrl = url(id);
-        var now = new Date();
         restler
             .get(itemUrl)
                 .on("complete", function(data, response) {
-                  console.log(new Date() - now);
                     if (data instanceof Error || response.statusCode !== 200) {
                         callback(data);
                     } else {
