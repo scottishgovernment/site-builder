@@ -36,7 +36,6 @@ module.exports = function(rootDir) {
 
         fs.writeFileSync(yamlFilename, yamlData);
         fs.writeFileSync(jsonFilename, JSON.stringify(item, null, '\t'));
-
     };
 
     var addElement = function(array, element, property) {

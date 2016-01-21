@@ -50,7 +50,7 @@ module.exports = function (config, contentFormatter, contentHandler) {
                 } else {
                     try {
                         var ids = JSON.parse(data);
-                        async.eachLimit(ids, 1000, fetchItem, callback );
+                        async.each(ids, fetchItem, callback );
                     } catch (error) {
                         callback(error);
                     }
