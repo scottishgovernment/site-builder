@@ -1,5 +1,20 @@
 'use strict';
 
+if (!String.prototype.endsWith) {
+    String.prototype.endsWith = function(searchString, position) {
+        var subjectString = this.toString();
+        if (typeof position !== 'number'
+                || !isFinite(position)
+                || Math.floor(position) !== position
+                || position > subjectString.length) {
+            position = subjectString.length;
+        }
+        position -= searchString.length;
+        var lastIndex = subjectString.indexOf(searchString, position);
+        return lastIndex !== -1 && lastIndex === position;
+    };
+}
+
 module.exports = function(grunt) {
 
     var config = require('config-weaver').config();
@@ -51,11 +66,9 @@ module.exports = function(grunt) {
                 throw err;
             }
 
-            files.map(function (file) {
-                return path.join(dir, file);
-            }).filter(function (file) {
-                return fs.statSync(file).isDirectory();
-            });
+            var items = files.filter(function (file) {
+                return file.endsWith(".yaml");
+            }).length;
 
             var fileCount = files.length;
 
@@ -65,7 +78,7 @@ module.exports = function(grunt) {
                 user: config.authentication.user,
                 start: startTime.toISOString(),
                 end: endTime.toISOString(),
-                items: fileCount
+                items: items
             }, release);
         });
 

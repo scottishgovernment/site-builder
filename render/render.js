@@ -31,6 +31,7 @@ var callbacks = {
 function init(layouts, partials, helpers) {
     layoutsDir = layouts;
     templates = {};
+    var renderer = createRenderer();
     registerPartials(hb, partials);
     registerHelpers(hb, helpers);
 
@@ -39,7 +40,7 @@ function init(layouts, partials, helpers) {
         var body = options.fn(this);
         var bodyTemplate = hb.compile(body);
         var content = bodyTemplate(this);
-        var html = marked(content);
+        var html = marked(content, { renderer: renderer });
         return new hb.SafeString(html);
     });
 
@@ -53,6 +54,15 @@ function init(layouts, partials, helpers) {
         return new hb.SafeString(content);
     });
 
+}
+
+function createRenderer() {
+    var renderer = new marked.Renderer();
+    renderer.link_original = marked.Renderer.prototype.link;
+    renderer.link = function(href, title, text) {
+        return this.link_original(href, title, text);
+    };
+    return renderer;
 }
 
 function registerPartials(handlebars, dir) {
