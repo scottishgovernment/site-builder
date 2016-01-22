@@ -13,7 +13,25 @@ module.exports = function (dir) {
         // called when the content source is starting
         start: function(callback) {
             redirects = [];
-            callback();
+
+            // load any hard coded redirects
+            if (fs.existsSync('resources/url_aliases.csv')) {
+              var csv = require("fast-csv");
+              console.log('Loading url_aliases.csv');
+              csv.fromPath("resources/url_aliases.csv")
+            	 .on("data", function(data){
+                  var alias = {
+                    url: data[1],
+                    alias: data[0]
+                  };
+            	 	  redirects.push(alias);
+            	 }).on("end", function() {
+                  console.log('Loaded '+redirects.length+' redirects from url_aliases.csv');
+          	 			callback();
+            	 });
+            } else {
+              callback();
+            }
         },
 
         // called for each content item provided by the content source
