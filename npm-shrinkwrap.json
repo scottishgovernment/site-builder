@@ -590,35 +590,6 @@
         "graceful-fs": {
           "version": "3.0.8"
         },
-        "handlebars": {
-          "version": "3.0.3",
-          "dependencies": {
-            "source-map": {
-              "version": "0.1.43",
-              "dependencies": {
-                "amdefine": {
-                  "version": "1.0.0"
-                }
-              }
-            },
-            "uglify-js": {
-              "version": "2.3.6",
-              "dependencies": {
-                "async": {
-                  "version": "0.2.10"
-                },
-                "optimist": {
-                  "version": "0.3.7",
-                  "dependencies": {
-                    "wordwrap": {
-                      "version": "0.0.3"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
         "object.assign": {
           "version": "1.1.1",
           "dependencies": {
@@ -710,6 +681,56 @@
         },
         "mkdir": {
           "version": "0.0.2"
+        }
+      }
+    },
+    "fast-csv": {
+      "version": "1.0.0",
+      "dependencies": {
+        "extended": {
+          "version": "0.0.6",
+          "dependencies": {
+            "extender": {
+              "version": "0.0.10",
+              "dependencies": {
+                "declare.js": {
+                  "version": "0.0.8"
+                }
+              }
+            }
+          }
+        },
+        "is-extended": {
+          "version": "0.0.10"
+        },
+        "object-extended": {
+          "version": "0.0.7",
+          "dependencies": {
+            "array-extended": {
+              "version": "0.0.11",
+              "dependencies": {
+                "arguments-extended": {
+                  "version": "0.0.3"
+                }
+              }
+            }
+          }
+        },
+        "string-extended": {
+          "version": "0.0.8",
+          "dependencies": {
+            "array-extended": {
+              "version": "0.0.11",
+              "dependencies": {
+                "arguments-extended": {
+                  "version": "0.0.3"
+                }
+              }
+            },
+            "date-extended": {
+              "version": "0.0.6"
+            }
+          }
         }
       }
     },
