@@ -13,7 +13,7 @@ module.exports = function(grunt) {
         var helpers = path.join(process.cwd(), 'resources/_helpers');
         render.init(layouts, partials, helpers);
         render.on('render', function(src, dst, item) {
-            grunt.log.writeln("Assembling " + dst.cyan);
+            grunt.log.writeln("Assembling " + item.uuid + " " + dst.cyan);
         });
         render.run(cb);
     });

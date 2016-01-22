@@ -14,15 +14,10 @@ module.exports = function (config, contentFormatter, contentHandler) {
     }
 
     function processJson(data, callback){
-       try {
-            var contentItem = contentFormatter.format(JSON.parse(data));
-            contentHandler.handleContentItem(contentItem,
-                                            function() {
-                                                callback(null, contentItem);
-                                            });
-        } catch (error) {
-           callback(error);
-        }
+        var contentItem = contentFormatter.format(JSON.parse(data));
+        contentHandler.handleContentItem(contentItem, function() {
+            callback(null, contentItem);
+        });
     }
 
     // fetch the item with this id
