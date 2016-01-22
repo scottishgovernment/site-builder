@@ -3,6 +3,7 @@
 // The ContentSource will call the method of this object as it fetched the content.
 module.exports = function(rootDir) {
 
+    var path = require('path');
     var fs = require('fs-extra');
     var yaml = require('js-yaml');
 
@@ -24,18 +25,19 @@ module.exports = function(rootDir) {
     };
 
     var writeYamlAndJson = function(item) {
+        var yamlText = '~~~\n'
+            + yaml.dump(item)
+            + '~~~\n'
+            + item.contentItem.content;
+        var jsonText = JSON.stringify(item, null, 4);
+        var base = path.join(rootDir, item.contentItem.uuid);
+        fs.writeFileSync(base + '.yaml', yamlText);
+        fs.writeFileSync(base + '.json', jsonText);
 
-        var yamlData = '~~~\n' + yaml.dump(item) + '~~~\n';
-        yamlData = yamlData + item.contentItem.content;
-        // write the YAML into a directory based upon its URL
-        var dir = rootDir + item.url;
+        var dir = path.join('out/pages', item.url);
         fs.mkdirsSync(dir);
-
-        var yamlFilename = dir + 'index.yaml';
-        var jsonFilename = dir + 'index.json';
-
-        fs.writeFileSync(yamlFilename, yamlData);
-        fs.writeFileSync(jsonFilename, JSON.stringify(item, null, '\t'));
+        fs.writeFileSync(path.join(dir, 'index.yaml'), yamlText);
+        fs.writeFileSync(path.join(dir, 'index.json'), jsonText);
     };
 
     var addElement = function(array, element, property) {

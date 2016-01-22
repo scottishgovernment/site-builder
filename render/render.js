@@ -87,55 +87,62 @@ function loadTemplate(format) {
 }
 
 function render(item) {
+    var renderCallback = callbacks.render;
+    if (renderCallback) {
+        renderCallback(item.uuid, item.url, item.contentItem);
+    }
     var template = loadTemplate(item.layout);
     item.config = config;
     return template(item);
 }
 
-function renderFile(src, dst, cb) {
-    var renderCallback = callbacks.render;
+function renderItemToFile(item, cb) {
+    var html = render(item);
+    var dir = path.join('out/pages', item.url);
+    fs.mkdirs(dir, function() {
+        fs.writeFile(path.join(dir, 'index.html'), html, fileOptions, cb);
+    });
+}
+
+function renderYamlToFile(data, cb) {
+    var data = yfm(data, frontMatterDelimiter);
+    var item = data.context;
+    var dst = item.url;
+    item.body = data.content;
+    try {
+        if (shouldRender(item)) {
+            renderItemToFile(item, cb);
+        } else {
+            cb();
+        }
+    } catch (e) {
+        e.message = "Failed on item: " + item.uuid + "\n" + e.message;
+        throw e;
+    }
+}
+
+function processFile(src, cb) {
     fs.readFile(src, fileOptions, function (err, data) {
         if (!err) {
-            var data = yfm(data, frontMatterDelimiter);
-            if (renderCallback) {
-                renderCallback(src, dst, data.context.contentItem);
-            }
-            var item = data.context;
-            item.body = data.content;
-            var html = render(item);
-            fs.mkdirsSync(path.dirname(dst));
-            fs.writeFileSync(dst, html, fileOptions);
-            cb();
+            renderYamlToFile(data, cb);
         } else {
             cb(err);
         }
     });
 }
 
-function processYamlFile(src, cb) {
-    var dest = src.replace('out/contentitems/', 'out/pages/')
-                   .replace(/.yaml$/, '.html');
-    renderFile(src, dest, cb);
+function shouldRender(item) {
+    // Remove first disjunct when resources/doctor has been removed.
+    return !item.contentItem._embedded.format._embedded
+      || !item.contentItem._embedded.format._embedded.structural;
 }
 
 function run(cb) {
-    glob("out/contentitems/**/*.yaml", {}, function (err, files) {
+    glob("out/contentitems/*.yaml", {}, function (err, files) {
         if (err) {
-            console.log(err);
             cb(err);
         } else {
-          // filter out any structural items
-          files = files.filter(function (file) {
-              var item = yfm(fs.readFileSync(file, fileOptions), frontMatterDelimiter).context;
-
-              if (item.contentItem._embedded.format._embedded) {
-                return item.contentItem._embedded.format._embedded.structural === false
-              }
-              return true;
-            });
-          async.eachSeries(files, processYamlFile, function(err) {
-                cb(err);
-            });
+            async.eachLimit(files, 4, processFile, cb);
         }
     });
 }

@@ -22,8 +22,8 @@ module.exports = function(handlers) {
                     handler.handleContentItem(contentItem, eachCallback);
                 },
                 // called when all are finished
-                function() {
-                    callback();
+                function(err) {
+                    callback(err);
                 }
             );
         },

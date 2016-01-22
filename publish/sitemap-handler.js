@@ -71,7 +71,7 @@ module.exports = function(root, baseUrl) {
         // called when the content source is starting
         start: function(callback) {
             fs.mkdirsSync(root);
-            del(root + "/sitemap.*");
+            del.sync(root + "/sitemap.*");
             callback();
         },
 

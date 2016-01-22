@@ -3,10 +3,11 @@ describe('yaml-writing-content-handler', function() {
 
     var fs = require('fs-extra');
 
-    function item(url, format, markdown) {
+    function item(id, url, format, markdown) {
         return {
             url: url,
             contentItem: {
+                uuid: id,
                 "_embedded": {
                     format: {
                         name: format
@@ -42,17 +43,20 @@ describe('yaml-writing-content-handler', function() {
         // ARRANGE
         var items = [
             // should be ignored
-            item('/ignore/me/', 'STRUCTURAL_CATEGORY_LIST'),
-            item('/multi/segement/url/', 'CATEGORY_LIST'),
-            item('/single-segment-url/', 'ARTICLE'),
-            item('/organisations/', 'ORG_LIST'),
-            item('/guide/', 'GUIDE', '#Page One\n#Page Two\n#Page Three'),
-            item('/single-segment-url/', 'FUNDING_OPPORTUNITY'),
-            item('/single-segment-url/', 'FUNDING_LIST')
+            item('01', '/ignore/me/', 'STRUCTURAL_CATEGORY_LIST'),
+            item('02', '/multi/segement/url/', 'CATEGORY_LIST'),
+            item('03', '/single-segment-url/', 'ARTICLE'),
+            item('04', '/organisations/', 'ORG_LIST'),
+            item('05', '/guide/', 'GUIDE', '#Page One\n#Page Two\n#Page Three'),
+            item('06', '/single-segment-url/', 'FUNDING_OPPORTUNITY'),
+            item('07', '/single-segment-url/', 'FUNDING_LIST')
         ];
 
-        var rootDir = tempDir + '/contentitems';
-        var sut = require(sutPath)(rootDir);
+        var yamlDir = 'out/contentitems';
+        var pagesDir = 'out/pages';
+        fs.mkdirsSync(yamlDir);
+        fs.mkdirsSync(pagesDir);
+        var sut = require(sutPath)(yamlDir);
 
         // ACT - manually drive the handler
         var cb = function() {};
@@ -62,10 +66,14 @@ describe('yaml-writing-content-handler', function() {
         });
         sut.end(null, function () {
             // ASSERT - the temp directory should contain the expected files
-            expect(fs.existsSync(rootDir + '/multi/segement/url/index.yaml')).toEqual(true);
-            expect(fs.existsSync(rootDir + '/single-segment-url/index.yaml')).toEqual(true);
-            expect(fs.existsSync(rootDir + '/organisations/index.yaml')).toEqual(true);
-            expect(fs.existsSync(rootDir + '/guide/index.yaml')).toEqual(true);    
+            expect(fs.existsSync(yamlDir + '/01.yaml')).toEqual(true);
+            expect(fs.existsSync(yamlDir + '/02.yaml')).toEqual(true);
+            expect(fs.existsSync(yamlDir + '/03.yaml')).toEqual(true);
+
+            expect(fs.existsSync(pagesDir + '/multi/segement/url/index.yaml')).toEqual(true);
+            expect(fs.existsSync(pagesDir + '/single-segment-url/index.yaml')).toEqual(true);
+            expect(fs.existsSync(pagesDir + '/organisations/index.yaml')).toEqual(true);
+            expect(fs.existsSync(pagesDir + '/guide/index.yaml')).toEqual(true);
             done();
         });
     });
