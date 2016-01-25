@@ -2,7 +2,7 @@ var config = require('config-weaver').config();
 var path = require('path');
 var async = require('async');
 var formatter = require('../publish/item-formatter')(config.layoutstrategy);
-var yamlWriter = require('../publish/yaml-writing-content-handler')('out/contentitems');
+var yamlWriter = require('../publish/yaml-writer')('out/contentitems');
 
 var slugify = require('../publish/slugify');
 
