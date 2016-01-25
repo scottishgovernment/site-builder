@@ -6,6 +6,7 @@ describe('yaml-writing-content-handler', function() {
     function item(id, url, format, markdown) {
         return {
             url: url,
+            layout: 'layout.hbs',
             contentItem: {
                 uuid: id,
                 "_embedded": {

@@ -1,0 +1,11 @@
+~~~
+uuid: structural
+layout: layout.hbs
+content: hello
+url: /structural/
+contentItem:
+  _embedded:
+    format:
+      _embedded:
+        structural: true
+~~~
