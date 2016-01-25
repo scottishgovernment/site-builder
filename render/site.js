@@ -61,7 +61,6 @@ Site.prototype.processFile = function(src, cb) {
     var that = this;
     fs.readFile(src, fileOptions, function (err, data) {
         if (!err) {
-            console.log("* " + src);
             that.renderYamlToFile(data, cb);
         } else {
             cb(err);
