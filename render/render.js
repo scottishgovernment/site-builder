@@ -3,64 +3,58 @@
  */
 'use strict';
 var path = require('path');
-var fs = require('fs-extra');
-var hb = require('handlebars');
-var marked = require('marked');
 var glob = require('glob');
-var yaml = require('js-yaml');
-var yfm = require('yfm');
-var async = require('async');
+var fs = require('fs-extra');
 var config = require('config-weaver').config();
 
 var frontMatterDelimiter = ['~~~', '~~~'];
 var fileOptions = {encoding: 'utf-8'};
 
-var layoutsDir;
+function Renderer(layouts, partials, helpers) {
+    var marked = require('marked');
+    var handlebars = require('handlebars');
+    this.handlebars = handlebars;
 
-/**
- * Compiled templates indexed by name of the layout file.
- */
-var templates = {};
-
-var callbacks = {
-    'render': function(src, dst, item) {
-        console.log(dst);
-    },
-};
-
-function init(layouts, partials, helpers) {
-    layoutsDir = layouts;
-    templates = {};
-    var renderer = createRenderer();
-    registerPartials(hb, partials);
-    registerHelpers(hb, helpers);
+    this.layoutsDir = layouts;
+    /**
+     * Compiled templates indexed by name of the layout file.
+     */
+    this.templates = {};
+    var renderer = createRenderer(marked);
+    registerPartials(this.handlebars, partials);
+    registerHelpers(this.handlebars, helpers);
 
     // Helper to convert body from markdown to HTML, and render shortcodes.
-    hb.registerHelper('markdown', function (options) {
+    handlebars.registerHelper('markdown', function (options) {
         var body = options.fn(this);
-        var bodyTemplate = hb.compile(body);
+        var bodyTemplate = handlebars.compile(body);
         var content = bodyTemplate(this);
         var html = marked(content, { renderer: renderer });
-        return new hb.SafeString(html);
+        return new handlebars.SafeString(html);
     });
 
     // Helper to expand shortcodes in the body.
     // Used for guides, because the helpers convert from markdown,
     // but they don't render shortcodes.
-    hb.registerHelper('shortcodes', function (options) {
+    handlebars.registerHelper('shortcodes', function (options) {
         var body = options.fn(this);
-        var bodyTemplate = hb.compile(body);
+        var bodyTemplate = handlebars.compile(body);
         var content = bodyTemplate(this);
-        return new hb.SafeString(content);
+        return new handlebars.SafeString(content);
     });
 
+    this.callbacks = {
+        'render': function(src, dst, item) {
+            console.log(dst);
+        },
+    };
 }
 
-function createRenderer() {
+function createRenderer(marked) {
     var renderer = new marked.Renderer();
-    renderer.link_original = marked.Renderer.prototype.link;
+    var original = renderer.link;
     renderer.link = function(href, title, text) {
-        return this.link_original(href, title, text);
+        return original.bind(this)(href, title, text);
     };
     return renderer;
 }
@@ -85,86 +79,35 @@ function registerHelpers(handlebars, dir) {
 /**
  * Returns the given layout as a template, loading it if necessary.
  */
-function loadTemplate(format) {
-    var template = templates[format];
+Renderer.prototype.loadTemplate = function(format) {
+    var template = this.templates[format];
     if (!template) {
-        var file = path.join(layoutsDir, format);
+        var file = path.join(this.layoutsDir, format);
         var layout = fs.readFileSync(file, fileOptions);
-        template = hb.compile(layout);
-        templates[format] = template;
+        template = this.handlebars.compile(layout);
+        this.templates[format] = template;
     }
     return template;
 }
 
-function render(item) {
-    var renderCallback = callbacks.render;
+Renderer.prototype.render = function(item) {
+    var renderCallback = this.callbacks.render;
     if (renderCallback) {
         renderCallback(item.uuid, item.url, item.contentItem);
     }
-    var template = loadTemplate(item.layout);
+    var format = item.layout;
+    if (!format) {
+        throw new Error("Item does not specify a layout\n" + JSON.stringify(item, null, 2));
+    }
+    var template = this.loadTemplate(format);
     item.config = config;
     return template(item);
 }
 
-function renderItemToFile(item, cb) {
-    var html = render(item);
-    var dir = path.join('out/pages', item.url);
-    fs.mkdirs(dir, function() {
-        fs.writeFile(path.join(dir, 'index.html'), html, fileOptions, cb);
-    });
-}
-
-function renderYamlToFile(data, cb) {
-    var data = yfm(data, frontMatterDelimiter);
-    var item = data.context;
-    var dst = item.url;
-    item.body = data.content;
-    try {
-        if (shouldRender(item)) {
-            renderItemToFile(item, cb);
-        } else {
-            cb();
-        }
-    } catch (e) {
-        e.message = "Failed on item: " + item.uuid + "\n" + e.message;
-        throw e;
-    }
-}
-
-function processFile(src, cb) {
-    fs.readFile(src, fileOptions, function (err, data) {
-        if (!err) {
-            renderYamlToFile(data, cb);
-        } else {
-            cb(err);
-        }
-    });
-}
-
-function shouldRender(item) {
-    // Remove first disjunct when resources/doctor has been removed.
-    return !item.contentItem._embedded.format._embedded
-      || !item.contentItem._embedded.format._embedded.structural;
-}
-
-function run(cb) {
-    glob("out/contentitems/*.yaml", {}, function (err, files) {
-        if (err) {
-            cb(err);
-        } else {
-            async.eachLimit(files, 4, processFile, cb);
-        }
-    });
-}
-
-function on(event, callback) {
-  callbacks[event] = callback;
+Renderer.prototype.on = function(event, callback) {
+  this.callbacks[event] = callback;
 }
 
 module.exports = {
-    handlebars: hb,
-    init: init,
-    render: render,
-    run: run,
-    on: on,
+    Renderer: Renderer
 };
