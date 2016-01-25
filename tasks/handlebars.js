@@ -17,7 +17,7 @@ module.exports = function(grunt) {
         });
         var site = require('../render/site.js');
         var siteBuilder = new site.Site('out/contentitems', 'out/pages', renderer);
-        siteBuilder.run(done);
+        siteBuilder.build(done);
     });
 
 };

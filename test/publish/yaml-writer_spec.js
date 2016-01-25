@@ -1,5 +1,5 @@
-var sutPath = '../../out/instrument/publish/yaml-writing-content-handler';
-describe('yaml-writing-content-handler', function() {
+var sutPath = '../../out/instrument/publish/yaml-writer';
+describe('yaml-writer', function() {
 
     var fs = require('fs-extra');
 

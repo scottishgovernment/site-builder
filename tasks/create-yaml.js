@@ -41,7 +41,7 @@ module.exports = function(grunt) {
                 module('redirect-writing-content-handler')(nginx),
 
                 // handler to write yaml files to disk
-                module('yaml-writing-content-handler')(target),
+                module('yaml-writer')(target),
 
                 // handler to write sitemap.xml files
                 module('sitemap-handler')(sitemap, baseUrl),
