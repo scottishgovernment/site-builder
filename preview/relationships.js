@@ -37,10 +37,8 @@ Relationships.prototype.find = function (item) {
         items = items.filter(function (rel) {
             return !seen[rel.uuid];
         });
-
-        return items;
     }
-
+    return items;
 }
 
 function collectLinks(item) {
