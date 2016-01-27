@@ -1,6 +1,7 @@
 var config = require('config-weaver').config();
 var path = require('path');
 var async = require('async');
+var relationships = require('./relationships');
 var formatter = require('../publish/item-formatter')(config.layoutstrategy);
 var yamlWriter = require('../publish/yaml-writer')('out/contentitems');
 
@@ -8,14 +9,14 @@ var slugify = require('../publish/slugify');
 
 function url(source, visibility) {
     var endpoint = config.buildapi.endpoint.replace(/\/$/, '');
-    var url = endpoint + '/urlOrId' + source + '?visibility=' + visibility;
-    return url;
+    var base = endpoint + '/' + path.join('urlOrId', source);
+    return base + '?visibility=' + visibility;
 }
 
 /**
 * @param source, the contentitem uuid or slug of the contentitem
 */
-function loadContent(restler, source, auth, visibility, seen, callback) {
+function loadContent(restler, source, auth, visibility, callback) {
     var contentUrl = url(source, visibility);
     restler.get(contentUrl, auth).on('complete', function(data, response) {
         if (data instanceof Error || (response && response.statusCode !== 200)) {
@@ -66,22 +67,20 @@ function guidify(item, guidePageSlug) {
 
 module.exports = function(restler) {
 
-    function fetchItem(req, auth, visibility, seen, callback) {
-        loadContent(restler, req.path, auth, visibility, seen, function(error, item) {
+    function fetchItem(req, auth, visibility, callback) {
+        loadContent(restler, req.path, auth, visibility, function(error, item) {
             if (!error) {
-                fetchRelatedItems(item, auth, visibility, seen, function (relatederr, relateditems) {
+                fetchRelatedItems(item, auth, visibility, function (relatederr, relateditems) {
                     callback(error, item);
                 });
                 return;
             }
 
             // fetch the parent in order to guidify
-            var route = req.path.replace(/\/$/, '').split('/');
+            var route = req.path.split('/').filter(function(x) { return x.length });
             if (route.length > 1) {
                 var parentUrl = req.path.substring(0, req.path.indexOf(route[route.length - 1]));
-
-
-                loadContent(restler, parentUrl, auth, visibility, seen, function(guideError, guideItem) {
+                loadContent(restler, parentUrl, auth, visibility, function(guideError, guideItem) {
                     if (guideError) {
                         callback(guideError);
                         return;
@@ -102,54 +101,25 @@ module.exports = function(restler) {
         });
     }
 
-    function fetchRelatedItems(item, auth, visibility, seen, callback) {
-        var relsToFetch = [];
-        seen[item.uuid] = item;
-        if (item.relatedItems) {
-            relsToFetch = relsToFetch.concat(item.relatedItems.hasResponsibleDirectorate);
-            relsToFetch = relsToFetch.concat(item.relatedItems.hasSecondaryResponsibleDirectorate);
-            relsToFetch = relsToFetch.concat(item.relatedItems.hasResponsibleRole);
-            relsToFetch = relsToFetch.concat(item.relatedItems.hasSecondaryResponsibleRole);
-            relsToFetch = relsToFetch.concat(item.relatedItems.hasIncumbent);
-            relsToFetch = relsToFetch.concat(item.relatedItems.hasOrganisationalRole);
-            relsToFetch = relsToFetch.concat(item.relatedItems.hasSecondaryOrganisationalRole);
-            relsToFetch = relsToFetch.concat(item.inverseRelatedItems.hasIncumbent);
-
-            // if this is a policy then ensure that the policy details pages are available
-            if (item.layout === 'policy.hbs') {
-              relsToFetch = relsToFetch.concat(
-                item.descendants.map(function (d) { return { url: d.url}; })
-              );
-            }
-
-            // policy detail pages need their parent
-            if (item.layout === 'policy-detail.hbs') {
-                relsToFetch = relsToFetch.concat(item.relatedItems.hasParent);
-            }
-
-            // remove any we have already seen
-            relsToFetch = relsToFetch.filter(function (rel) {
-                var hasBeenSeen = seen[rel.uuid];
-                return !hasBeenSeen;
-            });
-        }
+    function fetchRelatedItems(item, auth, visibility, callback) {
+        var relationship = new relationships.Relationships();
+        var relsToFetch = relationship.find(item);
         async.each(relsToFetch,
-            function (rel, cb) {
-                var req = { path: rel.url };
-                fetchItem(req, auth, visibility, seen, function (error, relItem) {
+            function (item, cb) {
+                var req = { path: item.url || item.uuid };
+                fetchItem(req, auth, visibility, function (error, relItem) {
                     yamlWriter.handleContentItem(relItem, cb);
                 });
             },
 
-            function(err) {
+            function (err) {
                 callback(err, item);
             });
     }
 
     return {
         fetch: function(req, auth, visibility, callback) {
-            var seen = {};
-            fetchItem(req, auth, visibility, seen, callback);
+            fetchItem(req, auth, visibility, callback);
         }
     };
 };

@@ -12,7 +12,7 @@ var fileOptions = {encoding: 'utf-8'};
 
 function Renderer(layouts, partials, helpers) {
     var marked = require('marked');
-    var handlebars = require('handlebars');
+    var handlebars = require('handlebars').create();
     this.handlebars = handlebars;
 
     this.layoutsDir = layouts;
@@ -20,7 +20,7 @@ function Renderer(layouts, partials, helpers) {
      * Compiled templates indexed by name of the layout file.
      */
     this.templates = {};
-    var renderer = createRenderer(marked);
+    var renderer = this.createRenderer(marked);
     registerPartials(this.handlebars, partials);
     registerHelpers(this.handlebars, helpers);
 
@@ -50,13 +50,19 @@ function Renderer(layouts, partials, helpers) {
     };
 }
 
-function createRenderer(marked) {
+Renderer.prototype.createRenderer = function (marked) {
+    var that = this;
     var renderer = new marked.Renderer();
     var original = renderer.link;
-    renderer.link = function(href, title, text) {
+    renderer.link = function(link, title, text) {
+        var href = that.rewriteLink(link);
         return original.bind(this)(href, title, text);
     };
     return renderer;
+}
+
+Renderer.prototype.rewriteLink = function (link) {
+    return link;
 }
 
 function registerPartials(handlebars, dir) {
@@ -97,7 +103,8 @@ Renderer.prototype.render = function(item) {
     }
     var format = item.layout;
     if (!format) {
-        throw new Error("Item does not specify a layout\n" + JSON.stringify(item, null, 2));
+        var itemJson = JSON.stringify(item, null, 2);
+        throw new Error("Item does not specify a layout\n" + itemJson);
     }
     var template = this.loadTemplate(format);
     item.config = config;
