@@ -24,7 +24,7 @@ function loadContent(restler, source, auth, visibility, callback) {
                 status: response ? response.statusCode : 500,
                 message: 'Failed to fetch item: ' + source + ' ' + data
             };
-            callback(error, null);
+            callback(error);
         } else {
             var item = formatter.format(JSON.parse(data));
             item.body = item.contentItem.content;
@@ -35,7 +35,7 @@ function loadContent(restler, source, auth, visibility, callback) {
                   status: 404,
                   message: 'Not found: ' + source
               };
-              callback(error, null);
+              callback(error);
             } else {
               callback(null, item);
             }
