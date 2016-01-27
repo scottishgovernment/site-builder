@@ -41,7 +41,6 @@ module.exports = exports = function(referenceDataSource, contentSource, engine) 
                 'Authorization': 'Bearer ' + token
             }
         };
-
         contentSource.fetch(req, auth, visibility, function(error, item) {
             callback(error, item);
         });
