@@ -1,6 +1,13 @@
-//var sutPath = '../../out/instrument/preview/content-source';
-var sutPath = '../../preview/content-source';
+var sutPath = '../../out/instrument/preview/content-source';
+var enginePath = '../../out/instrument/preview/template-engine';
+
 describe('Content source, preview', function() {
+    var helpers = __dirname + '/samples/helper/';
+    var layouts = __dirname + '/samples/layout/';
+    var partials = __dirname + '/samples/partial/';
+
+    var engine = require(enginePath)();
+    engine.compile(layouts, partials, helpers);
 
     var guideItem = {
         contentItem: {
@@ -53,7 +60,7 @@ describe('Content source, preview', function() {
             }
         };
 
-        var sut = require(sutPath)(restler);
+        var sut = require(sutPath)(restler, engine);
         sut.fetch({path: '/guide/slug2/'}, {}, 'siteBuild', function(error, item) {
             expect('guide.hbs').toEqual(item.layout);
             expect(guideItem.contentItem.content).toEqual(item.body);
@@ -63,7 +70,6 @@ describe('Content source, preview', function() {
     });
 
     it('Fetch any', function(done) {
-        var sut = require(sutPath)();
         var restler = {
             get: function(url, cred) {
                 return {
@@ -74,7 +80,7 @@ describe('Content source, preview', function() {
             }
         };
 
-        var sut = require(sutPath)(restler);
+        var sut = require(sutPath)(restler, engine);
         sut.fetch({ path: '/any/'}, {}, 'siteBuild', function(error, item) {
             expect('any.hbs').toEqual(item.layout);
             expect(anyItem.contentItem.content).toEqual(item.body);
@@ -96,7 +102,7 @@ describe('Content source, preview', function() {
             }
         };
 
-        var sut = require(sutPath)(restler);
+        var sut = require(sutPath)(restler, engine);
         sut.fetch({ path: '/parent/any/' }, {}, 'siteBuild', function(error, item) {
             expect('any.hbs').toEqual(item.layout);
             expect(anyItem.contentItem.content).toEqual(item.body);
@@ -120,7 +126,7 @@ describe('Content source, preview', function() {
             }
         };
 
-        var sut = require(sutPath)(restler);
+        var sut = require(sutPath)(restler, engine);
         sut.fetch({ path: '/any/' }, {}, 'siteBuild', function(error, item) {
             expect(item).toBeUndefined();
             expect(error.message.indexOf('Failed') > -1).toBe(true);

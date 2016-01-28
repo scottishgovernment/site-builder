@@ -33,12 +33,7 @@ Site.prototype.build = function(done) {
             return;
         }
         that.indexFiles(files, function(err, index) {
-            that.renderer.rewriteLink = function(href) {
-                if (href.match(idRegex)) {
-                    return index[href];
-                }
-                return href;
-            };
+            this.index = index;
             async.eachLimit(files, 4, that.processFile.bind(that), done);
         });
     });
@@ -120,7 +115,15 @@ function shouldRender(item) {
 }
 
 Site.prototype.renderItemToFile = function(item, cb) {
-    var html = this.renderer.render(item);
+    var context = {
+        rewriteLink: function(href) {
+            if (href.match(idRegex)) {
+                return this.index[href];
+            }
+            return href;
+        }
+    };
+    var html = this.renderer.render(item, context);
     var url = item.url;
     if (!url) {
         throw new Error("Item does not specify a URL.");

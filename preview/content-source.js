@@ -65,7 +65,7 @@ function guidify(item, guidePageSlug) {
     });
 }
 
-module.exports = function(restler) {
+module.exports = function(restler, engine) {
 
     function fetchItem(req, auth, visibility, callback) {
         loadContent(restler, req.path, auth, visibility, function(error, item) {
@@ -102,7 +102,7 @@ module.exports = function(restler) {
     }
 
     function fetchRelatedItems(item, auth, visibility, callback) {
-        var relationship = new relationships.Relationships();
+        var relationship = new relationships.Relationships(engine.get());
         var relsToFetch = relationship.find(item);
         async.each(relsToFetch,
             function (item, cb) {

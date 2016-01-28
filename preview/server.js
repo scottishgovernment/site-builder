@@ -4,10 +4,6 @@ var logger = require('express-logger');
 var cookieParser = require('cookie-parser');
 var path = require('path');
 
-// create content-source to fetch item
-var restler = require('restler');
-var contentSource = require('./content-source')(restler);
-
 // create template engine to render fetched item
 var layouts = './resources/templates/_layouts/';
 var partials = './resources/templates/_partials/';
@@ -21,6 +17,10 @@ watch([layouts, partials, helpers], function() {
     console.log('Layouts, partials or helpers changed');
     engine.compile(layouts, partials, helpers);
 });
+
+// create content-source to fetch item
+var restler = require('restler');
+var contentSource = require('./content-source')(restler, engine);
 
 // create routes
 var config = require('config-weaver').config();

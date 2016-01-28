@@ -1,5 +1,6 @@
 var renderPath = '../../out/instrument/render/render';
 var sutPath = '../../out/instrument/render/site';
+
 describe('site', function() {
 
     var path = require('path');
