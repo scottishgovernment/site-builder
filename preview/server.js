@@ -8,24 +8,24 @@ var path = require('path');
 var layouts = './resources/templates/_layouts/';
 var partials = './resources/templates/_partials/';
 var helpers = path.join(process.cwd(), 'resources/_helpers');
-var engine = require('./template-engine')();
-engine.compile(layouts, partials, helpers);
+var render = require(path.join(__dirname, '../render/render'));
+var renderer = new render.Renderer(layouts, partials, helpers);
 
 var watch = require('node-watch');
-
 watch([layouts, partials, helpers], function() {
     console.log('Layouts, partials or helpers changed');
-    engine.compile(layouts, partials, helpers);
+    renderer.reload();
+    renderer.handlebars.registerPartial('clickjack', '');
 });
 
 // create content-source to fetch item
 var restler = require('restler');
-var contentSource = require('./content-source')(restler, engine);
+var contentSource = require('./content-source')(restler, renderer);
 
 // create routes
 var config = require('config-weaver').config();
 var referenceDataSource = require('../publish/referenceDataSource')(config, 'out/referenceData.json');
-var routes = require('./routes')(referenceDataSource, contentSource, engine);
+var routes = require('./routes')(referenceDataSource, contentSource, renderer);
 
 // fetch the reference data
 app.use(function(req, res, next) {

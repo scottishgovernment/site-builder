@@ -20,14 +20,14 @@ describe('routes', function() {
     };
 
     var engine = {
-        render: function(item, callback) {
-            callback(null, 'rendered-' + JSON.stringify(item));
+        render: function(item) {
+            return 'rendered-' + JSON.stringify(item);
         }
     };
 
     var engineBad = {
-        render: function(item, callback) {
-            callback('template-notfound', null);
+        render: function(item) {
+            throw 'template-notfound';
         }
     };
 
