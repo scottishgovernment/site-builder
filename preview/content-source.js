@@ -106,9 +106,13 @@ module.exports = function(restler) {
         var relsToFetch = relationship.find(item);
         async.each(relsToFetch,
             function (item, cb) {
-                var req = { path: item.url || item.uuid };
-                fetchItem(req, auth, visibility, function (error, relItem) {
-                    yamlWriter.handleContentItem(relItem, cb);
+                var slug = item.url || item.uuid;
+                loadContent(restler, slug, auth, visibility, function(error, item) {
+                    if (error) {
+                        cb(error);
+                    } else {
+                        yamlWriter.handleContentItem(item, cb);
+                    }
                 });
             },
 
