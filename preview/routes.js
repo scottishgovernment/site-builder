@@ -50,21 +50,6 @@ module.exports = exports = function(referenceDataSource, contentSource, renderer
         });
     }
 
-    function screenshot(req, res) {
-        var phantom = require('phantom-render-stream')();
-        var extend = require('node.extend');
-        var base64 = require('base64-stream');
-
-        var opts = extend({}, req.query);
-        var url = 'http://localhost:3000' + req.path;
-
-        if (!req.headers['x-accept-encoding'] || req.headers['x-accept-encoding'] !== 'base64') {
-            phantom(url, opts).pipe(res);
-        } else {
-            phantom(url, opts).pipe(base64.encode()).pipe(res);
-        }
-    }
-
     function ensureReferenceDataPresent(callback) {
       if (referenceDataFetched === false) {
         try {
@@ -86,13 +71,7 @@ module.exports = exports = function(referenceDataSource, contentSource, renderer
         preview: function(req, res) {
 
             ensureReferenceDataPresent( function () {
-              if (req.headers['accept'] && req.headers['accept'].indexOf('image/png') !== -1) {
-                  screenshot(req, res);
-                  return;
-              }
-
               var visibility = req.headers['x-visibility'] || 'siteBuild';
-
               var slug = req.path;
               if ( slug != '/' && fs.existsSync('resources/doctor'+slug)){
                 var filename = 'resources/doctor'+slug+'/index.json';
