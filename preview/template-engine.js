@@ -19,7 +19,11 @@ module.exports = function() {
             }
         },
 
-        compile: init
+        compile: init,
+
+        get: function () {
+            return renderer;
+        }
 
     };
 };

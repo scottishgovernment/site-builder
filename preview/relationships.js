@@ -3,6 +3,7 @@ var path = require('path');
 var idRegex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
 
 function Relationships(renderer) {
+    this.renderer = renderer;
 }
 
 Relationships.prototype.find = function (item) {
@@ -31,7 +32,7 @@ Relationships.prototype.find = function (item) {
             items = items.concat(item.relatedItems.hasParent);
         }
 
-        items = items.concat(collectLinks(item));
+        items = items.concat(this.collectLinks(item));
 
         // remove any we have already seen
         items = items.filter(function (rel) {
@@ -41,21 +42,18 @@ Relationships.prototype.find = function (item) {
     return items;
 }
 
-function collectLinks(item) {
-    var layouts = './resources/templates/_layouts/';
-    var partials = './resources/templates/_partials/';
-    var helpers = path.join(process.cwd(), 'resources/_helpers');
-    var render = require('../render/render');
-    var renderer = new render.Renderer(layouts, partials, helpers);
+Relationships.prototype.collectLinks = function (item) {
     var ids = [];
-    renderer.rewriteLink = function(href) {
-        var match = href.match(idRegex);
-        if (match) {
-            var id = match[0];
-            ids.push({uuid: id});
+    var context = {
+        rewriteLink: function(href) {
+            var match = href.match(idRegex);
+            if (match) {
+                var id = match[0];
+                ids.push({uuid: id});
+            }
         }
     };
-    renderer.render(item);
+    this.renderer.render(item, context);
     return ids;
 }
 

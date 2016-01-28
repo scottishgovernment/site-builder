@@ -2,6 +2,7 @@
  * Generates HTML for content items by instantiating Handlebars templates.
  */
 'use strict';
+var marked = require('marked');
 var path = require('path');
 var glob = require('glob');
 var fs = require('fs-extra');
@@ -11,6 +12,7 @@ var frontMatterDelimiter = ['~~~', '~~~'];
 var fileOptions = {encoding: 'utf-8'};
 
 function Renderer(layouts, partials, helpers) {
+    var that = this;
     var marked = require('marked');
     var handlebars = require('handlebars').create();
     this.handlebars = handlebars;
@@ -29,6 +31,7 @@ function Renderer(layouts, partials, helpers) {
         var body = options.fn(this);
         var bodyTemplate = handlebars.compile(body);
         var content = bodyTemplate(this);
+        var renderer = that.createRenderer(options.data.root.rewriteLink);
         var html = marked(content, { renderer: renderer });
         return new handlebars.SafeString(html);
     });
@@ -50,19 +53,16 @@ function Renderer(layouts, partials, helpers) {
     };
 }
 
-Renderer.prototype.createRenderer = function (marked) {
-    var that = this;
+Renderer.prototype.createRenderer = function (rewriteLink) {
     var renderer = new marked.Renderer();
-    var original = renderer.link;
-    renderer.link = function(link, title, text) {
-        var href = that.rewriteLink(link);
-        return original.bind(this)(href, title, text);
-    };
+    if (rewriteLink) {
+        var original = renderer.link;
+        renderer.link = function(link, title, text) {
+            var href = rewriteLink(link);
+            return original.bind(this)(href, title, text);
+        };
+    }
     return renderer;
-}
-
-Renderer.prototype.rewriteLink = function (link) {
-    return link;
 }
 
 function registerPartials(handlebars, dir) {
@@ -96,7 +96,7 @@ Renderer.prototype.loadTemplate = function(format) {
     return template;
 }
 
-Renderer.prototype.render = function(item) {
+Renderer.prototype.render = function(item, options) {
     var renderCallback = this.callbacks.render;
     if (renderCallback) {
         renderCallback(item.uuid, item.url, item.contentItem);
@@ -107,6 +107,8 @@ Renderer.prototype.render = function(item) {
         throw new Error("Item does not specify a layout\n" + itemJson);
     }
     var template = this.loadTemplate(format);
+    options = options || {};
+    item.rewriteLink = options.rewriteLink;
     item.config = config;
     return template(item);
 }
