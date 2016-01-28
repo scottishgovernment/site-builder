@@ -1,4 +1,4 @@
-module.exports = exports = function(referenceDataSource, contentSource, engine) {
+module.exports = exports = function(referenceDataSource, contentSource, renderer) {
 
     var config = require('config-weaver').config();
     var fs = require('fs');
@@ -7,28 +7,32 @@ module.exports = exports = function(referenceDataSource, contentSource, engine) 
     var referenceDataFetched = false;
 
     var handleError = function(res, error) {
+        var status = error.status | 400;
         var item = {
             url: '/error',
             body: 'There was an error',
             title: 'Error',
             contentItem: { summary: 'Error'},
             layout : '_error.hbs',
-            statusCode : error.status | 400,
+            statusCode : status,
             message : error
         };
-        engine.render(item, function(ex, renderedItem) {
-            res.status(error.status | 400).send(renderedItem);
-        });
+        var html;
+        try {
+            html = renderer.render(item);
+        } catch (e) {
+            html = null;
+        }
+        res.status(status).send(html);
     };
 
     function render(item, res) {
-        engine.render(item, function(error, renderedItem) {
-            if (error) {
-                handleError(res, error);
-            } else {
-                res.status(200).send(renderedItem);
-            }
-        });
+        try {
+            var html = renderer.render(item);
+            res.status(200).send(html);
+        } catch (e) {
+            handleError(res, e);
+        }
     }
 
     function fetch(req, res, visibility, callback) {

@@ -12,19 +12,27 @@ var frontMatterDelimiter = ['~~~', '~~~'];
 var fileOptions = {encoding: 'utf-8'};
 
 function Renderer(layouts, partials, helpers) {
+    this.layoutsDir = layouts;
+    this.partials = partials;
+    this.helpers = helpers;
+    this.reload();
+
+    this.callbacks = {
+        'render': function(src, dst, item) {
+            console.log(dst);
+        },
+    };
+}
+
+Renderer.prototype.reload = function() {
     var that = this;
     var marked = require('marked');
     var handlebars = require('handlebars').create();
     this.handlebars = handlebars;
-
-    this.layoutsDir = layouts;
-    /**
-     * Compiled templates indexed by name of the layout file.
-     */
     this.templates = {};
     var renderer = this.createRenderer(marked);
-    registerPartials(this.handlebars, partials);
-    registerHelpers(this.handlebars, helpers);
+    registerPartials(this.handlebars, this.partials);
+    registerHelpers(this.handlebars, this.helpers);
 
     // Helper to convert body from markdown to HTML, and render shortcodes.
     handlebars.registerHelper('markdown', function (options) {
@@ -46,11 +54,6 @@ function Renderer(layouts, partials, helpers) {
         return new handlebars.SafeString(content);
     });
 
-    this.callbacks = {
-        'render': function(src, dst, item) {
-            console.log(dst);
-        },
-    };
 }
 
 Renderer.prototype.createRenderer = function (rewriteLink) {
