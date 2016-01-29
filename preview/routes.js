@@ -1,10 +1,9 @@
-var idRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
-
 module.exports = exports = function(referenceDataSource, contentSource, renderer) {
 
     var config = require('config-weaver').config();
     var fs = require('fs');
     var path = require('path');
+    var links = require('../render/links');
 
     // fetch and savereference data
     var referenceDataFetched = false;
@@ -31,14 +30,7 @@ module.exports = exports = function(referenceDataSource, contentSource, renderer
 
     function render(item, index, res) {
         var context = {
-            rewriteLink: function(href) {
-                var match = href.match(idRegex);
-                if (match) {
-                    var suffix = href.substring(match[0].length);
-                    return path.join(index[match[0]].url, suffix);
-                }
-                return href;
-            }
+            rewriteLink: links.createRewriter(index)
         };
         try {
             var html = renderer.render(item, context);
