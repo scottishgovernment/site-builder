@@ -1,3 +1,5 @@
+var idRegex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
+
 module.exports = exports = function(referenceDataSource, contentSource, renderer) {
 
     var config = require('config-weaver').config();
@@ -26,9 +28,17 @@ module.exports = exports = function(referenceDataSource, contentSource, renderer
         res.status(status).send(html);
     };
 
-    function render(item, res) {
+    function render(item, index, res) {
+        var context = {
+            rewriteLink: function(href) {
+                if (href.match(idRegex)) {
+                    return index[href].url;
+                }
+                return href;
+            }
+        };
         try {
-            var html = renderer.render(item);
+            var html = renderer.render(item, context);
             res.status(200).send(html);
         } catch (e) {
             handleError(res, e);
@@ -80,16 +90,18 @@ module.exports = exports = function(referenceDataSource, contentSource, renderer
                 item.stagingEnvironment = true;
                 render(item, res);
               } else {
-                fetch(req, res, visibility, function(error, item) {
+                fetch(req, res, visibility, function(error, content) {
                     if (error) {
                         handleError(res, error);
                     } else {
+                        var item = content.item;
+                        var index = content.index;
                         // Display a banner to warn that this is not the real version of the site.
                         if (visibility === 'factChecking') {
                             item.stagingEnvironment = true;
                         }
                         item.config = config;
-                        render(item, res);
+                        render(item, index, res);
                     }
                 });
               }

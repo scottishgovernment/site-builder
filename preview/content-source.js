@@ -70,8 +70,8 @@ module.exports = function(restler, renderer) {
     function fetchItem(req, auth, visibility, callback) {
         loadContent(restler, req.path, auth, visibility, function(error, item) {
             if (!error) {
-                fetchRelatedItems(item, auth, visibility, function (relatederr, relateditems) {
-                    callback(error, item);
+                fetchRelatedItems(item, auth, visibility, function (err, related) {
+                    callback(err, { item: item, index: related });
                 });
                 return;
             }
@@ -88,14 +88,20 @@ module.exports = function(restler, renderer) {
                     if (guideItem.layout === 'guide.hbs') {
                         var leaf = route[route.length - 1];
                         guidify(guideItem, leaf);
-                        callback(null, guideItem);
+                        fetchRelatedItems(guideItem, auth, visibility, function (err, related) {
+                            if (!err) {
+                                callback(null, { item: guideItem, index: related });
+                            } else {
+                                callback(err);
+                            }
+                        });
                     } else {
                       // if it is not a guide then return the original error
                       callback(error);
                     }
                 });
             } else {
-              callback(error, item);
+              callback(error);
             }
 
         });
@@ -104,6 +110,7 @@ module.exports = function(restler, renderer) {
     function fetchRelatedItems(item, auth, visibility, callback) {
         var relationship = new relationships.Relationships(renderer);
         var relsToFetch = relationship.find(item);
+        var items = {};
         async.each(relsToFetch,
             function (item, cb) {
                 var slug = item.url || item.uuid;
@@ -111,13 +118,14 @@ module.exports = function(restler, renderer) {
                     if (error) {
                         cb(error);
                     } else {
+                        items[item.uuid] = item;
                         yamlWriter.handleContentItem(item, cb);
                     }
                 });
             },
 
             function (err) {
-                callback(err, item);
+                callback(err, items);
             });
     }
 
