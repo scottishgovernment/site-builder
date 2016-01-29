@@ -9,7 +9,7 @@ describe('routes', function() {
 
     var source = {
         fetch: function(path, auth, visibility, callback) {
-            callback(null, 'content-item');
+            callback(null, {item: 'content-item', index: {}});
         }
     };
 

@@ -31,14 +31,12 @@ Relationships.prototype.find = function (item) {
         if (item.layout === 'policy-detail.hbs') {
             items = items.concat(item.relatedItems.hasParent);
         }
-
-        items = items.concat(this.collectLinks(item));
-
-        // remove any we have already seen
-        items = items.filter(function (rel) {
-            return !seen[rel.uuid];
-        });
     }
+
+    items = items.concat(this.collectLinks(item));
+    items = items.filter(function (rel) {
+        return !seen[rel.uuid];
+    });
     return items;
 }
 

@@ -61,7 +61,8 @@ describe('Content source, preview', function() {
         };
 
         var sut = require(sutPath)(restler, renderer);
-        sut.fetch({path: '/guide/slug2/'}, {}, 'siteBuild', function(error, item) {
+        sut.fetch({path: '/guide/slug2/'}, {}, 'siteBuild', function(error, content) {
+            var item = content.item;
             expect('guide.hbs').toEqual(item.layout);
             expect(guideItem.contentItem.content).toEqual(item.body);
             expect('slug2').toEqual(item.contentItem.guidepageslug);
@@ -81,7 +82,8 @@ describe('Content source, preview', function() {
         };
 
         var sut = require(sutPath)(restler, renderer);
-        sut.fetch({ path: '/any/'}, {}, 'siteBuild', function(error, item) {
+        sut.fetch({ path: '/any/'}, {}, 'siteBuild', function(error, content) {
+            var item = content.item;
             expect('any.hbs').toEqual(item.layout);
             expect(anyItem.contentItem.content).toEqual(item.body);
             expect(item.contentItem.guidepageslug).toBeUndefined();
@@ -103,7 +105,8 @@ describe('Content source, preview', function() {
         };
 
         var sut = require(sutPath)(restler, renderer);
-        sut.fetch({ path: '/parent/any/' }, {}, 'siteBuild', function(error, item) {
+        sut.fetch({ path: '/parent/any/' }, {}, 'siteBuild', function(error, content) {
+            var item = content.item;
             expect('any.hbs').toEqual(item.layout);
             expect(anyItem.contentItem.content).toEqual(item.body);
             expect(item.contentItem.guidepageslug).toBeUndefined();
@@ -150,13 +153,13 @@ describe('Content source, preview', function() {
         };
 
         var sut = require(sutPath)(restler);
-        sut.fetch({ path: '/any/' }, {}, 'siteBuild', function(error, item) {
-            expect(item).toBeUndefined();
+        sut.fetch({ path: '/any/' }, {}, 'siteBuild', function(error, content) {
+            expect(content).toBeUndefined();
             expect(error.message.indexOf('_connection_refused') > -1).toBe(true);
             done();
         });
-        sut.fetch({ path: '/parent/any/'}, {}, 'siteBuild', function(error, item) {
-            expect(item).toBeUndefined();
+        sut.fetch({ path: '/parent/any/'}, {}, 'siteBuild', function(error, content) {
+            expect(content).toBeUndefined();
             expect(error.message.indexOf('_connection_refused') > -1).toBe(true);
             done();
         });
