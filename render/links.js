@@ -1,3 +1,5 @@
+var path = require('path');
+
 var idRegex = /^[A-Z]+-[0-9]+/;
 
 function createRewriter(index) {
@@ -13,14 +15,15 @@ function createRewriter(index) {
 }
 
 function collector() {
+    var ids = [];
     var fn = function(href) {
         var match = href.match(idRegex);
         if (match) {
             var id = match[0];
-            this.ids.push({uuid: id});
+            ids.push({uuid: id});
         }
     };
-    fn.ids = [];
+    fn.ids = ids;
     return fn;
 }
 
