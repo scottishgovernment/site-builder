@@ -1,6 +1,5 @@
 var path = require('path');
-
-var idRegex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
+var links = require('../render/links');
 
 function Relationships(renderer) {
     this.renderer = renderer;
@@ -41,18 +40,12 @@ Relationships.prototype.find = function (item) {
 }
 
 Relationships.prototype.collectLinks = function (item) {
-    var ids = [];
+    var collector = links.collector();
     var context = {
-        rewriteLink: function(href) {
-            var match = href.match(idRegex);
-            if (match) {
-                var id = match[0];
-                ids.push({uuid: id});
-            }
-        }
+        rewriteLink: collector
     };
     this.renderer.render(item, context);
-    return ids;
+    return collector.ids;
 }
 
 module.exports = {
