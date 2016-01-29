@@ -4,6 +4,7 @@ var glob = require('glob');
 var yaml = require('js-yaml');
 var yfm = require('yfm');
 var async = require('async');
+var links = require('./links');
 
 if (!String.prototype.startsWith) {
     String.prototype.startsWith = function(searchString, position){
@@ -116,12 +117,7 @@ function shouldRender(item) {
 
 Site.prototype.renderItemToFile = function(item, cb) {
     var context = {
-        rewriteLink: function(href) {
-            if (href.match(idRegex)) {
-                return this.index[href];
-            }
-            return href;
-        }
+        rewriteLink: links.createRewriter(this.index)
     };
     var html = this.renderer.render(item, context);
     var url = item.url;
