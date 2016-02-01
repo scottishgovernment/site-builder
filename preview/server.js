@@ -10,6 +10,7 @@ var partials = './resources/templates/_partials/';
 var helpers = path.join(process.cwd(), 'resources/_helpers');
 var render = require(path.join(__dirname, '../render/render'));
 var renderer = new render.Renderer(layouts, partials, helpers);
+renderer.handlebars.registerPartial('clickjack', '');
 
 var watch = require('node-watch');
 watch([layouts, partials, helpers], function() {
