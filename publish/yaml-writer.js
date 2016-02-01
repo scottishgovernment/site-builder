@@ -24,11 +24,15 @@ module.exports = function(rootDir) {
         }
     };
 
-    var writeYamlAndJson = function(item) {
-        var yamlText = '~~~\n'
+    var itemAsYaml = function (item) {
+        return '~~~\n'
             + yaml.dump(item)
             + '~~~\n'
             + item.contentItem.content;
+    }
+
+    var writeYamlAndJson = function (item) {
+        var yamlText = itemAsYaml(item);
         var jsonText = JSON.stringify(item, null, 4);
         var base = path.join(rootDir, item.contentItem.uuid);
         fs.writeFileSync(base + '.yaml', yamlText);
@@ -39,6 +43,23 @@ module.exports = function(rootDir) {
         fs.writeFileSync(path.join(dir, 'index.yaml'), yamlText);
         fs.writeFileSync(path.join(dir, 'index.json'), jsonText);
     };
+
+    var writeGuideItem = function (item) {
+        var yamlText = itemAsYaml(item);
+        var jsonText = JSON.stringify(item, null, 4);
+        var base = path.join(rootDir, item.contentItem.uuid);
+        fs.writeFileSync(base + '.yaml', yamlText);
+        fs.writeFileSync(base + '.json', jsonText);
+    }
+
+    var writeGuidePage = function (item) {
+        var yamlText = itemAsYaml(item);
+        var jsonText = JSON.stringify(item, null, 4);
+        var dir = path.join('out/pages', item.url);
+        fs.mkdirsSync(dir);
+        fs.writeFileSync(path.join(dir, 'index.yaml'), yamlText);
+        fs.writeFileSync(path.join(dir, 'index.json'), jsonText);
+    }
 
     var addElement = function(array, element, property) {
         if (element) {
@@ -134,13 +155,12 @@ module.exports = function(rootDir) {
         },
 
         GUIDE: function(item) {
+            writeGuideItem(item);
+            writeGuidePage(item);
+
+            var url = item.url;
             var html = require('marked')(item.contentItem.content);
             var $ = require('cheerio').load(html);
-            var url = item.url;
-
-            item.canonicalurl = url;
-            item.url = url;
-            writeYamlAndJson(item);
 
             $('h1').each(function(index, element) {
                 //var slug = $(element).text().toLowerCase().replace(/[^\w|\']+/g, '-');
@@ -148,15 +168,10 @@ module.exports = function(rootDir) {
                 item.contentItem['guidepage'] = $(element).text();
                 item.contentItem['guidepageslug'] = slug;
                 item.url = url + slug + '/';
-                if (index === 0) {
-                    item.canonicalurl = url;
-                } else {
-                    item.canonicalurl = item.url;
-                }
-                writeYamlAndJson(item, slug);
+                item.canonicalurl = !index ? url : item.url;
+                writeGuidePage(item);
             });
 
-            // reset the
             item.canonicalurl = url;
             item.url = url;
         }

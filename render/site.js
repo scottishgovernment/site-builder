@@ -27,14 +27,14 @@ function Site(yamlDir, htmlDir, renderer) {
 
 Site.prototype.build = function(done) {
     var that = this;
-    var yamlGlob = path.join(this.yamlDir, '*.yaml');
+    var yamlGlob = path.join(this.yamlDir, '**/*.yaml');
     glob(yamlGlob, {}, function (err, files) {
         if (err) {
             done(err);
             return;
         }
         that.indexFiles(files, function(err, index) {
-            this.index = index;
+            that.index = index;
             async.eachLimit(files, 4, that.processFile.bind(that), done);
         });
     });
