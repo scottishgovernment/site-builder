@@ -6,7 +6,7 @@ function createRewriter(index) {
     return function(href) {
         var match = href.match(idRegex);
         if (match) {
-            var itemUrl = index[match[0]].url;
+            var itemUrl = index[match[0]];
             var suffix = href.substring(match[0].length);
             return path.join(itemUrl, suffix);
         }

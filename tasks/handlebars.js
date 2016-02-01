@@ -16,7 +16,7 @@ module.exports = function(grunt) {
             grunt.log.writeln("Assembling " + item.uuid + " " + dst.cyan);
         });
         var site = require('../render/site.js');
-        var siteBuilder = new site.Site('out/contentitems', 'out/pages', renderer);
+        var siteBuilder = new site.Site('out/pages', 'out/pages', renderer);
         siteBuilder.build(done);
     });
 
