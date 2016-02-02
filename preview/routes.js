@@ -10,6 +10,13 @@ module.exports = exports = function(referenceDataSource, contentSource, renderer
 
     var handleError = function(res, error) {
         var status = error.status | 400;
+
+        if (error instanceof Error) {
+          console.log(error.stack);
+        } else {
+          console.log(error);
+        }
+
         var item = {
             url: '/error',
             body: 'There was an error',
@@ -33,8 +40,8 @@ module.exports = exports = function(referenceDataSource, contentSource, renderer
             rewriteLink: links.createRewriter(index)
         };
         try {
-            var html = renderer.render(item, context);
-            res.status(200).send(html);
+          var html = renderer.render(item, context);
+          res.status(200).send(html);
         } catch (e) {
             handleError(res, e);
         }
@@ -50,21 +57,25 @@ module.exports = exports = function(referenceDataSource, contentSource, renderer
                 'Authorization': 'Bearer ' + token
             }
         };
-        contentSource.fetch(req, auth, visibility, function(error, item) {
-            callback(error, item);
-        });
+        try {
+          contentSource.fetch(req, auth, visibility, function(error, item) {
+              callback(error, item);
+          });
+        } catch (e) {
+          handleError(res, e);
+        }
     }
 
     function ensureReferenceDataPresent(callback) {
       if (referenceDataFetched === false) {
         try {
           referenceDataSource.writeReferenceData(function () {
-              console.log('Fetched reference Data.');
               referenceDataFetched = true;
               callback();
           });
         } catch (e) {
           console.log('Failed to fetch referenceData');
+          console.log(e.stack);
           callback();
         }
       } else {
