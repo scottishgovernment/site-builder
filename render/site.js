@@ -15,7 +15,6 @@ if (!String.prototype.startsWith) {
 
 var frontMatterDelimiter = ['~~~', '~~~'];
 var fileOptions = {encoding: 'utf-8'};
-var idRegex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
 var layoutsDir;
 
 
