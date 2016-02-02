@@ -1,0 +1,13 @@
+#!/usr/bin/node
+var path = require('path');
+var render = require('../render/render');
+var linkChecker = require('../publish/link-checker');
+
+var layouts = path.join(process.cwd(), 'resources/templates/_layouts');
+var partials = path.join(process.cwd(), 'resources/templates/_partials');
+var helpers = path.join(process.cwd(), 'resources/_helpers');
+var renderer = new render.Renderer(layouts, partials, helpers);
+
+var checker = new linkChecker.LinkChecker('out/pages', 'out/pages', renderer);
+
+checker.run(function() { console.log("Done"); });
