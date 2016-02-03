@@ -1,5 +1,5 @@
 var renderPath = '../../out/instrument/render/render';
-var sutPath = '../../out/instrument/render/site';
+var sutPath = '../../out/instrument/publish/site';
 
 describe('site', function() {
 
