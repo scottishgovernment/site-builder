@@ -44,7 +44,12 @@ Relationships.prototype.collectLinks = function (item) {
     var context = {
         rewriteLink: collector
     };
-    this.renderer.render(item, context);
+    try {
+      this.renderer.render(item, context);
+    } catch (e) {
+      console.log('Failed to render while collecting links');
+      console.log(e.stack);
+    }
     return collector.ids;
 }
 
