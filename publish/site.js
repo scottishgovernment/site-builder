@@ -4,7 +4,7 @@ var glob = require('glob');
 var yaml = require('js-yaml');
 var yfm = require('yfm');
 var async = require('async');
-var links = require('./links');
+var links = require('../render/links');
 
 if (!String.prototype.startsWith) {
     String.prototype.startsWith = function(searchString, position){
