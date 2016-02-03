@@ -37,7 +37,7 @@ function LinkChecker(yamlDir, htmlDir, renderer) {
     this.htmlDir = htmlDir;
     this.renderer = renderer;
     this.htmlFiles = {};
-    this.yamlErrors = {};
+    this.brokenLinks = {};
     this.renderer.on('render', function() {});
     this.originalRenderer = renderer.createRenderer;
     this.renderer.createRenderer = this.createRenderer.bind(this);
@@ -72,21 +72,20 @@ LinkChecker.prototype.checkLink = function(href) {
         path = path.substring(0, idx);
     }
     if (!this.htmlFiles[path]) {
-        this.report(this.item, url);
+        this.brokenLink(this.item, url);
     }
 }
 
-LinkChecker.prototype.report = function(item, url) {
-    if (this.last !== item.uuid) {
-        this.last = item.uuid;
-        console.log('\n', item.contentItem.title);
+LinkChecker.prototype.brokenLink = function(item, url) {
+    var category = item.ancestors[1].title.trim();
+    var pages = this.brokenLinks[category] || {};
+    var links = pages[item.contentItem.title] || [];
+    var formatted = require('url').format(url);
+    if (links.indexOf(formatted) < 0) {
+        links.push(formatted);
     }
-    var errors = this.yamlErrors[item.uuid] || [];
-    if (errors.indexOf(url.path) < 0) {
-        console.log(' ', require('url').format(url));
-        errors.push(url.path);
-        this.yamlErrors[item.uuid] = errors;
-    }
+    this.brokenLinks[category] = pages;
+    pages[item.contentItem.title] = links;
 }
 
 LinkChecker.prototype.run = function(done) {
@@ -107,10 +106,37 @@ LinkChecker.prototype.run = function(done) {
                 done(err);
                 return;
             }
-            async.eachSeries(yamlFiles, that.processFile.bind(that), done);
+            async.eachSeries(yamlFiles, that.processFile.bind(that), function() {
+                that.report(done);
+            });
         });
     });
 }
+
+LinkChecker.prototype.report = function(done) {
+    var lastCategory;
+    var lastPage;
+    for (var categoryName in this.brokenLinks) {
+        var category = this.brokenLinks[categoryName];
+        var showCategory = true;
+        for (var pageTitle in category) {
+            var page = category[pageTitle];
+            var showPage = true;
+            for (var linkIdx in page) {
+                var link = page[linkIdx];
+                var csv = '"' + [
+                    showCategory ? categoryName : '',
+                    showPage ? pageTitle : '',
+                    link
+                ].join('","') + '"';
+                console.log(csv);
+                showCategory = false;
+                showPage = false;
+            }
+        }
+    }
+}
+
 
 LinkChecker.prototype.processFile = function(src, cb) {
     var that = this;
