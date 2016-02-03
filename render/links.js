@@ -1,3 +1,7 @@
+/**
+ * Provides functions used for collecting and rewriting links in Markdown.
+ */
+
 var path = require('path');
 
 var idRegex = /^[A-Z]+-[0-9]+/;
@@ -8,7 +12,7 @@ function createRewriter(index) {
         if (match) {
             var itemUrl = index[match[0]];
             var suffix = href.substring(match[0].length);
-            return path.join(itemUrl, suffix);
+            return path.join(itemUrl, suffix, '/');
         }
         return href;
     };
