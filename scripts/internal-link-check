@@ -57,8 +57,10 @@ LinkChecker.prototype.createRenderer = function(rewriteLink) {
 LinkChecker.prototype.checkLink = function(href) {
     var url = require('url').parse(href);
     if (url.host
-          && url.host !== 'mygov.scot'
-          && url.host !== 'www.mygov.scot') {
+          && url.host !== 'gov.scot') {
+        return;
+    }
+    if (url.protocol === 'mailto:') {
         return;
     }
     var path = url.path;
@@ -78,7 +80,8 @@ LinkChecker.prototype.checkLink = function(href) {
 }
 
 LinkChecker.prototype.brokenLink = function(item, url) {
-    var category = item.ancestors[1].title.trim();
+    var ancestor = item.ancestors[1];
+    var category = ancestor ? ancestor.title.trim() : 'Unknown';
     var pages = this.brokenLinks[category] || {};
     var links = pages[item.contentItem.title] || [];
     var formatted = require('url').format(url);
