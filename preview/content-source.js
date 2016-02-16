@@ -88,13 +88,24 @@ module.exports = function(restler, renderer) {
                     if (guideItem.layout === 'guide.hbs') {
                         var leaf = route[route.length - 1];
                         guidify(guideItem, leaf);
-                        fetchRelatedItems(guideItem, auth, visibility, function (err, related) {
+
+                        // make sure that we foind the item we are loking for
+                        if (guideItem.contentItem.guidepageslug === undefined) {
+                          // we do not recognise this guide page - return a 404
+                          var error = {
+                              status: 404,
+                              message: 'Not found: ' + req.path
+                          };
+                          callback(error);
+                        } else {
+                            fetchRelatedItems(guideItem, auth, visibility, function (err, related) {
                             if (!err) {
                                 callback(null, { item: guideItem, index: related });
                             } else {
                                 callback(err);
                             }
                         });
+                      }
                     } else {
                       // if it is not a guide then return the original error
                       callback(error);
