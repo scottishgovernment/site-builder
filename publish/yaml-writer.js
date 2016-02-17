@@ -9,6 +9,7 @@ module.exports = function(rootDir) {
     var slugify = require('./slugify');
     var config = require('config-weaver').config();
     var restler = require('restler');
+    var http = require('http');
 
     var context = {
         funding: {
@@ -33,16 +34,18 @@ module.exports = function(rootDir) {
     }
 
     var writeYamlAndJson = function (item) {
+
         var yamlText = itemAsYaml(item);
         var jsonText = JSON.stringify(item, null, 4);
         var base = path.join(rootDir, item.contentItem.uuid);
         fs.writeFileSync(base + '.yaml', yamlText);
         fs.writeFileSync(base + '.json', jsonText);
 
-        var dir = path.join('out/pages', item.url);
+        var dir = path.join('out', 'pages', item.url);
         fs.mkdirsSync(dir);
         fs.writeFileSync(path.join(dir, 'index.yaml'), yamlText);
         fs.writeFileSync(path.join(dir, 'index.json'), jsonText);
+
     };
 
     var writeGuideItem = function (item) {
@@ -180,22 +183,28 @@ module.exports = function(rootDir) {
 		PDF_COVER_PAGE: function(item, callback) {
 
 			//go get meta data
-			jsonurl = config.doctor.jsonurl.replace('{uuid}', item.contentItem.pdfUUID);
-			console.log('-------------------'+jsonurl);
+			jsonurl = config.doctor.url+item.contentItem.pdfUUID;
 
 			//somthing with restler to get the json
 			restler
 	            .get(jsonurl)
 	                .on("complete", function(data, response) {
 	                    if (data instanceof Error || response.statusCode !== 200) {
+                            console.log(JSON.stringify(data, null, '\t'));
 	                        callback(data);
 	                    } else {
-	                    	console.log(JSON.stringify(data, null, '\t'));
 	                    	item.contentItem.pageCount=data.pages;
 	                    	item.contentItem.size=data.size;
                 			writeYamlAndJson(item);
 
                 			// save jpg and pdf to dist
+                            data.binaries.forEach(function(binary){
+                                var filename = path.join( "out", "pages", item.url, path.basename(binary));
+                                var file = fs.createWriteStream(filename);
+                                var request = http.get(config.doctor.url+binary, function(response) {
+                                    response.pipe(file);
+                                });
+                            });
 	                    }
 	                });
 
