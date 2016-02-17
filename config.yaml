@@ -13,4 +13,3 @@ sitemaps:
     - STATUS
   exclude_slugs:
     - search-results
-
