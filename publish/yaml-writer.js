@@ -10,6 +10,7 @@ module.exports = function(rootDir) {
     var config = require('config-weaver').config();
     var restler = require('restler');
     var http = require('http');
+    var async = require('async');
 
     var context = {
         funding: {
@@ -87,7 +88,7 @@ module.exports = function(rootDir) {
 
     var customHandlers = {
 
-        CATEGORY_LIST : function (item) {
+        CATEGORY_LIST : function (item, callback) {
             // number grandchildren by index (this is used by the data-gtm attribs)
 
             var i = 0,
@@ -104,9 +105,11 @@ module.exports = function(rootDir) {
             });
 
             writeYamlAndJson(item);
+
+            callback();
         },
 
-        FUNDING_OPPORTUNITY: function(item) {
+        FUNDING_OPPORTUNITY: function(item, callback) {
             item.contentItem.fundingBusinessRegions = [];
             item.contentItem.businessTypes = [];
             addElement(item.contentItem.fundingBusinessRegions, item.contentItem._embedded.regions, 'name');
@@ -120,9 +123,11 @@ module.exports = function(rootDir) {
             addElement(context.funding.fundingOpportunityType, item.contentItem.fundingOpportunityType);
 
             writeYamlAndJson(item);
+
+            callback();
         },
 
-        PRESS_RELEASE: function (item) {
+        PRESS_RELEASE: function (item, callback) {
             var pressReleaseDateTime = new Date(item.contentItem.pressReleaseDateTime),
                 compareDate;
 
@@ -137,15 +142,19 @@ module.exports = function(rootDir) {
             }
 
             writeYamlAndJson(item);
+
+            callback();
         },
 
-        PRESS_RELEASE_LANDING_PAGE: function (item) {
+        PRESS_RELEASE_LANDING_PAGE: function (item, callback) {
             item.contentItem.minDateTime = context.lists.pressRelease.minDateTime;
 
             context.lists.pressRelease.landing = item;
+
+            callback();
         },
 
-        FUNDING_LIST: function(item) {
+        FUNDING_LIST: function(item, callback) {
             // enrich funding list for the rhs dropdown menu items
             item.contentItem.businessTypes = context.funding.businessTypes;
             item.contentItem.fundingBusinessStages = context.funding.fundingBusinessStages;
@@ -156,9 +165,10 @@ module.exports = function(rootDir) {
             // update context
             context.funding.list = item;
             // do not yamlize this item yet, above lists will be updated while each funding_opportunity being handled.
+            callback();
         },
 
-        GUIDE: function(item) {
+        GUIDE: function(item, callback) {
             writeGuideItem(item);
             writeGuidePage(item);
 
@@ -178,6 +188,7 @@ module.exports = function(rootDir) {
 
             item.canonicalurl = url;
             item.url = url;
+            callback();
         },
 
 		PDF_COVER_PAGE: function(item, callback) {
@@ -190,21 +201,30 @@ module.exports = function(rootDir) {
 	            .get(jsonurl)
 	                .on("complete", function(data, response) {
 	                    if (data instanceof Error || response.statusCode !== 200) {
+                            console.log("Unable to fetch the json for "+jsonurl);
                             console.log(JSON.stringify(data, null, '\t'));
-	                        callback(data);
+                            callback(error);
 	                    } else {
+
 	                    	item.contentItem.pageCount=data.pages;
 	                    	item.contentItem.size=data.size;
+
                 			writeYamlAndJson(item);
 
                 			// save jpg and pdf to dist
-                            data.binaries.forEach(function(binary){
-                                var filename = path.join( "out", "pages", item.url, path.basename(binary));
-                                var file = fs.createWriteStream(filename);
-                                var request = http.get(config.doctor.url+binary, function(response) {
-                                    response.pipe(file);
+                            async.each(
+                                data.binaries, 
+                                function(binary, cb){
+                                    var filename = path.join( "out", "pages", item.url, path.basename(binary));
+                                    var file = fs.createWriteStream(filename);
+                                    http.get(config.doctor.url+binary, function(response) {
+                                        response.pipe(file);
+                                        response.on('end', cb);
+                                    });
+                                }, 
+                                function(){
+                                    callback();
                                 });
-                            });
 	                    }
 	                });
 
@@ -231,9 +251,9 @@ module.exports = function(rootDir) {
                 customHandler(item, callback);
             } else {
                 writeYamlAndJson(item);
+                callback();
             }
 
-            callback();
 
         },
 
