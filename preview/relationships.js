@@ -37,7 +37,7 @@ Relationships.prototype.find = function (item) {
         return !seen[rel.uuid];
     });
     return items;
-}
+};
 
 Relationships.prototype.collectLinks = function (item) {
     var collector = links.collector();
@@ -51,8 +51,8 @@ Relationships.prototype.collectLinks = function (item) {
       console.log(e.stack);
     }
     return collector.ids;
-}
+};
 
 module.exports = {
     Relationships: Relationships
-}
+};

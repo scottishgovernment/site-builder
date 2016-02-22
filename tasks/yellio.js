@@ -91,7 +91,7 @@ module.exports = function(grunt) {
           what: 'redirects',
           user: config.authentication.user,
           start: startTime.toISOString(),
-          end: endTime.toISOString(),
+          end: endTime.toISOString()
         }, release);
     }
 
