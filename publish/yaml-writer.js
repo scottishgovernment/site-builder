@@ -32,7 +32,7 @@ module.exports = function(rootDir) {
             + yaml.dump(item)
             + '~~~\n'
             + item.contentItem.content;
-    }
+    };
 
     var writeYamlAndJson = function (item) {
 
@@ -55,7 +55,7 @@ module.exports = function(rootDir) {
         var base = path.join(rootDir, item.contentItem.uuid);
         fs.writeFileSync(base + '.yaml', yamlText);
         fs.writeFileSync(base + '.json', jsonText);
-    }
+    };
 
     var writeGuidePage = function (item) {
         var yamlText = itemAsYaml(item);
@@ -64,7 +64,7 @@ module.exports = function(rootDir) {
         fs.mkdirsSync(dir);
         fs.writeFileSync(path.join(dir, 'index.yaml'), yamlText);
         fs.writeFileSync(path.join(dir, 'index.json'), jsonText);
-    }
+    };
 
     var addElement = function(array, element, property) {
         if (element) {
@@ -213,7 +213,7 @@ module.exports = function(rootDir) {
 
                 			// save jpg and pdf to dist
                             async.each(
-                                data.binaries, 
+                                data.binaries,
                                 function(binary, cb){
                                     var filename = path.join( "out", "pages", item.url, path.basename(binary));
                                     var file = fs.createWriteStream(filename);
@@ -221,7 +221,7 @@ module.exports = function(rootDir) {
                                         response.pipe(file);
                                         response.on('end', cb);
                                     });
-                                }, 
+                                },
                                 function(){
                                     callback();
                                 });

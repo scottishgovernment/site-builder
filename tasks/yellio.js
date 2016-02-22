@@ -20,7 +20,6 @@ module.exports = function(grunt) {
     var config = require('config-weaver').config();
 
     var fs = require('fs'),
-        path = require("path"),
         http = require('http'),
         url = require('url');
 
@@ -69,8 +68,6 @@ module.exports = function(grunt) {
             var items = files.filter(function (file) {
                 return file.endsWith(".yaml");
             }).length;
-
-            var fileCount = files.length;
 
             post({
                 type: 'publish',

@@ -35,4 +35,4 @@ function collector() {
 module.exports = {
     createRewriter: createRewriter,
     collector: collector
-}
+};

@@ -30,7 +30,6 @@ Renderer.prototype.reload = function() {
     var handlebars = require('handlebars').create();
     this.handlebars = handlebars;
     this.templates = {};
-    var renderer = this.createRenderer(marked);
     registerPartials(this.handlebars, this.partials);
     registerHelpers(this.handlebars, this.helpers);
 
