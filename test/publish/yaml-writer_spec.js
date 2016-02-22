@@ -1,5 +1,5 @@
-//var sutPath = '../../out/instrument/publish/yaml-writer';
-var sutPath = '../../publish/yaml-writer';
+var sutPath = '../../out/instrument/publish/yaml-writer';
+
 describe('yaml-writer', function() {
 
     var fs = require('fs-extra');
@@ -43,7 +43,7 @@ describe('yaml-writer', function() {
 
     it('green path', function(done) {
 
-        var testDoctorServer = require('./test-doctor-server')();   
+        var testDoctorServer = require('./test-doctor-server')();
         testDoctorServer.startServer(6573, function(server){
 
             console.log("DOCTOR server started");
@@ -96,7 +96,7 @@ describe('yaml-writer', function() {
                     done();
                 });
             });
-        }); 
+        });
 
     });
 });
