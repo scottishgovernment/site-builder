@@ -77,7 +77,7 @@ module.exports = function(restler, renderer) {
             }
 
             // fetch the parent in order to guidify
-            var route = req.path.split('/').filter(function(x) { return x.length });
+            var route = req.path.split('/').filter(function(x) { return x.length; });
             if (route.length > 1) {
                 var parentUrl = req.path.substring(0, req.path.indexOf(route[route.length - 1]));
                 loadContent(restler, parentUrl, auth, visibility, function(guideError, guideItem) {

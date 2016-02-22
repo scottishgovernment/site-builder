@@ -20,7 +20,7 @@ function Renderer(layouts, partials, helpers) {
     this.callbacks = {
         'render': function(src, dst, item) {
             console.log(dst);
-        },
+        }
     };
 }
 
@@ -54,7 +54,7 @@ Renderer.prototype.reload = function() {
         return new handlebars.SafeString(content);
     });
 
-}
+};
 
 Renderer.prototype.createRenderer = function (rewriteLink) {
     var renderer = new marked.Renderer();
@@ -66,7 +66,7 @@ Renderer.prototype.createRenderer = function (rewriteLink) {
         };
     }
     return renderer;
-}
+};
 
 function registerPartials(handlebars, dir) {
     var files = fs.readdirSync(dir);
@@ -97,7 +97,7 @@ Renderer.prototype.loadTemplate = function(format) {
         this.templates[format] = template;
     }
     return template;
-}
+};
 
 Renderer.prototype.render = function(item, options) {
     var renderCallback = this.callbacks.render;
@@ -114,11 +114,11 @@ Renderer.prototype.render = function(item, options) {
     item.rewriteLink = options.rewriteLink;
     item.config = config;
     return template(item);
-}
+};
 
 Renderer.prototype.on = function(event, callback) {
   this.callbacks[event] = callback;
-}
+};
 
 module.exports = {
     Renderer: Renderer

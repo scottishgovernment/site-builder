@@ -37,7 +37,7 @@ Site.prototype.build = function(done) {
             async.eachLimit(files, 4, that.processFile.bind(that), done);
         });
     });
-}
+};
 
 Site.prototype.indexFiles = function (files, callback) {
     var that = this;
@@ -59,7 +59,7 @@ Site.prototype.indexFiles = function (files, callback) {
             callback(err);
         }
     });
-}
+};
 
 Site.prototype.processFile = function(src, cb) {
     var that = this;
@@ -70,7 +70,7 @@ Site.prototype.processFile = function(src, cb) {
             cb(err);
         }
     });
-}
+};
 
 function readFile(file, callback) {
     fs.readFile(file, fileOptions, function (err, data) {
@@ -105,7 +105,7 @@ Site.prototype.renderYamlToFile = function(data, cb) {
         e.message = "Failed on item: " + item.uuid + "\n" + e.message;
         throw e;
     }
-}
+};
 
 
 function shouldRender(item) {
@@ -127,8 +127,8 @@ Site.prototype.renderItemToFile = function(item, cb) {
     fs.mkdirs(dir, function() {
         fs.writeFile(path.join(dir, 'index.html'), html, fileOptions, cb);
     });
-}
+};
 
 module.exports = {
     Site: Site
-}
+};
