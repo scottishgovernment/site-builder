@@ -6,7 +6,6 @@ module.exports = function(root, baseUrl) {
     var fs = require('fs-extra');
     var df = require('dateformat');
     var del = require('del');
-    var yaml = require('js-yaml');
     var marked = require('marked');
     var config = require('config-weaver').config();
 
