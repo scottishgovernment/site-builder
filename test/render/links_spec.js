@@ -15,12 +15,6 @@ describe('links collector', function() {
         expect(collector.ids).toEqual([{uuid: 'MYGOV-1'}, {uuid: 'MYGOV-2'}]);
     });
 
-    it('collects internal links by id', function () {
-        collector('MYGOV-1');
-        collector('MYGOV-2');
-        expect(collector.ids).toEqual([{uuid: 'MYGOV-1'}, {uuid: 'MYGOV-2'}]);
-    });
-
     it('does not collect external links', function () {
         collector('http://foo.bar/');
         expect(collector.ids).toEqual([]);

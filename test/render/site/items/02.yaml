@@ -1,8 +1,8 @@
 ~~~
-uuid: "SITE-01"
+uuid: "SITE-02"
 layout: layout.hbs
-content: hello
-url: /01/
+content: hello [home](SITE-01)
+url: /02/
 contentItem:
   _embedded:
     format:
