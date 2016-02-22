@@ -4,31 +4,28 @@ describe('render', function() {
     var path = require('path');
     var resources = path.join(process.cwd(), 'test/render/site');
 
-    it('Render', function(done) {
+    var renderer;
+    beforeEach(function() {
         var render = require(sutPath)
         var layouts = path.join(resources, 'layouts');
         var partials = path.join(resources, 'partials');
         var helpers = path.join(resources, 'helpers');
-        var renderer = new render.Renderer(layouts, partials, helpers);
+        renderer = new render.Renderer(layouts, partials, helpers);
+    });
+
+    it('Render', function() {
         var html = renderer.render({
             layout: 'layout.hbs',
             content: 'hello'
         });
         expect(html).toContain("<p>hello</p>");
-        done();
     });
 
-    it('Render shortcodes', function(done) {
-        var render = require(sutPath)
-        var layouts = path.join(resources, 'layouts');
-        var partials = path.join(resources, 'partials');
-        var helpers = path.join(resources, 'helpers');
-        var renderer = new render.Renderer(layouts, partials, helpers);
+    it('Render shortcodes', function() {
         var html = renderer.render({
             layout: 'shortcode.hbs'
         });
         expect(html).toContain("<p><b>hello</b></p>");
-        done();
     });
 
 });
