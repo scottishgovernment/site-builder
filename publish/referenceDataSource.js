@@ -85,8 +85,7 @@ module.exports = function (config, path) {
         writeReferenceData : function (callback) {
             login(
                 function() {
-                    console.log(authtoken);
-                    fetchReferenceData(callback)
+                    fetchReferenceData(callback);
                 });
         }
     };

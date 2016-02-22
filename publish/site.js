@@ -92,7 +92,6 @@ function readFile(file, callback) {
 Site.prototype.renderYamlToFile = function(data, cb) {
     var parsed = yfm(data, frontMatterDelimiter);
     var item = parsed.context;
-    var dst = item.url;
     item.body = parsed.content;
     try {
         if (shouldRender(item)) {

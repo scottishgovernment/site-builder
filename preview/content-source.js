@@ -20,22 +20,20 @@ function loadContent(restler, source, auth, visibility, callback) {
     var contentUrl = url(source, visibility);
     restler.get(contentUrl, auth).on('complete', function(data, response) {
         if (data instanceof Error || (response && response.statusCode !== 200)) {
-            var error = {
+            callback({
                 status: response ? response.statusCode : 500,
                 message: 'Failed to fetch item: ' + source + ' ' + data
-            };
-            callback(error);
+            });
         } else {
             var item = formatter.format(JSON.parse(data));
             item.body = item.contentItem.content;
 
             // if the item is structural then return a 404
             if (item.contentItem._embedded.format._embedded.structural === true) {
-              var error = {
+              callback({
                   status: 404,
                   message: 'Not found: ' + source
-              };
-              callback(error);
+              });
             } else {
               callback(null, item);
             }
