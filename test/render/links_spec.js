@@ -39,7 +39,7 @@ describe('links collector', function() {
 
 describe('links rewriter', function() {
 
-    it('rewrites internal links', function (done) {
+    it('rewrites internal links', function () {
         var index = {
             'MYGOV-1': '/',
             'MYGOV-2': '/benefits/'
@@ -47,10 +47,9 @@ describe('links rewriter', function() {
         var rewriter = links.createRewriter(index);
         expect(rewriter('MYGOV-1')).toEqual('/');
         expect(rewriter('MYGOV-2')).toEqual('/benefits/');
-        done();
     });
 
-    it('adds a trailing slash if required', function (done) {
+    it('adds a trailing slash if required', function () {
         var index = {
             'MYGOV-3': '/guide/'
         }
@@ -60,17 +59,15 @@ describe('links rewriter', function() {
         expect(rewriter('MYGOV-3/section')).toEqual('/guide/section/');
         expect(rewriter('MYGOV-3/section/')).toEqual('/guide/section/');
         expect(rewriter('MYGOV-3/section#anchor')).toEqual('/guide/section/#anchor');
-        done();
     });
 
-    it('does not modify external links', function (done) {
+    it('does not modify external links', function () {
         var index = {
             'MYGOV-1': '/',
         }
         var rewriter = links.createRewriter(index);
         expect(rewriter('http://www.gov.scot/page')).toEqual('http://www.gov.scot/page');
         expect(rewriter('mailto:foo@example.com')).toEqual('mailto:foo@example.com');
-        done();
     });
 
 });
