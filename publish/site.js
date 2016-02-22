@@ -40,7 +40,6 @@ Site.prototype.build = function(done) {
 };
 
 Site.prototype.indexFiles = function (files, callback) {
-    var that = this;
     var urlById = {};
     var summary = function(file, callback) {
         readFile(file, function(err, item) {
@@ -79,9 +78,9 @@ function readFile(file, callback) {
         }
         var item;
         try {
-            var data = yfm(data, frontMatterDelimiter);
-            item = data.context;
-            item.body = data.content;
+            var parsed = yfm(data, frontMatterDelimiter);
+            item = parsed.context;
+            item.body = parsed.content;
         } catch (e) {
             callback("Could not parse file: " + file + "\n" + e.message);
         }
@@ -91,10 +90,10 @@ function readFile(file, callback) {
 }
 
 Site.prototype.renderYamlToFile = function(data, cb) {
-    var data = yfm(data, frontMatterDelimiter);
-    var item = data.context;
+    var parsed = yfm(data, frontMatterDelimiter);
+    var item = parsed.context;
     var dst = item.url;
-    item.body = data.content;
+    item.body = parsed.content;
     try {
         if (shouldRender(item)) {
             this.renderItemToFile(item, cb);
