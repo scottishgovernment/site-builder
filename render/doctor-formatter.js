@@ -41,7 +41,6 @@ module.exports = exports = function(config) {
               function(binary, cb) {
                 var filename = path.join(dir, path.basename(binary));
 
-                // if this is a
                 if (filename.indexOf('.pdf') === filename.length - 4) {
                   item.doctor.filename = path.join(item.url, path.basename(binary));
                 }
