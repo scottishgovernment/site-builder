@@ -7,10 +7,6 @@ module.exports = function(rootDir) {
     var fs = require('fs-extra');
     var yaml = require('js-yaml');
     var slugify = require('./slugify');
-    var config = require('config-weaver').config();
-    var restler = require('restler');
-    var http = require('http');
-    var async = require('async');
 
     var context = {
         funding: {
