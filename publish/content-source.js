@@ -7,6 +7,7 @@ module.exports = function (config, contentFormatter, contentHandler) {
     var async = require('async');
     var fs = require('fs');
     var referenceDataSource = require('./referenceDataSource')(config, 'out/referenceData.json');
+    var doctorFormatter = require('../render/doctor-formatter')(config);
 
     // return a url for this item (if empty then will return the url for all items)
     function url(id) {
@@ -15,9 +16,12 @@ module.exports = function (config, contentFormatter, contentHandler) {
 
     function processJson(data, callback){
         var contentItem = contentFormatter.format(JSON.parse(data));
-        contentHandler.handleContentItem(contentItem, function() {
-            callback(null, contentItem);
-        });
+
+        doctorFormatter.formatDoctorFiles(contentItem, function (err, item) {
+          contentHandler.handleContentItem(contentItem, function() {
+              callback(null, item);
+          });
+        })
     }
 
     // fetch the item with this id
@@ -37,7 +41,6 @@ module.exports = function (config, contentFormatter, contentHandler) {
     // fetch all published IDs then fetch each item in turn
     function processContentItems(callback) {
         var publishedIDsURL = url('');
-        console.log('processContentItems ', publishedIDsURL);
         restler.get(publishedIDsURL)
             .on('complete', function(data, response) {
                 if (data instanceof Error || response.statusCode !== 200) {
