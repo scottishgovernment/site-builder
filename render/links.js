@@ -3,16 +3,17 @@
  */
 
 var path = require('path');
-
+var url = require('url');
 var idRegex = /^[A-Z]+-[0-9]+/;
 
 function createRewriter(index) {
     return function(href) {
         var match = href.match(idRegex);
         if (match) {
-            var itemUrl = index[match[0]];
             var suffix = href.substring(match[0].length);
-            return path.join(itemUrl, suffix, '/');
+            var itemUrl = url.parse(index[match[0]] + suffix);
+            itemUrl.pathname = path.join(itemUrl.pathname, '/');
+            return itemUrl.format();
         }
         return href;
     };
@@ -34,4 +35,4 @@ function collector() {
 module.exports = {
     createRewriter: createRewriter,
     collector: collector
-}
+};

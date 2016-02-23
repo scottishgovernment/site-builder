@@ -2,14 +2,13 @@ module.exports = exports = function(referenceDataSource, contentSource, renderer
 
     var config = require('config-weaver').config();
     var fs = require('fs');
-    var path = require('path');
     var links = require('../render/links');
 
     // fetch and savereference data
     var referenceDataFetched = false;
 
     var handleError = function(res, error) {
-        var status = error.status | 400;
+        var status = error.status || 400;
 
         if (error instanceof Error) {
           console.log(error.stack);
@@ -88,8 +87,8 @@ module.exports = exports = function(referenceDataSource, contentSource, renderer
             ensureReferenceDataPresent( function () {
               var visibility = req.headers['x-visibility'] || 'siteBuild';
               var slug = req.path;
-              if ( slug != '/' && fs.existsSync('resources/doctor'+slug)){
-                var filename = 'resources/doctor'+slug+'/index.json';
+              if (slug !== '/' && fs.existsSync('resources/doctor'+slug)) {
+                var filename = 'resources/doctor' + slug + '/index.json';
                 var item = JSON.parse(fs.readFileSync(filename, 'utf8'));
                 item.config = config;
                 item.stagingEnvironment = true;
