@@ -34,13 +34,18 @@ module.exports = exports = function(config) {
             item.doctor.pageCount = data.pageCount;
             item.doctor.size = data.size;
             item.doctor.lastUpdated = data.lastUpdated;
-            item.doctor.filename = path.join(item.url, data.originalName);
 
             // save binaries to dist
             async.each(
               data.binaries,
               function(binary, cb) {
                 var filename = path.join(dir, path.basename(binary));
+
+                // if this is a
+                if (filename.indexOf('.pdf') === filename.length - 4) {
+                  item.doctor.filename = path.join(item.url, path.basename(binary));
+                }
+
                 var file = fs.createWriteStream(filename);
                 http.get(config.doctor.url + binary, function(response) {
                   response.pipe(file);
