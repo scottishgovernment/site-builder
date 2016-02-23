@@ -32,11 +32,7 @@ module.exports = function(restler, renderer) {
 
         // if the item is structural then return a 404
         if (item.contentItem._embedded.format._embedded.structural === true) {
-          var error = {
-            status: 404,
-            message: 'Not found: ' + source
-          };
-          callback(error);
+          callback({ status: 404, message: 'Not found: ' + source });
         } else {
           callback(null, item);
         }
@@ -74,7 +70,7 @@ module.exports = function(restler, renderer) {
       }
       // we got an error. Check if the parent is a guide or not.
       var route = req.path.split('/').filter(function(x) {
-        return x.length
+        return x.length;
       });
 
       // cant be a guide as it does not have enough path elements

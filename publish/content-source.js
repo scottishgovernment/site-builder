@@ -21,7 +21,7 @@ module.exports = function (config, contentFormatter, contentHandler) {
           contentHandler.handleContentItem(contentItem, function() {
               callback(null, item);
           });
-        })
+        });
     }
 
     // fetch the item with this id
