@@ -85,7 +85,6 @@ module.exports = exports = function(referenceDataSource, contentSource, renderer
 
     return {
         preview: function(req, res) {
-
             ensureReferenceDataPresent( function () {
               var visibility = req.headers['x-visibility'] || 'siteBuild';
               var slug = req.path;
