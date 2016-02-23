@@ -23,11 +23,11 @@ module.exports = function (config, path) {
 
                         try {
                             var listData = JSON.parse(data);
-                            var data = listData._embedded[item.name];
-                            data.forEach( function (dataItem) {
+                            var list = listData._embedded[item.name];
+                            list.forEach(function (dataItem) {
                                 delete dataItem._links;
                             });
-                            memo[item.name] = data;
+                            memo[items.name] = list;
                             callback(null, memo);
                         } catch (error) {
                             callback(error);
@@ -39,7 +39,7 @@ module.exports = function (config, path) {
     function headers(authtoken) {
         return {
             headers: {
-                'Authorization': 'Bearer ' + authtoken               
+                'Authorization': 'Bearer ' + authtoken
             }
         };
     }
@@ -69,7 +69,7 @@ module.exports = function (config, path) {
                     } else {
                         try {
                             var lists = JSON.parse(data);
-                            async.reduce(lists.lists, {}, fetchList, 
+                            async.reduce(lists.lists, {}, fetchList,
                                 function (err, result) {
                                     fs.writeFile(path, JSON.stringify(result, null, '\t'), callback);
                                 });
@@ -77,7 +77,7 @@ module.exports = function (config, path) {
                             callback(error);
                         }
                     }
-                });          
+                });
     }
 
     return {
@@ -85,8 +85,7 @@ module.exports = function (config, path) {
         writeReferenceData : function (callback) {
             login(
                 function() {
-                    console.log(authtoken);
-                    fetchReferenceData(callback)
+                    fetchReferenceData(callback);
                 });
         }
     };

@@ -27,9 +27,7 @@ module.exports = exports = function(config) {
           } else {
             // ensure that a directory exists for this item
             var dir = path.join("out", "pages", item.url);
-            if (!fs.existsSync(dir)) {
-              fs.mkdirSync(dir);
-            }
+            fs.ensureDirSync(dir);
 
             // enrich the item with meta data from doctor
             item.doctor = {};

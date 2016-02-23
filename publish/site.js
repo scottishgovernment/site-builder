@@ -37,10 +37,9 @@ Site.prototype.build = function(done) {
             async.eachLimit(files, 4, that.processFile.bind(that), done);
         });
     });
-}
+};
 
 Site.prototype.indexFiles = function (files, callback) {
-    var that = this;
     var urlById = {};
     var summary = function(file, callback) {
         readFile(file, function(err, item) {
@@ -59,7 +58,7 @@ Site.prototype.indexFiles = function (files, callback) {
             callback(err);
         }
     });
-}
+};
 
 Site.prototype.processFile = function(src, cb) {
     var that = this;
@@ -70,7 +69,7 @@ Site.prototype.processFile = function(src, cb) {
             cb(err);
         }
     });
-}
+};
 
 function readFile(file, callback) {
     fs.readFile(file, fileOptions, function (err, data) {
@@ -79,9 +78,9 @@ function readFile(file, callback) {
         }
         var item;
         try {
-            var data = yfm(data, frontMatterDelimiter);
-            item = data.context;
-            item.body = data.content;
+            var parsed = yfm(data, frontMatterDelimiter);
+            item = parsed.context;
+            item.body = parsed.content;
         } catch (e) {
             callback("Could not parse file: " + file + "\n" + e.message);
         }
@@ -91,10 +90,9 @@ function readFile(file, callback) {
 }
 
 Site.prototype.renderYamlToFile = function(data, cb) {
-    var data = yfm(data, frontMatterDelimiter);
-    var item = data.context;
-    var dst = item.url;
-    item.body = data.content;
+    var parsed = yfm(data, frontMatterDelimiter);
+    var item = parsed.context;
+    item.body = parsed.content;
     try {
         if (shouldRender(item)) {
             this.renderItemToFile(item, cb);
@@ -105,7 +103,7 @@ Site.prototype.renderYamlToFile = function(data, cb) {
         e.message = "Failed on item: " + item.uuid + "\n" + e.message;
         throw e;
     }
-}
+};
 
 
 function shouldRender(item) {
@@ -127,8 +125,8 @@ Site.prototype.renderItemToFile = function(item, cb) {
     fs.mkdirs(dir, function() {
         fs.writeFile(path.join(dir, 'index.html'), html, fileOptions, cb);
     });
-}
+};
 
 module.exports = {
     Site: Site
-}
+};

@@ -3,7 +3,6 @@
 module.exports = function(grunt) {
 
     var path = require('path');
-    var log = grunt.log;
 
     grunt.registerTask('handlebars', '', function() {
         var render = require('../render/render.js');
