@@ -140,7 +140,7 @@ GwwwuntTask.prototype.run = function () {
         // Perform the task
         // Source configuration in case it has changed since this server was started.
         // Set LANG to prevent compass failing on characters not in US-ASCII.
-        var child = exec('. /etc/profile; export LANG=en_GB.UTF-8; grunt ' + task, {
+        var child = exec('. /etc/profile; export LANG=en_GB.UTF-8; grunt --stack ' + task, {
             silent: false,
             async: true
         });
