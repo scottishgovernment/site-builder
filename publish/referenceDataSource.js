@@ -27,7 +27,7 @@ module.exports = function (config, path) {
                             list.forEach(function (dataItem) {
                                 delete dataItem._links;
                             });
-                            memo[items.name] = list;
+                            memo[item.name] = list;
                             callback(null, memo);
                         } catch (error) {
                             callback(error);
