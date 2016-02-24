@@ -73,7 +73,9 @@ module.exports = function (config, contentFormatter, contentHandler) {
     }
 
     function processStaticFiles(callback) {
-        if ( config.doctor.enabled && fs.existsSync('resources/doctor/')){
+        if (config.doctor
+                && config.doctor.enabled
+                && fs.existsSync('resources/doctor/')) {
             console.log("Starting to doctor files....");
             fs.readdir('resources/doctor/', function(err, files){
                 async.each(files,  processStaticFile,
