@@ -42,7 +42,7 @@ app.use('/robots.txt',
 
 app.use('/',
     express.static('out/css'),
-    express.static('out/pages'),
+    express.static('out/pdfs'),
     express.static('app/')
     );
 

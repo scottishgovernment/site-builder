@@ -1,4 +1,4 @@
-module.exports = exports = function(config) {
+module.exports = exports = function(config, target) {
 
   var restler = require('restler');
   var path = require('path');
@@ -26,7 +26,7 @@ module.exports = exports = function(config) {
             callback(error);
           } else {
             // ensure that a directory exists for this item
-            var dir = path.join("out", "pages", item.url);
+            var dir = path.join("out", target, item.url);
             fs.ensureDirSync(dir);
 
             // enrich the item with meta data from doctor

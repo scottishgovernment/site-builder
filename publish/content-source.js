@@ -7,7 +7,7 @@ module.exports = function (config, contentFormatter, contentHandler) {
     var async = require('async');
     var fs = require('fs');
     var referenceDataSource = require('./referenceDataSource')(config, 'out/referenceData.json');
-    var doctorFormatter = require('../render/doctor-formatter')(config);
+    var doctorFormatter = require('../render/doctor-formatter')(config, 'pages');
 
     // return a url for this item (if empty then will return the url for all items)
     function url(id) {
