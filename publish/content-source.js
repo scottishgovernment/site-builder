@@ -5,7 +5,6 @@ module.exports = function (config, contentFormatter, contentHandler) {
 
     var restler = require('restler');
     var async = require('async');
-    var fs = require('fs');
     var referenceDataSource = require('./referenceDataSource')(config, 'out/referenceData.json');
     var doctorFormatter = require('../render/doctor-formatter')(config, 'pages');
 
