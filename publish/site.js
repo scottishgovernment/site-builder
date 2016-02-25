@@ -107,9 +107,7 @@ Site.prototype.renderYamlToFile = function(data, cb) {
 
 
 function shouldRender(item) {
-    // Remove first disjunct when resources/doctor has been removed.
-    return !item.contentItem._embedded.format._embedded
-      || !item.contentItem._embedded.format._embedded.structural;
+    return !item.contentItem._embedded.format._embedded.structural;
 }
 
 Site.prototype.renderItemToFile = function(item, cb) {

@@ -15,4 +15,3 @@ sitemaps:
     - search-results
 doctor:
     url: http://localhost:6573/
-    enabled: true
