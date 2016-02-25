@@ -56,39 +56,6 @@ module.exports = function (config, contentFormatter, contentHandler) {
             });
     }
 
-    function processStaticFile(filename, callback) {
-        var json = "resources/doctor/"+filename+"/index.json";
-        console.log("processing doctor file "+json);
-        fs.readFile( json, 'utf8',
-                    function(err, data) {
-                                if (err){
-                                    console.log(err);
-                                    callback(err);
-                                } else
-                                {
-                                    processJson(data, callback);
-                                }//
-                            });
-
-    }
-
-    function processStaticFiles(callback) {
-        if (config.doctor
-                && config.doctor.enabled
-                && fs.existsSync('resources/doctor/')) {
-            console.log("Starting to doctor files....");
-            fs.readdir('resources/doctor/', function(err, files){
-                async.each(files,  processStaticFile,
-                                function(err) {
-                                    callback(err);
-                                });
-            });
-        } else {
-            console.log("Not processing doctor files.");
-            callback();
-        }
-    }
-
     return {
 
         getContentItem : function (id, callback) {
@@ -99,8 +66,7 @@ module.exports = function (config, contentFormatter, contentHandler) {
             async.series([
                 referenceDataSource.writeReferenceData,
                 contentHandler.start,
-                processContentItems,
-                processStaticFiles
+                processContentItems
             ],
             function(err){
                 contentHandler.end(err, callback);
