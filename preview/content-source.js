@@ -123,7 +123,7 @@ module.exports = function(restler, renderer) {
           if (error) {
             cb(error);
           } else {
-            items[item.uuid] = item;
+            items[item.uuid] = item.url;
             yamlWriter.handleContentItem(item, cb);
           }
         });
@@ -135,28 +135,27 @@ module.exports = function(restler, renderer) {
   }
 
   function postProcess(item, auth, visibility, callback) {
-
-    var results = {
-      item: item
-    };
-
+    var index;
     async.series([
         // fetch related items
-        function(cb) {
+        function (cb) {
           fetchRelatedItems(item, auth, visibility, function(err, related) {
-            results.index = related;
-            cb(err, results);
+            index = related;
+            cb(err);
           });
         },
 
         // write doctor files
         function(cb) {
-          doctorFormatter.formatDoctorFiles(results.item, cb);
+          doctorFormatter.formatDoctorFiles(item, cb);
         }
       ],
 
-      function(err) {
-        callback(err, results);
+      function (err) {
+        callback(err, {
+          item: item,
+          index: index
+        });
       }
     );
   }
