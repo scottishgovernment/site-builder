@@ -46,7 +46,9 @@ Site.prototype.indexFiles = function (files, callback) {
             if (err) {
                 callback("Could not read file: " + file);
             } else {
-                urlById[item.uuid] = item.url;
+                if (!item.contentItem.guidepageslug) {
+                  urlById[item.uuid] = item.url;
+                }
                 callback();
             }
         });
