@@ -1,62 +1,67 @@
-module.exports = function (dir) {
+module.exports = function(dir) {
 
-    var redirects = [];
+  var redirects = [];
 
-    var handlebars = require('handlebars');
-    var fs = require('fs-extra');
+  var handlebars = require('handlebars');
+  var fs = require('fs-extra');
 
-    var templateText = fs.readFileSync(__dirname + '/redirects.hbs', 'UTF-8');
-    var template = handlebars.compile(templateText);
+  var templateText = fs.readFileSync(__dirname + '/redirects.hbs', 'UTF-8');
+  var template = handlebars.compile(templateText);
 
-    return {
+  function addRedirect(redirect) {
+    if (redirect.url && redirect.url.length > 0 && redirect.alias && redirect.alias.length > 0) {
+      redirects.push(redirect);
+    } else {
+      console.log('skipping invalid redirect:', JSON.stringify(redirect));
+    }
+  }
 
-        // called when the content source is starting
-        start: function(callback) {
-            redirects = [];
+  return {
 
-            // load any hard coded redirects
-            if (fs.existsSync('resources/url_aliases.csv')) {
-              var csv = require("fast-csv");
-              console.log('Loading url_aliases.csv');
-              csv.fromPath("resources/url_aliases.csv")
-            	 .on("data", function(data){
-                  var alias = {
-                    url: data[1],
-                    alias: data[0]
-                  };
-            	 	  redirects.push(alias);
-            	 }).on("end", function() {
-                  console.log('Loaded '+redirects.length+' redirects from url_aliases.csv');
-          	 			callback();
-            	 });
-            } else {
-              callback();
-            }
-        },
+    // called when the content source is starting
+    start: function(callback) {
+      redirects = [];
+      // load any hard coded redirects
+      if (!fs.existsSync('resources/url_aliases.csv')) {
+        callback();
+        return;
+      }
 
-        // called for each content item provided by the content source
-        handleContentItem: function(item, callback) {
+      console.log('Loading url_aliases.csv');
+      require("fast-csv").fromPath("resources/url_aliases.csv")
+        .on("data", function(data) {
+          addRedirect({
+            url: data[1],
+            alias: data[0]
+          });
+        }).on("end", function() {
+          console.log('Loaded ' + redirects.length + ' redirects from url_aliases.csv');
+          callback();
+        });
+    },
 
-            if (item.contentItem._embedded.urlaliases) {
-                item.contentItem._embedded.urlaliases.forEach(
-                    function(alias) {
-                        var redirect = {
-                            url: item.url,
-                            alias: alias.url
-                        };
-                        redirects.push(redirect);
-                    });
-            }
+    // called for each content item provided by the content source
+    handleContentItem: function(item, callback) {
 
-            callback();
-        },
+      if (item.contentItem._embedded.urlaliases) {
+        item.contentItem._embedded.urlaliases.forEach(
+          function(alias) {
+            addRedirect({
+              url: item.url,
+              alias: alias.url
+            });
+          });
+      }
 
-        // called when the content source will provide no more items
-        end: function(err, callback) {
-            var formattedRedirects = template(redirects);
-            fs.mkdirsSync(dir);
-            fs.writeFileSync(dir+'/urlAliases.txt', formattedRedirects, 'UTF-8');
-            callback();
-        }
-    };
+      callback();
+    },
+
+    // called when the content source will provide no more items
+    end: function(err, callback) {
+      var formattedRedirects = template(redirects);
+      fs.mkdirsSync(dir);
+      fs.writeFileSync(dir + '/urlAliases.txt', formattedRedirects, 'UTF-8');
+      callback();
+    }
+  };
 };
