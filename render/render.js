@@ -80,7 +80,9 @@ function registerHelpers(handlebars, dir) {
     var files = glob.sync(path.join(dir, '*.js'));
     for (var i = 0; i < files.length; i++) {
         var helpers = require(files[i]);
-        helpers.register(handlebars);
+        if (helpers.register) {
+            helpers.register(handlebars);
+        }
     }
 }
 
