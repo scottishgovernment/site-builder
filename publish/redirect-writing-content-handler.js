@@ -9,11 +9,18 @@ module.exports = function(dir) {
   var template = handlebars.compile(templateText);
 
   function addRedirect(redirect) {
-    if (redirect.url && redirect.url.length > 0 && redirect.alias && redirect.alias.length > 0) {
-      redirects.push(redirect);
-    } else {
+    if (!redirect.url || redirect.url.length === 0 || !redirect.alias || redirect.alias.length === 0) {
       console.log('skipping invalid redirect:', JSON.stringify(redirect));
+      return;
     }
+
+    // ensure that the alias has an optional trailing slash
+    if (redirect.alias.charAt(redirect.length - 1) === '/') {
+      redirect.alias = redirect.alias + '?';
+    } else {
+      redirect.alias = redirect.alias + '/?';
+    }
+    redirects.push(redirect);
   }
 
   return {

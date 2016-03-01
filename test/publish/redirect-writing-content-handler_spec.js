@@ -22,7 +22,7 @@ describe('redirect-writing-content-handler', function() {
 
         // ARRANGE
         var items = [
-            // should be ignored 
+            // should be ignored
             item('/url1/', [{
                 url: '/url1/alias1/'
             }, {
@@ -35,9 +35,9 @@ describe('redirect-writing-content-handler', function() {
 
         var sut = require(sutPath)('/tmp/');
 
-        var expectedContent = 'rewrite ^/url1/alias1/(.*)$ /url1/$1 permanent ;\n' +
-            'rewrite ^/url1/alias2/(.*)$ /url1/$1 permanent ;\n' +
-            'rewrite ^/url2/(.*)$ /url2/with/path/$1 permanent ;\n';
+        var expectedContent = 'rewrite ^/url1/alias1/?(.*)$ /url1/$1 permanent ;\n' +
+            'rewrite ^/url1/alias2/?(.*)$ /url1/$1 permanent ;\n' +
+            'rewrite ^/url2/?(.*)$ /url2/with/path/$1 permanent ;\n';
 
         // ACT - manually drive the handler
         var cb = function() {};
