@@ -14,11 +14,14 @@ module.exports = function(dir) {
       return;
     }
 
-    // ensure that the alias has an optional trailing slash
-    if (redirect.alias.charAt(redirect.length - 1) === '/') {
-      redirect.alias = redirect.alias + '?';
-    } else {
-      redirect.alias = redirect.alias + '/?';
+    // remove trailing slash in the alias if present (the hbs file will make it optional)
+    if (redirect.alias.charAt(redirect.alias.length - 1) === '/') {
+      redirect.alias = redirect.alias.substring(0, redirect.alias.length - 1);
+    }
+
+    // remove any trailing slash on the url
+    if (redirect.url.charAt(redirect.url.length - 1) === '/') {
+      redirect.url = redirect.url.substring(0, redirect.url.length - 1);
     }
     redirects.push(redirect);
   }
