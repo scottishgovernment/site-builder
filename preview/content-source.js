@@ -140,6 +140,7 @@ module.exports = function(restler, renderer) {
         // fetch related items
         function (cb) {
           fetchRelatedItems(item, auth, visibility, function(err, related) {
+            related[item.uuid] = item.url;
             index = related;
             cb(err);
           });
