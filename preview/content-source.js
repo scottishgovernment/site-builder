@@ -6,6 +6,7 @@ var formatter = require('../publish/item-formatter')(config.layoutstrategy);
 var yamlWriter = require('../publish/yaml-writer')('out/contentitems');
 var slugify = require('../publish/slugify');
 var doctorFormatter = require('../render/doctor-formatter')(config, 'pdfs');
+
 module.exports = function(restler, renderer) {
 
   function url(source, visibility) {
@@ -19,7 +20,6 @@ module.exports = function(restler, renderer) {
    */
   function loadContent(restler, source, auth, visibility, callback) {
     var contentUrl = url(source, visibility);
-    console.log(contentUrl);
     restler.get(contentUrl, auth).on('complete', function(data, response) {
       if (data instanceof Error || (response && response.statusCode !== 200)) {
         var error = {
@@ -45,7 +45,6 @@ module.exports = function(restler, renderer) {
    * @param item, the actual guide content
    * @param guidePageSlug, the leaf slug, which is presumably the guide page (sub guide item)
    */
-
   function guidify(item, guidePageSlug) {
     var html = require('marked')(item.contentItem.content);
     var $ = require('cheerio').load(html);
@@ -134,16 +133,42 @@ module.exports = function(restler, renderer) {
       });
   }
 
+  function buildIndex(item, callback) {
+    var relationship = new relationships.Relationships(renderer);
+    var links = relationship.collectLinks(item).map(function (link) {
+      return link.uuid;
+    });
+    // add the id of this content item
+    links.push(item.uuid);
+
+    var idsParam = links.join(',');
+    var fetchIndexUrl = config.publishing.endpoint + 'items/urlsById?ids=' + idsParam;
+    restler.get(fetchIndexUrl).on('complete', function(data, response) {
+      if (data instanceof Error) {
+        callback(data);
+        return;
+      }
+
+      if (response && response.statusCode !== 200) {
+        callback(response);
+        return;
+      }
+      callback(null, JSON.parse(data));
+    });
+  }
+
   function postProcess(item, auth, visibility, callback) {
-    var index;
     async.series([
         // fetch related items
         function (cb) {
           fetchRelatedItems(item, auth, visibility, function(err, related) {
-            related[item.uuid] = item.url;
-            index = related;
-            cb(err);
+            cb(err, related);
           });
+        },
+
+        // construct url index for all links in this page
+        function (cb) {
+          buildIndex(item, cb);
         },
 
         // write doctor files
@@ -152,10 +177,10 @@ module.exports = function(restler, renderer) {
         }
       ],
 
-      function (err) {
+      function (err, results) {
         callback(err, {
           item: item,
-          index: index
+          index: results[1]
         });
       }
     );
