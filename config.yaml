@@ -2,6 +2,8 @@ application:
   name: site-builder
 buildapi:
   endpoint: "http://localhost:8085/build-api/"
+publishing:
+  endpoint: "http://localhost:8085/content/"
 healthcheck:
   enable: true
   crawlUrl: "http://localhost:9000/"
