@@ -32,7 +32,6 @@ Relationships.prototype.find = function (item) {
         }
     }
 
-    items = items.concat(this.collectLinks(item));
     items = items.filter(function (rel) {
         return !seen[rel.uuid];
     });

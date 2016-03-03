@@ -23,7 +23,7 @@ module.exports = exports = function(config, target) {
           if (data instanceof Error || response.statusCode !== 200) {
             console.log("Unable to fetch the json for " + doctorUrl);
             console.log(JSON.stringify(data, null, '\t'));
-            callback(error);
+            callback(data);
           } else {
             // ensure that a directory exists for this item
             var dir = path.join("out", target, item.url);
