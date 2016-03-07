@@ -79,7 +79,8 @@ module.exports = function(restler, renderer) {
         return;
       }
 
-      var parentUrl = req.path.substring(0, req.path.indexOf(route[route.length - 1]));
+      var leaf = route.pop();
+      var parentUrl = '/' + route.join('/') + '/';
       loadContent(restler, parentUrl, auth, visibility, function(guideError, guideItem) {
 
         // we got an error trying to fetch the parent url
@@ -95,7 +96,7 @@ module.exports = function(restler, renderer) {
         }
 
         // make sure that we found the item we are looking for
-        var leaf = route[route.length - 1];
+        //var leaf = route[route.length - 1];
         guidify(guideItem, leaf);
 
         if (guideItem.contentItem.guidepageslug === undefined) {
