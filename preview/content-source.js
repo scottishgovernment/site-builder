@@ -96,7 +96,6 @@ module.exports = function(restler, renderer) {
         }
 
         // make sure that we found the item we are looking for
-        //var leaf = route[route.length - 1];
         guidify(guideItem, leaf);
 
         if (guideItem.contentItem.guidepageslug === undefined) {
