@@ -84,32 +84,24 @@ module.exports = exports = function(referenceDataSource, contentSource, renderer
 
     return {
         preview: function(req, res) {
-            ensureReferenceDataPresent( function () {
+            ensureReferenceDataPresent(function () {
               var visibility = req.headers['x-visibility'] || 'siteBuild';
               var slug = req.path;
-              if (slug !== '/' && fs.existsSync('resources/doctor'+slug)) {
-                var filename = 'resources/doctor' + slug + '/index.json';
-                var item = JSON.parse(fs.readFileSync(filename, 'utf8'));
-                item.config = config;
-                item.stagingEnvironment = true;
-                render(item, {}, res);
-              } else {
-                fetch(req, res, visibility, function(error, content) {
-                    if (error) {
-                        handleError(res, error);
-                    } else {
-                        var item = content.item;
-                        var index = content.index;
-                        // Display a banner to warn that this is not the real version of the site.
-                        if (visibility === 'factChecking') {
-                            item.stagingEnvironment = true;
-                        }
-                        item.config = config;
-                        render(item, index, res);
-                    }
-                });
-              }
-            });
+              fetch(req, res, visibility, function(error, content) {
+                  if (error) {
+                      handleError(res, error);
+                  } else {
+                      var item = content.item;
+                      var index = content.index;
+                      // Display a banner to warn that this is not the real version of the site.
+                      if (visibility === 'factChecking') {
+                          item.stagingEnvironment = true;
+                      }
+                      item.config = config;
+                      render(item, index, res);
+                  }
+              });
+          });
         }
     };
 };
