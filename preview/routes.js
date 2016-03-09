@@ -94,7 +94,7 @@ module.exports = exports = function(referenceDataSource, contentSource, renderer
                       var item = content.item;
                       var index = content.index;
                       // Display a banner to warn that this is not the real version of the site.
-                      if (visibility === 'factChecking') {
+                      if (visibility === 'stage') {
                           item.stagingEnvironment = true;
                       }
                       item.config = config;
