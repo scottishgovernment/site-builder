@@ -1,7 +1,6 @@
 module.exports = exports = function(referenceDataSource, contentSource, renderer) {
 
     var config = require('config-weaver').config();
-    var fs = require('fs');
     var links = require('../render/links');
 
     // fetch and savereference data
@@ -86,7 +85,6 @@ module.exports = exports = function(referenceDataSource, contentSource, renderer
         preview: function(req, res) {
             ensureReferenceDataPresent(function () {
               var visibility = req.headers['x-visibility'] || 'siteBuild';
-              var slug = req.path;
               fetch(req, res, visibility, function(error, content) {
                   if (error) {
                       handleError(res, error);
