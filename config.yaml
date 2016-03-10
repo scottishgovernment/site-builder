@@ -14,6 +14,6 @@ sitemaps:
     - STRUCTURAL_CATEGORY_LIST
     - STATUS
   exclude_slugs:
-    - search-results
+    - search
 doctor:
     url: http://localhost:6573/
