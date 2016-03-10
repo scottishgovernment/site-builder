@@ -53,7 +53,7 @@ describe('sitemap-handler', function() {
                 '2014-12-03T00:00:00Z', [''], 'ARTICLE'),
             item('/root/',
                 '2014-12-03T01:00:00Z', [''], 'STRUCTURAL_CATEGORY_LIST'),
-            item('/search-results/',
+            item('/search/',
                 '2014-12-03T01:00:00Z', [''], 'SEARCH'),
 
             // benefits sitemap
