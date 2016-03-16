@@ -126,7 +126,7 @@ module.exports = function(grunt) {
 
         sonarRunner: {
             analysis: {
-                options: createSonarConfiguration('analysis')
+                options: createSonarConfiguration('publish')
             },
             preview: {
                 options: createSonarConfiguration('preview')
