@@ -1,5 +1,8 @@
 'use strict';
 
+var fs = require('fs');
+var path = require('path');
+
 module.exports = function(grunt) {
 
     require('load-grunt-config')(grunt);
@@ -9,18 +12,20 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-istanbul');
     grunt.loadNpmTasks('grunt-sonar-runner');
 
+    var tokenFile = path.join(process.env.HOME, '.sonar/token');
+    var token;
+    if (fs.existsSync(tokenFile)) {
+        token = fs.readFileSync(tokenFile).toString().trim();
+    }
+
     var createSonarConfiguration = function(mode) {
-        return {
-            debug: true,
+        var options = {
             sonar: {
                 analysis: {
                     mode: mode
                 },
                 host: {
                     url: 'http://sonar.digital.gov.uk'
-                },
-                jdbc: {
-                    url: 'jdbc:postgresql://sonar.digital.gov.uk/sonar',
                 },
                 projectKey: "site-builder",
                 projectName: "Site Builder",
@@ -43,6 +48,10 @@ module.exports = function(grunt) {
                 }
             }
         };
+        if (token) {
+          options.sonar.login = token;
+        }
+        return options;
     };
 
     grunt.initConfig({
@@ -129,7 +138,7 @@ module.exports = function(grunt) {
                 options: createSonarConfiguration('publish')
             },
             preview: {
-                options: createSonarConfiguration('preview')
+                options: createSonarConfiguration('issues')
             }
         }
 
