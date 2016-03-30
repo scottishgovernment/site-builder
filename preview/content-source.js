@@ -114,8 +114,24 @@ module.exports = function(restler, renderer) {
   function fetchRelatedItems(item, auth, visibility, callback) {
     var relationship = new relationships.Relationships(renderer);
     var relsToFetch = relationship.find(item);
+
+    // policy details pages need to fetch their siblings...
+    if (item.layout === 'policy-detail.hbs') {
+      var parentId = item.relatedItems.hasParent[0].uuid;
+      loadContent(restler, parentId, auth, visibility, function (error, parentItem) {
+        parentItem.descendants.forEach(function (child) {
+          relsToFetch.push(child);
+        });
+        writeRelatedItems(relsToFetch, auth, visibility, callback);
+      });
+    } else {
+      writeRelatedItems(relsToFetch, auth, visibility, callback);
+    }
+  }
+
+  function writeRelatedItems(itemsToFetch, auth, visibility, callback) {
     var items = {};
-    async.each(relsToFetch,
+    async.each(itemsToFetch,
       function(item, cb) {
         var slug = item.url || item.uuid;
         loadContent(restler, slug, auth, visibility, function(error, item) {
