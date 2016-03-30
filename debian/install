@@ -1,7 +1,5 @@
-couch            /usr/lib/node_modules/site-builder
 decommission     /usr/lib/node_modules/site-builder
 grunt            /usr/lib/node_modules/site-builder
-gwwwunt          /usr/lib/node_modules/site-builder
 preview          /usr/lib/node_modules/site-builder
 publish          /usr/lib/node_modules/site-builder
 render           /usr/lib/node_modules/site-builder

@@ -33,7 +33,6 @@ module.exports = function(grunt) {
                 projectDescription: grunt.package.description,
                 sources: [
                     'decommission',
-                    'gwwwunt',
                     'preview',
                     'publish',
                     'render',
@@ -87,7 +86,6 @@ module.exports = function(grunt) {
             files: [
                 'publish/*.js',
                 'decommission/*.js',
-                'gwwwunt/**/*.js',
                 'preview/*.js',
                 'render/*.js',
                 'tasks/*.js'
