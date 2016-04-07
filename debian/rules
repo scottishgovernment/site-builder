@@ -22,7 +22,7 @@ override_dh_install:
 	sed "s@$$PWD/node_modules/@@" | \
 	  sort \
 	  > out/deps-prod.txt
-	comm -23 out/deps-all.txt out/deps-prod.txt > out/deps-test.txt
+	comm -23 out/deps-all.txt out/deps-prod.txt | sed 's@^@/@' > out/deps-test.txt
 	mkdir -p debian/site-builder/$(MODULES)/site-builder
 	rsync -a \
 	  --delete \
