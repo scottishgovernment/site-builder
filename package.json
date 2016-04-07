@@ -20,7 +20,6 @@
     "dateformat": "^1.0.11",
     "del": "^1.1.1",
     "express": "^4.13.1",
-    "express-logger": "0.0.3",
     "fast-csv": "^1.0.0",
     "fs-extra": "^0.26.7",
     "glob": "^5.0.15",
