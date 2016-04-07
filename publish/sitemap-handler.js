@@ -5,7 +5,6 @@ module.exports = function(root, baseUrl) {
 
     var fs = require('fs-extra');
     var df = require('dateformat');
-    var del = require('del');
     var marked = require('marked');
     var config = require('config-weaver').config();
 
@@ -68,10 +67,9 @@ module.exports = function(root, baseUrl) {
     return {
 
         // called when the content source is starting
-        start: function(callback) {
+        start: function (callback) {
             fs.mkdirsSync(root);
-            del.sync(root + "/sitemap.*");
-            callback();
+            fs.emptyDir(root, callback);
         },
 
         // called for each content item provided by the content source
