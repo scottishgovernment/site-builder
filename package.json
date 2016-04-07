@@ -39,12 +39,12 @@
     "yfm": "^0.2.0"
   },
   "devDependencies": {
-    "body-parser": "^1.10.2",
-    "grunt-contrib-copy": "^0.8.0",
-    "grunt-istanbul": "^0.6.1",
+    "body-parser": "^1.15.0",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-istanbul": "^0.7.0",
     "grunt-jasmine-node": "^0.3.1",
-    "grunt-sonar-runner": "^2.3.1",
-    "load-grunt-config": "^0.17.2",
+    "grunt-sonar-runner": "^2.4.5",
+    "load-grunt-config": "^0.19.1",
     "temp": "^0.8.1"
   },
   "publishConfig": {
