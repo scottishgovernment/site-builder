@@ -22,7 +22,7 @@
     "express": "^4.13.1",
     "express-logger": "0.0.3",
     "fast-csv": "^1.0.0",
-    "fs-extra": "^0.22.1",
+    "fs-extra": "^0.26.7",
     "glob": "^5.0.15",
     "grunt": "^0.4.5",
     "handlebars": "^3.0.3",
