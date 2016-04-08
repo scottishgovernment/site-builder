@@ -34,7 +34,7 @@ module.exports = exports = function(config, target) {
       
                             // MGS-1099 for backwards compatibility with the hbs file
                             // keeping these fields, setting to the first document..
-                            if (document.uuid == item.documents[0].uuid) {
+                            if (document.uuid === item.documents[0].uuid) {
                                 item.doctor = {};
                                 item.doctor.pageCount = data.pageCount;
                                 item.doctor.size = data.size;
@@ -49,7 +49,7 @@ module.exports = exports = function(config, target) {
                                 if (filename.endsWith('.pdf')) {
                                     document.doctor.filename = path.join(item.url, path.basename(binary));
                                     // MGS-1099 for backwards compatibility with the hbs file
-                                    if (document.uuid == item.documents[0].uuid) {
+                                    if (document.uuid === item.documents[0].uuid) {
                                       item.doctor.filename = document.doctor.filename;
                                     }
                                 }
