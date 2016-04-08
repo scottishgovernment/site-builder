@@ -114,20 +114,31 @@ module.exports = function(restler, renderer) {
   function fetchRelatedItems(item, auth, visibility, callback) {
     var relationship = new relationships.Relationships(renderer);
     var relsToFetch = relationship.find(item);
-
     // policy details pages need to fetch their siblings...
     if (item.layout === 'policy-detail.hbs') {
-      var parentId = item.relatedItems.hasParent[0].uuid;
-      loadContent(restler, parentId, auth, visibility, function (error, parentItem) {
-        parentItem.descendants.forEach(function (child) {
-          relsToFetch.push(child);
-        });
-        writeRelatedItems(relsToFetch, auth, visibility, callback);
-      });
+       // for policy content items, hasParent relationship might be removed and rubric allows it if the item is not published
+       // updated this section to forvgive policy items without hasParent relationship
+       // if required rather than returning 404, we can mimmick parent as home page
+       // unassigned is not supported anymore (GOV-7)
+       // i.e or showing itself as parent, or GOV-1
+       // if (!item.relatedItems.hasParent[0]) {
+       //      item.relatedItems.hasParent = [{uuid: item.uuid}];
+       //  }
+       if (item.relatedItems.hasParent[0]) {
+         var parentId = item.relatedItems.hasParent[0].uuid;
+         loadContent(restler, parentId, auth, visibility, function (error, parentItem) {
+           parentItem.descendants.forEach(function (child) {
+              relsToFetch.push(child);
+           });
+           writeRelatedItems(relsToFetch, auth, visibility, callback);
+         });
+       }  else {
+           callback({message: 'Please assign parent to preview this content item (' + item.uuid + ')'});
+       }
     } else {
       writeRelatedItems(relsToFetch, auth, visibility, callback);
     }
-  }
+  }   
 
   function writeRelatedItems(itemsToFetch, auth, visibility, callback) {
     var items = {};
