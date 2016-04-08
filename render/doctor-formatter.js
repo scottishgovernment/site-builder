@@ -24,7 +24,7 @@ module.exports = exports = function(config, target) {
                         if (data instanceof Error || response.statusCode !== 200) {
                             console.log("Unable to fetch the json for " + doctorUrl);
                             console.log(JSON.stringify(data, null, '\t'));
-                            renderCallback(data);
+                            parentCallback(data);
                         } else {
                             // add doctor fields to the document
                             document.doctor = {};
