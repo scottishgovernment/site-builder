@@ -57,10 +57,11 @@ module.exports = function (config) {
         if (sites._embedded && sites._embedded.sites) {
             async.forEach(sites._embedded.sites, fetchPageForSite,
                 function (err) {
-                    if (err !== undefined) {
-                        done('Error fetching pages: '+JSON.stringify(err));
+                    if (err) {
+                        done('Error fetching pages: ' + JSON.stringify(err));
+                    } else {
+                        done();
                     }
-                    done();
                 }
             );
 
