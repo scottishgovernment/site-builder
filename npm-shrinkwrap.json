@@ -181,17 +181,6 @@
         }
       }
     },
-    "cookie-parser": {
-      "version": "1.3.5",
-      "dependencies": {
-        "cookie": {
-          "version": "0.1.3"
-        },
-        "cookie-signature": {
-          "version": "1.0.6"
-        }
-      }
-    },
     "dateformat": {
       "version": "1.0.11",
       "dependencies": {
