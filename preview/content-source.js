@@ -116,14 +116,7 @@ module.exports = function(restler, renderer) {
     var relsToFetch = relationship.find(item);
     // policy details pages need to fetch their siblings...
     if (item.layout === 'policy-detail.hbs') {
-       // for policy content items, hasParent relationship might be removed and rubric allows it if the item is not published
-       // updated this section to forvgive policy items without hasParent relationship
-       // if required rather than returning 404, we can mimmick parent as home page
-       // unassigned is not supported anymore (GOV-7)
-       // i.e or showing itself as parent, or GOV-1
-       // if (!item.relatedItems.hasParent[0]) {
-       //      item.relatedItems.hasParent = [{uuid: item.uuid}];
-       //  }
+       // MGS-1116, policy details might not have a parent (some states)
        if (item.relatedItems.hasParent[0]) {
          var parentId = item.relatedItems.hasParent[0].uuid;
          loadContent(restler, parentId, auth, visibility, function (error, parentItem) {
@@ -133,6 +126,7 @@ module.exports = function(restler, renderer) {
            writeRelatedItems(relsToFetch, auth, visibility, callback);
          });
        }  else {
+           // MGS-1116, showing error message if policy details does not have parent
            callback({message: 'Please assign parent to preview this content item (' + item.uuid + ')'});
        }
     } else {
