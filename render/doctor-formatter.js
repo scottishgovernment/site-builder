@@ -46,7 +46,7 @@ module.exports = exports = function(config, target) {
                             // copy file from doctor
                             async.each(data.binaries, function(binary, fileCallback) {
                                var filename = path.join(dir, path.basename(binary));
-                                if (filename.endsWith('.pdf')) {
+                                if (filename.indexOf('.pdf') === filename.length - 4) {
                                     document.doctor.filename = path.join(item.url, path.basename(binary));
                                     // MGS-1099 for backwards compatibility with the hbs file
                                     if (document.uuid === item.documents[0].uuid) {
