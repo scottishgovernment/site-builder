@@ -1,6 +1,5 @@
 var express = require('express');
 var app = express();
-var cookieParser = require('cookie-parser');
 var path = require('path');
 
 // create template engine to render fetched item
@@ -33,7 +32,6 @@ app.use(function(req, res, next) {
   next();
 });
 
-app.use(cookieParser());
 app.use('/robots.txt',
   express.static(__dirname + '/robots.txt'));
 
