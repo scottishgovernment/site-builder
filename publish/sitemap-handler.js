@@ -77,8 +77,8 @@ module.exports = function(root, baseUrl) {
             if (isIncluded(item)) {
                 prepareFile(item);
 
-                var lastModified = df(Date.parse(item.contentItem.dateModified), 'yyyy-mm-dd');
                 var filename = getFilename(item);
+                var lastModified = item.contentItem.dateModified;
                 appendToSitemap(filename, lastModified, item.url);
 
                 // if it is a guide then also add its sub-pages
