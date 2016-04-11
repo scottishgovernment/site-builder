@@ -4,7 +4,6 @@
 module.exports = function(root, baseUrl) {
 
     var fs = require('fs-extra');
-    var df = require('dateformat');
     var marked = require('marked');
     var config = require('config-weaver').config();
 
@@ -77,8 +76,8 @@ module.exports = function(root, baseUrl) {
             if (isIncluded(item)) {
                 prepareFile(item);
 
-                var lastModified = df(Date.parse(item.contentItem.dateModified), 'yyyy-mm-dd');
                 var filename = getFilename(item);
+                var lastModified = item.contentItem.dateModified;
                 appendToSitemap(filename, lastModified, item.url);
 
                 // if it is a guide then also add its sub-pages
