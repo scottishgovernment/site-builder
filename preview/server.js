@@ -10,6 +10,11 @@ var render = require(path.join(__dirname, '../render/render'));
 var renderer = new render.Renderer(layouts, partials, helpers);
 
 var watch = require('node-watch');
+
+process.on('uncaughtException', function(ex) {
+    console.log('Preview service is unabled to handle the error: \n' + ex.stack);
+});
+
 watch([layouts, partials, helpers], function() {
     console.log('Layouts, partials or helpers changed');
     renderer.reload();
