@@ -192,57 +192,6 @@
         }
       }
     },
-    "dateformat": {
-      "version": "1.0.11",
-      "dependencies": {
-        "get-stdin": {
-          "version": "5.0.0"
-        },
-        "meow": {
-          "version": "3.3.0",
-          "dependencies": {
-            "camelcase-keys": {
-              "version": "1.0.0",
-              "dependencies": {
-                "camelcase": {
-                  "version": "1.2.1"
-                },
-                "map-obj": {
-                  "version": "1.0.1"
-                }
-              }
-            },
-            "indent-string": {
-              "version": "1.2.2",
-              "dependencies": {
-                "get-stdin": {
-                  "version": "4.0.1"
-                },
-                "repeating": {
-                  "version": "1.1.3",
-                  "dependencies": {
-                    "is-finite": {
-                      "version": "1.0.1",
-                      "dependencies": {
-                        "number-is-nan": {
-                          "version": "1.0.0"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "minimist": {
-              "version": "1.2.0"
-            },
-            "object-assign": {
-              "version": "3.0.0"
-            }
-          }
-        }
-      }
-    },
     "express": {
       "version": "4.13.4",
       "dependencies": {

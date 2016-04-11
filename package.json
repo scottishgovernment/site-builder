@@ -17,7 +17,6 @@
     "cheerio": "^0.20.0",
     "config-weaver": "0.0.15",
     "cookie-parser": "^1.4.1",
-    "dateformat": "^1.0.11",
     "express": "^4.13.4",
     "fast-csv": "^1.1.0",
     "fs-extra": "^0.26.7",
