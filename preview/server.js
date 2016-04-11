@@ -1,5 +1,6 @@
 var express = require('express');
 var app = express();
+var cookieParser = require('cookie-parser');
 var path = require('path');
 
 // create template engine to render fetched item
@@ -36,6 +37,9 @@ app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Visibility, X-Accept-Encoding");
   next();
 });
+
+// cookieParser provides access to the authentication token via req.cookies
+app.use(cookieParser());
 
 app.use('/robots.txt',
   express.static(__dirname + '/robots.txt'));
