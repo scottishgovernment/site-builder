@@ -4,21 +4,14 @@ var cookieParser = require('cookie-parser');
 var path = require('path');
 
 // create template engine to render fetched item
-var layouts = './resources/templates/_layouts/';
-var partials = './resources/templates/_partials/';
+var layouts = 'resources/templates/_layouts';
+var partials = 'resources/templates/_partials';
 var helpers = path.join(process.cwd(), 'resources/_helpers');
 var render = require(path.join(__dirname, '../render/render'));
 var renderer = new render.Renderer(layouts, partials, helpers);
 
-var watch = require('node-watch');
-
 process.on('uncaughtException', function(ex) {
     console.log('Preview service is unable to handle the error: \n' + ex.stack);
-});
-
-watch([layouts, partials, helpers], function() {
-    console.log('Layouts, partials or helpers changed');
-    renderer.reload();
 });
 
 // create content-source to fetch item
@@ -29,6 +22,23 @@ var contentSource = require('./content-source')(restler, renderer);
 var config = require('config-weaver').config();
 var referenceDataSource = require('../publish/referenceDataSource')(config, 'out/referenceData.json');
 var routes = require('./routes')(referenceDataSource, contentSource, renderer);
+
+// If configured, setup watching for changes
+if (config.preview && config.preview.watch) {
+
+  var Gaze = require('gaze').Gaze;
+  var gaze = new Gaze([layouts+'/**/*', partials+'/**/*', helpers+'/**/*' ] ,
+    { 'mode': 'poll'},
+    function() {
+      console.log('Watching for changes in layouts, partials or helpers');
+      gaze.on('all', function(event, filepath) {
+        console.log('Layouts, partials or helpers changed');
+        renderer.reload();
+      });
+    }
+  );
+
+}
 
 // fetch the reference data
 app.use(function(req, res, next) {
