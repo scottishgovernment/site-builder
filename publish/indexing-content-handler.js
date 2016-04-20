@@ -21,7 +21,9 @@ module.exports = function (searchURL) {
 
         // called for each content item provided by the content source
         handleContentItem : function(item, callback) {
-            if (item.noindex) {
+
+            if (item.contentItem._embedded.format._embedded.siteSearchable !== true) {
+                console.log('not indexable ' + item.url);
                 callback();
                 return;
             }

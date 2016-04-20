@@ -55,12 +55,7 @@ module.exports = function(root, baseUrl) {
     };
 
     var isIncluded = function(item) {
-        if ( config.sitemaps.exclude_formats.indexOf(item.contentItem._embedded.format.name) > -1
-          || config.sitemaps.exclude_slugs.indexOf(item.contentItem.slug) > -1 ){
-            return false;
-        } else {
-            return true;
-        }
+        return item.contentItem._embedded.format._embedded.internetSearchable;
     };
 
     return {
