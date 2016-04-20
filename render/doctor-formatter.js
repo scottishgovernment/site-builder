@@ -6,67 +6,91 @@ module.exports = exports = function(config, target) {
     var http = require('http');
     var async = require('async');
 
+    var thumbnailWidths = [107, 165, 214, 330];
+
+    function writeDocument(dir, item, document, callback) {
+      var filename = path.join(dir, path.basename(document.doctor.originalName));
+      document.doctor.filename = filename;
+      // MGS-1099 for backwards compatibility with the hbs file
+      if (document.uuid === item.documents[0].uuid) {
+        item.doctor.filename = path.join(item.url, path.basename(document.doctor.originalName));
+      }
+      var stream = fs.createWriteStream(filename);
+      var doctorURL = config.doctor.url + document.doctor.uuid + '/document';
+      http.get(doctorURL, function(response) {
+          response.pipe(stream);
+          response.on('end', callback);
+      });
+    }
+
+    function writeThumbnail(width, dir, item, document, callback) {
+      var filename = path.join(dir,
+        path.basename(document.doctor.originalName, path.extname(document.doctor.originalName))
+        + '.' + width + '.jpg');
+      var stream = fs.createWriteStream(filename);
+      var doctorURL = config.doctor.url + document.doctor.uuid + '/thumbnail/' + width;
+      http.get(doctorURL, function(response) {
+          response.pipe(stream);
+          response.on('end', callback);
+      });
+    }
+
+    function writeThumbnails(dir, item, document, callback) {
+      async.each(thumbnailWidths,
+        function (width, cb) {
+          writeThumbnail(width, dir, item, document, cb);
+        },
+        callback
+      );
+    }
+
     return {
         // for a content item, fetch meta data from doctor and write out any pdf and jpg files
         formatDoctorFiles: function(item, parentCallback) {
-
             item.documents = item.contentItem._embedded.documents;
             if (!item.documents || item.documents.length == 0) {
                 // content item does not have any document references
                 parentCallback();
                 return;
             }
-            // item now has list of documents [MGS-1099]
-            // download content and dooctor details for each document
-            async.each(item.documents, function(document, documentsCallback) {
-                    var doctorUrl = config.doctor.url + document.externalDocumentId;
-                    restler.get(doctorUrl).on('complete', function(data, response) {
-                        if (data instanceof Error || response.statusCode !== 200) {
-                            console.log("Unable to fetch the json for " + doctorUrl);
-                            console.log(JSON.stringify(data, null, '\t'));
-                            parentCallback(data);
-                        } else {
-                            // add doctor fields to the document
-                            document.doctor = {};
-                            document.doctor.pageCount = data.pageCount;
-                            document.doctor.size = data.size;
-                            document.doctor.lastUpdated = data.lastUpdated;
-      
-                            // MGS-1099 for backwards compatibility with the hbs file
-                            // keeping these fields, setting to the first document..
-                            if (document.uuid === item.documents[0].uuid) {
-                                item.doctor = {};
-                                item.doctor.pageCount = data.pageCount;
-                                item.doctor.size = data.size;
-                                item.doctor.lastUpdated = data.lastUpdated;
-                            }
 
-                            var dir = path.join('out', target, item.url);
-                            fs.ensureDirSync(dir);
-                            // copy file from doctor
-                            async.each(data.binaries, function(binary, fileCallback) {
-                               var filename = path.join(dir, path.basename(binary));
-                                if (filename.indexOf('.pdf') === filename.length - 4) {
-                                    document.doctor.filename = path.join(item.url, path.basename(binary));
-                                    // MGS-1099 for backwards compatibility with the hbs file
-                                    if (document.uuid === item.documents[0].uuid) {
-                                      item.doctor.filename = document.doctor.filename;
-                                    }
-                                }
-                                var stream = fs.createWriteStream(filename);
-                                http.get(config.doctor.url + binary, function(response) {
-                                    response.pipe(stream);
-                                    response.on('end', fileCallback);
-                                });
-                            }, function(err) {
-                                documentsCallback(err, document);
-                            });
-                        }
+            async.each(item.documents,
+
+              function(document, documentsCallback) {
+                var doctorUrl = config.doctor.url + document.externalDocumentId;
+                restler.get(doctorUrl).on('complete', function(data, response) {
+                    if (data instanceof Error || response.statusCode !== 200) {
+                        console.log("Unable to fetch the json for " + doctorUrl);
+                        console.log(JSON.stringify(data, null, '\t'));
+                        documentsCallback(data, null);
+                        return;
+                    }
+
+                    var dir = path.join('out', target, item.url);
+                    fs.ensureDirSync(dir);
+
+                    // add doctor fields to the document
+                    document.doctor = data;
+
+                    // MGS-1099 for backwards compatibility with the hbs file
+                    // keeping these fields, setting to the first document..
+                    if (document.uuid === item.documents[0].uuid) {
+                        item.doctor = data;
+                    }
+
+                    async.series([
+                        function (cb) { writeDocument(dir, item, document, cb); },
+                        function (cb) { writeThumbnails(dir, item, document, cb);}
+                      ],
+                      function (err, data) {
+                        documentsCallback(err, data);
+                      });
                     });
-                },
-                function(err) {
-                    parentCallback(err, item);
-                }
+                  },
+                  function(err, data) {
+                    console.log('DONE, calling parent callback');
+                      parentCallback(err, item);
+                  }
             );
 
         }
