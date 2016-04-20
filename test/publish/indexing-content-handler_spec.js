@@ -2,13 +2,16 @@ var sutPath = '../../out/instrument/publish/indexing-content-handler';
 
 describe('indexing-content-handler', function() {
 
-    function item(url, format) {
+    function item(url, format, siteSearchable) {
         return {
-            url : url, 
+            url : url,
             contentItem : {
                 _embedded: {
                     format: {
-                        name:format
+                        name: format,
+                        _embedded : {
+                          siteSearchable: siteSearchable
+                        }
                     }
                 }
             }
@@ -23,111 +26,113 @@ describe('indexing-content-handler', function() {
 
         // ARRANGE
         var items = [
-            item('/multi/segement/url', 'CATEGORY_LIST'),
-            item('/single-segment-url', 'ARTICLE'),
-            item('/organisations', 'ORG_LIST')
+            item('/multi/segement/url', 'CATEGORY_LIST', false),
+            item('/single-segment-url', 'ARTICLE', true),
+            item('/organisations', 'ORG_LIST', true)
         ];
-        var testSearchServer = require('./test-search-server')();   
-        var testApp = testSearchServer.startServer(testPort);     
+        var testSearchServer = require('./test-search-server')();
+        var testApp = testSearchServer.startServer(testPort);
         var sut = require(sutPath)(testUrl);
 
         //ACT
         async.series([
-                function (callback) { 
+                function (callback) {
                     sut.start(callback)
                 },
-                function (callback) { 
+                function (callback) {
                     sut.handleContentItem(items[0], callback);
-                }, 
-                function (callback) { 
+                },
+                function (callback) {
                     sut.handleContentItem(items[1], callback);
-                }, 
-                function (callback) { 
+                },
+                function (callback) {
                     sut.handleContentItem(items[2], callback);
-                }, 
-                function (callback) { 
+                },
+                function (callback) {
                     sut.end(null, function() { callback(); });
                 }
-            ], 
+            ],
+
             function (err, results) {
                 testApp.close();
-                // ASSERT 
+                console.log(JSON.stringify(testSearchServer.indexedItems(), null, '\t'));
+
+                // ASSERT
                 // clear index was called
                 expect(testSearchServer.wasIndexCleared()).toBe(true);
 
                 // each of the items were indexed
-                expect(testSearchServer.wasIndexed(items[0])).toBe(true);
-                expect(testSearchServer.wasIndexed(items[1])).toBe(true);
-                expect(testSearchServer.wasIndexed(items[2])).toBe(true);
+                expect(testSearchServer.indexedItems().length).toBe(2);
                 done();
             }
-        );        
+        );
     });
+
 
     it('search server not running', function(done) {
 
         // ARRANGE
         var items = [
-            item('/multi/segement/url', 'CATEGORY_LIST')
+            item('/multi/segement/url', 'CATEGORY_LIST', false)
         ];
         var sut = require(sutPath)(testUrl);
 
         //ACT
         async.series([
-                function (callback) { 
+                function (callback) {
                     sut.start(callback)
                 },
-                function (callback) { 
+                function (callback) {
                     sut.handleContentItem(items[0], callback);
-                }, 
-                function (callback) { 
+                },
+                function (callback) {
                     sut.end(null, function () { callback(); });
                 }
-            ], 
+            ],
             function (err, results) {
                 // ASSERT - todo once error handleing has been defined assrt it here
-          
+
                 done();
             }
-        );        
+        );
     });
 
     it('search server returns error', function(done) {
- 
+
         // ARRANGE
         var items = [
-            item('/multi/segement/url', 'CATEGORY_LIST'),
-            item('/single-segment-url', 'ARTICLE'),
-            item('/organisations', 'ORG_LIST')
+            item('/multi/segement/url', 'CATEGORY_LIST', false),
+            item('/single-segment-url', 'ARTICLE', true),
+            item('/organisations', 'ORG_LIST', true)
         ];
-        var testSearchServer = require('./test-search-server')();   
-        var testApp = testSearchServer.startFaultyServer(testPort);     
+        var testSearchServer = require('./test-search-server')();
+        var testApp = testSearchServer.startFaultyServer(testPort);
         var sut = require(sutPath)(testUrl);
 
         //ACT
         async.series([
-                function (callback) { 
+                function (callback) {
                     sut.start(callback)
                 },
-                function (callback) { 
+                function (callback) {
                     sut.handleContentItem(items[0], callback);
-                }, 
-                function (callback) { 
+                },
+                function (callback) {
                     sut.handleContentItem(items[1], callback);
-                }, 
-                function (callback) { 
+                },
+                function (callback) {
                     sut.handleContentItem(items[2], callback);
-                }, 
-                function (callback) { 
+                },
+                function (callback) {
                     sut.end(null, function () { callback(); });
                 }
-            ], 
+            ],
             function (err, results) {
                 testApp.close();
                 // ASSERT - todo once error handleing has been defined assrt it here
-                
+
                 done();
             }
-        );        
+        );
     });
 });
