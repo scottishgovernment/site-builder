@@ -7,7 +7,7 @@ describe('sitemap-handler', function() {
 
     var dir = "out/sitemap/";
 
-    function item(url, dateModified, ancestorUrls, format) {
+    function item(url, dateModified, ancestorUrls, format, internetSearchable) {
         var ancestors = [];
         ancestorUrls.forEach(function(ancestorUrl) {
             ancestors.push({
@@ -22,7 +22,10 @@ describe('sitemap-handler', function() {
                 dateModified: dateModified,
                 _embedded: {
                     format: {
-                        name: format
+                        name: format,
+                        _embedded : {
+                          internetSearchable: internetSearchable
+                        }
                     }
                 },
                 content: '#section one\ncontent of first section\n'
@@ -50,25 +53,25 @@ describe('sitemap-handler', function() {
         var items = [
             // root
             item('/',
-                '2014-12-03T00:00:00Z', [''], 'ARTICLE'),
+                '2014-12-03T00:00:00Z', [''], 'ARTICLE', true),
             item('/root/',
-                '2014-12-03T01:00:00Z', [''], 'STRUCTURAL_CATEGORY_LIST'),
+                '2014-12-03T01:00:00Z', [''], 'STRUCTURAL_CATEGORY_LIST', true),
             item('/search/',
-                '2014-12-03T01:00:00Z', [''], 'SEARCH'),
+                '2014-12-03T01:00:00Z', [''], 'SEARCH', false),
 
             // benefits sitemap
             item('/benefits/benefits-item1/',
-                '2014-12-03T00:00:00Z', ['/', '/benefits/'], 'ARTICLE'),
+                '2014-12-03T00:00:00Z', ['/', '/benefits/'], 'ARTICLE', true),
             item('/benefits/subcat/benefits-item2/',
-                '2014-12-03T01:00:00Z', ['/', '/benefits/', '/benefits/subcat/'], 'ARTICLE'),
+                '2014-12-03T01:00:00Z', ['/', '/benefits/', '/benefits/subcat/'], 'ARTICLE', true),
             item('/guide/',
-                '2014-12-03T00:00:00Z', ['/', '/benefits/'], 'GUIDE'),
+                '2014-12-03T00:00:00Z', ['/', '/benefits/'], 'GUIDE', true),
 
             // orgs sitemap
             item('/organisations/aberdeen-city-council/',
-                '2014-12-03T00:00:00Z', ['/', '/organisations/'], 'ARTICLE'),
+                '2014-12-03T00:00:00Z', ['/', '/organisations/'], 'ARTICLE', true),
             item('/organisations/aberdeenshire-council/',
-                '2014-12-03T01:00:00Z', ['/', '/organisations/'], 'ARTICLE'),
+                '2014-12-03T01:00:00Z', ['/', '/organisations/'], 'ARTICLE', true),
         ];
 
         var sut = require(sutPath)(dir, 'https://www.mygov.scot');

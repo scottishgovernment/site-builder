@@ -23,7 +23,6 @@ module.exports = function (searchURL) {
         handleContentItem : function(item, callback) {
 
             if (item.contentItem._embedded.format._embedded.siteSearchable !== true) {
-                console.log('not indexable ' + item.url);
                 callback();
                 return;
             }
@@ -47,7 +46,7 @@ module.exports = function (searchURL) {
             restler.putJson(searchURL, contentItem)
                 .on('complete', function(err) {
                      //Should log the failure to index
-                     callback(err);
+                     callback();
                 });
         },
 
