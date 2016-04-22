@@ -71,6 +71,7 @@ module.exports = exports = function(config, target) {
 
                     // add doctor fields to the document
                     document.doctor = data;
+                    document.doctor.filename = data.originalName;
 
                     // MGS-1099 for backwards compatibility with the hbs file
                     // keeping these fields, setting to the first document..
