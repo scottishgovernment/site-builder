@@ -9,3 +9,5 @@ debian/site-builder.substvars
 node_modules
 npm-debug.log
 out
+.idea
+

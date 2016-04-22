@@ -10,12 +10,13 @@ server {
 
 {{#pages}}
     rewrite '{{{source}}}'
-            '{{{target}}}?via=$scheme://$host$uri' permanent;
+            '{{{target}}}?via=$scheme://$host$uri' {{rewriteFlag}};
 {{/pages}}
 
     # catch all redirect to the home page
     location / {
         rewrite ^ {{url}}?via=$scheme://$host$uri break;
+        return 302;
     }
 
 }
@@ -30,12 +31,13 @@ server {
 
 {{#pages}}
     rewrite '{{{source}}}'
-            '{{{target}}}?via=$scheme://$host$uri' permanent;
+            '{{{target}}}?via=$scheme://$host$uri' {{rewriteFlag}};
 {{/pages}}
 
     # catch all redirect to the home page
     location / {
         rewrite ^ {{{url}}}?via=$scheme://$host$uri break;
+        return 302;
     }
 
 }
