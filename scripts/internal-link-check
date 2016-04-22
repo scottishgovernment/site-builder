@@ -1,12 +1,9 @@
 #!/usr/bin/node
+
+var url = require('url');
 var path = require('path');
-var fs = require('fs-extra');
-var glob = require('glob');
-var yaml = require('js-yaml');
-var yfm = require('yfm');
-var async = require('async');
-var links = require('../render/links');
-var render = require('../render/render');
+var Renderer = require('../render/render').Renderer;
+var Site = require('../publish/site').Site;
 
 if (!String.prototype.startsWith) {
     String.prototype.startsWith = function(searchString, position){
@@ -15,111 +12,61 @@ if (!String.prototype.startsWith) {
   };
 }
 
-if (!String.prototype.endsWith) {
-  String.prototype.endsWith = function(searchString, position) {
-      var subjectString = this.toString();
-      if (typeof position !== 'number'
-          || !isFinite(position)
-          || Math.floor(position) !== position
-          || position > subjectString.length) {
-        position = subjectString.length;
-      }
-      position -= searchString.length;
-      var lastIndex = subjectString.indexOf(searchString, position);
-      return lastIndex !== -1 && lastIndex === position;
-  };
-}
-
-var frontMatterDelimiter = ['~~~', '~~~'];
-var fileOptions = {encoding: 'utf-8'};
-
 function LinkChecker(yamlDir, htmlDir, renderer) {
-    this.yamlDir = yamlDir;
-    this.htmlDir = htmlDir;
-    this.renderer = renderer;
-    this.htmlFiles = {};
+    Site.call(this, yamlDir, htmlDir, renderer);
     this.brokenLinks = {};
-    this.renderer.on('render', function() {});
-    this.originalRenderer = renderer.createRenderer;
-    this.renderer.createRenderer = this.createRenderer.bind(this);
 }
 
-LinkChecker.prototype.createRenderer = function(rewriteLink) {
-    var that = this;
-    var markedRenderer = this.originalRenderer(rewriteLink);
-    markedRenderer.link = function(href, title, text) {
-        that.checkLink(href);
-        return '';
+LinkChecker.prototype = Object.create(Site.prototype);
+LinkChecker.prototype.constructor = LinkChecker;
+
+LinkChecker.prototype.renderItemToFile = function (item, cb) {
+    this.item = item;
+    var context = {
+        rewriteLink: this.rewriteLink.bind(this)
     };
-    return markedRenderer;
-}
+    var html = this.renderer.render(item, context);
+    cb();
+};
 
-LinkChecker.prototype.checkLink = function(href) {
-    var url = require('url').parse(href);
-    if (url.host
-          && url.host !== 'gov.scot') {
-        return;
+LinkChecker.prototype.rewriteLink = function (href, title, text) {
+    var uri = url.parse(href);
+    if (uri.host && uri.host.match(/^((www.|stage.)?mygov|beta.gov).scot/)) {
+        this.brokenLink(this.item, href, title, text);
+    } else if (uri.pathname && uri.pathname.match(/^[A-Z]+-[0-9]+/)) {
+        var id = uri.pathname.split(path.sep)[0];
+        if (!this.index[id]) {
+            this.brokenLink(this.item, href, title, text);
+        }
+    } else if (!uri.host && uri.pathname && uri.pathname[0] === '/') {
+        this.brokenLink(this.item, href, title, text);
     }
-    if (url.protocol === 'mailto:') {
-        return;
-    }
-    var path = url.path;
-    if (!path.startsWith('/')) {
-        return;
-    }
-    if (!path.endsWith('/')) {
-        path += '/';
-    }
-    var idx = path.indexOf('#');
-    if (idx > 0) {
-        path = path.substring(0, idx);
-    }
-    if (!this.htmlFiles[path]) {
-        this.brokenLink(this.item, url);
-    }
-}
+};
 
-LinkChecker.prototype.brokenLink = function(item, url) {
+LinkChecker.prototype.brokenLink = function (item, url, title, text) {
     var ancestor = item.ancestors[1];
     var category = ancestor ? ancestor.title.trim() : 'Unknown';
     var pages = this.brokenLinks[category] || {};
     var links = pages[item.contentItem.title] || [];
-    var formatted = require('url').format(url);
-    if (links.indexOf(formatted) < 0) {
-        links.push(formatted);
-    }
+    links.push({
+        url: url,
+        title: title,
+        text: text
+    });
     this.brokenLinks[category] = pages;
     pages[item.contentItem.title] = links;
 }
 
-LinkChecker.prototype.run = function(done) {
-    var that = this;
-    var yamlGlob = path.join(this.yamlDir, '**/*.yaml');
-    glob('**/*.html', { cwd: this.htmlDir }, function (err, files) {
-        if (err) {
-            done(err);
-            return;
-        }
-        files.map(function (file) {
-            return '/' + file.replace(/index.html$/, '');
-        }).forEach(function (file) {
-            that.htmlFiles[file] = file;
-        });
-        glob(yamlGlob, {}, function (err, yamlFiles) {
-            if (err) {
-                done(err);
-                return;
-            }
-            async.eachSeries(yamlFiles, that.processFile.bind(that), function() {
-                that.report(done);
-            });
-        });
-    });
-}
-
-LinkChecker.prototype.report = function(done) {
+LinkChecker.prototype.report = function (done) {
     var lastCategory;
     var lastPage;
+    var columns = [
+        'Category',
+        'Page Title',
+        'Link Target',
+        'Link Text'
+    ];
+    console.log('"' + columns.join('","') + '"');
     for (var categoryName in this.brokenLinks) {
         var category = this.brokenLinks[categoryName];
         var showCategory = true;
@@ -131,7 +78,8 @@ LinkChecker.prototype.report = function(done) {
                 var csv = '"' + [
                     showCategory ? categoryName : '',
                     showPage ? pageTitle : '',
-                    link
+                    link.url,
+                    link.text
                 ].join('","') + '"';
                 console.log(csv);
                 showCategory = false;
@@ -139,71 +87,19 @@ LinkChecker.prototype.report = function(done) {
             }
         }
     }
-}
+};
 
-
-LinkChecker.prototype.processFile = function(src, cb) {
+LinkChecker.prototype.build = function (done) {
     var that = this;
-    fs.readFile(src, fileOptions, function (err, data) {
-        if (!err) {
-            that.renderYamlToFile(data, cb);
-        } else {
-            cb(err);
-        }
+    Site.prototype.build.call(this, function (done) {
+        that.report(done);
     });
-}
-
-function readFile(file, callback) {
-    fs.readFile(file, fileOptions, function (err, data) {
-        if (err) {
-            callback("Could not read file: " + file);
-        }
-        var item;
-        try {
-            var data = yfm(data, frontMatterDelimiter);
-            item = data.context;
-            item.body = data.content;
-        } catch (e) {
-            callback("Could not parse file: " + file + "\n" + e.message);
-        }
-        callback(null, item);
-    });
-
-}
-
-LinkChecker.prototype.renderYamlToFile = function(data, cb) {
-    var that = this;
-    var data = yfm(data, frontMatterDelimiter);
-    var item = data.context;
-    var dst = item.url;
-    item.body = data.content;
-    this.item = item;
-    try {
-        if (shouldRender(item)) {
-            this.item = item;
-            var context = {
-                rewriteLink: function (href) {
-                    that.checkLink(href);
-                }
-            };
-            var html = this.renderer.render(item, context);
-        }
-        cb();
-    } catch (e) {
-        e.message = "Failed on item: " + item.uuid + "\n" + e.message;
-        throw e;
-    }
-}
-
-function shouldRender(item) {
-    // Remove first disjunct when resources/doctor has been removed.
-    return !item.contentItem._embedded.format._embedded
-      || !item.contentItem._embedded.format._embedded.structural;
-}
+};
 
 var layouts = path.join(process.cwd(), 'resources/templates/_layouts');
 var partials = path.join(process.cwd(), 'resources/templates/_partials');
 var helpers = path.join(process.cwd(), 'resources/_helpers');
-var renderer = new render.Renderer(layouts, partials, helpers);
-var checker = new LinkChecker('out/pages', 'out/pages', renderer);
-checker.run(function() {});
+var renderer = new Renderer(layouts, partials, helpers);
+var checker = new LinkChecker('out/contentitems', 'out/pages', renderer);
+renderer.on('render', null);
+checker.build(function() {});

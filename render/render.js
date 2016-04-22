@@ -60,7 +60,7 @@ Renderer.prototype.createRenderer = function (rewriteLink) {
     if (rewriteLink) {
         var original = renderer.link;
         renderer.link = function(link, title, text) {
-            var href = rewriteLink(link);
+            var href = rewriteLink(link, title, text);
             return original.bind(this)(href, title, text);
         };
     }
