@@ -97,6 +97,19 @@ module.exports = function (config) {
         }
     }
 
+    //The redirect type is the flag used on the rewite directive
+    //It can only have the values redirect or permanent, lower-case, and default
+    //to permanent
+    function sanitiseRedirectType(page) {
+        var redirect = page.redirectType.toLowerCase();
+        if(redirect === 'redirect' || redirect === 'permanent') {
+            return redirect;
+        } else {
+            return 'permanent';
+        }
+
+    }
+
     function fetchPageForSite(site, callback) {
         restler.get(site._links.pages.href, headers()).on('complete',
             function (data, response) {
@@ -134,7 +147,8 @@ module.exports = function (config) {
                     var page = pagesJSON._embedded.pages[i];
                     pages.push({
                         source: sourceUrl(page),
-                        target: targetUrl(page.targetUrl, siteUrl)
+                        target: targetUrl(page.targetUrl, siteUrl),
+                        rewriteFlag: sanitiseRedirectType(page)
                     });
                 }
 
