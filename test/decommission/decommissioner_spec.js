@@ -80,7 +80,8 @@ describe('decommissioner', function() {
                         "pages" : [ 
                             {
                                 "srcUrl": "/srcUrl/",
-                                "targetUrl": "/target/url/"
+                                "targetUrl": "/target/url/",
+                                "redirectType": "REDIRECT"
                             }
                         ]
                     }
@@ -135,7 +136,8 @@ describe('decommissioner', function() {
                         "pages" : [ 
                             {
                                 "srcUrl": "/srcUrl/",
-                                "targetUrl": "/target/url/"
+                                "targetUrl": "/target/url/",
+                                "redirectType": "REDIRECT"
                             }
                         ]
                     }
