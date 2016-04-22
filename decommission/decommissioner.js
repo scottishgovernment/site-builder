@@ -97,11 +97,14 @@ module.exports = function (config) {
         }
     }
 
-    //The redirect type is the flag used on the rewite directive
+    //The redirect type is the flag used on the rewrite directive
     //It can only have the values redirect or permanent, lower-case, and default
     //to permanent
     function sanitiseRedirectType(page) {
-        var redirect = page.redirectType.toLowerCase();
+        if(page.redirectType) {
+            var redirect = page.redirectType.toLowerCase();
+        }
+
         if(redirect === 'redirect' || redirect === 'permanent') {
             return redirect;
         } else {
