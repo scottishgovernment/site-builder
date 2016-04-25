@@ -159,6 +159,7 @@ module.exports = function (config) {
                     name: site.name,
                     host: site.host,
                     url: siteUrl,
+                    catchAllUri: site.catchAllUri,
                     pages: pages
                 };
 
