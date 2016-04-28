@@ -14,8 +14,8 @@ server {
 {{/pages}}
 
     # catch all redirect to the home page
-    location {{catchAllUri}} {
-        rewrite ^ {{url}}?via=$scheme://$host$uri break;
+    location / {
+        rewrite ^ {{url}}{{catchAllUri}}?via=$scheme://$host$uri break;
         return 302;
     }
 
@@ -35,8 +35,8 @@ server {
 {{/pages}}
 
     # catch all redirect to the home page
-    location {{catchAllUri}} {
-        rewrite ^ {{{url}}}?via=$scheme://$host$uri break;
+    location / {
+        rewrite ^ {{{url}}}{{catchAllUri}}?via=$scheme://$host$uri break;
         return 302;
     }
 
