@@ -83,6 +83,19 @@ module.exports = function(rootDir) {
     };
 
     var customHandlers = {
+        STRUCTURAL_CATEGORY_LIST : function (item, callback) {
+          // do nothing, no yaml needs to be written
+          callback();
+        },
+
+        SITE_ITEM : function (item, callback) {
+
+          // only create the yaml if this is not being used as a signpost
+          if (item.contentItem.signpostUrl !== null) {
+            writeYamlAndJson(item);
+          }
+          callback();
+        },
 
         CATEGORY_LIST : function (item, callback) {
             // number grandchildren by index (this is used by the data-gtm attribs)
