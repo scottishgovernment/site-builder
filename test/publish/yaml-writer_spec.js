@@ -68,7 +68,7 @@ describe('yaml-writer', function() {
         });
         sut.end(null, function () {
             // ASSERT - the temp directory should contain the expected files
-            expect(fs.existsSync(yamlDir + '/01.yaml')).toEqual(true);
+            expect(fs.existsSync(yamlDir + '/01.yaml')).toEqual(false);
             expect(fs.existsSync(yamlDir + '/02.yaml')).toEqual(true);
             expect(fs.existsSync(yamlDir + '/03.yaml')).toEqual(true);
 
