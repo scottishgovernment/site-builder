@@ -43,6 +43,8 @@ module.exports = function (searchURL) {
                 });
             }
 
+            contentItem.filterDate = item.filterDate;
+
             restler.putJson(searchURL, contentItem)
                 .on('complete', function(err) {
                      //Should log the failure to index
