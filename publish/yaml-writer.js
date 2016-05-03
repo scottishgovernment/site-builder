@@ -91,9 +91,10 @@ module.exports = function(rootDir) {
         SITE_ITEM : function (item, callback) {
 
           // only create the yaml if this is not being used as a signpost
-          if (item.contentItem.signpostUrl !== null) {
+          if (item.contentItem.signpostUrl === null) {
             writeYamlAndJson(item);
           }
+
           callback();
         },
 
