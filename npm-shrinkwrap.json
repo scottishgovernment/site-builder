@@ -934,7 +934,7 @@
       }
     },
     "grunt-sonar-runner": {
-      "version": "2.4.5"
+      "version": "2.4.6"
     },
     "handlebars": {
       "version": "4.0.5",
