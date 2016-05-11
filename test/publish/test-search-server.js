@@ -6,7 +6,8 @@ module.exports = function () {
 
 	// map each data item by its id
 	var indexedItems = [];
-	var indexCleared = false;
+	var siteIndexBeginCalled = false;
+	var siteIndexEndCalled = false;
 
 	function error (req, res) {
 		res.status(500).send('500');
@@ -17,17 +18,26 @@ module.exports = function () {
 		res.status(201).send({});
 	}
 
-	function clearIndex(req, res) {
-		indexCleared = true;
-		indexedItems = [];
-		res.status(204).send({});
+	function siteIndexBegin(req, res) {
+		siteIndexBeginCalled = true;
+		res.status(200).send({});
+	}
+
+	function siteIndexEnd(req, res) {
+		siteIndexEndCalled = true;
+		res.status(200).send({});
 	}
 
 	return {
 
-		wasIndexCleared : function () {
-			return indexCleared;
+		wasSiteIndexBeginCalled : function () {
+			return siteIndexBeginCalled;
 		},
+
+		wasSiteIndexEndCalled : function () {
+			return siteIndexEndCalled;
+		},
+
 
 		indexedItems : function () {
 				return indexedItems;
@@ -43,8 +53,9 @@ module.exports = function () {
 		startServer : function (port) {
 			var app = express();
 			app.use(bodyParser.json());
+			app.route('/siteIndexBegin').post(siteIndexBegin);
+			app.route('/siteIndexEnd').post(siteIndexEnd);
 			app.route('/').put(index);
-			app.route('/').delete(clearIndex);
 			return app.listen(port);
 		},
 

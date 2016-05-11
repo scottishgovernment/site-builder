@@ -58,8 +58,9 @@ describe('indexing-content-handler', function() {
                 console.log(JSON.stringify(testSearchServer.indexedItems(), null, '\t'));
 
                 // ASSERT
-                // clear index was called
-                expect(testSearchServer.wasIndexCleared()).toBe(true);
+
+                //expect(testSearchServer.wasSiteIndexBeginCalled()).toBe(true);
+                expect(testSearchServer.wasSiteIndexEndCalled()).toBe(true);
 
                 // each of the items were indexed
                 expect(testSearchServer.indexedItems().length).toBe(2);

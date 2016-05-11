@@ -4,19 +4,23 @@
 module.exports = function (searchURL) {
 
     var restler = require('restler');
+    var count = 0;
 
     return {
 
         // called when the content source is starting
         start : function(callback) {
-            // clear the index
-            restler.del(searchURL);
-            setTimeout(
-                function() {
-                    // restler does not handle 204 header hence timeout
-                    callback();
-                },
-                3000);
+          count = 0;
+
+          // clear the index
+          restler.del(searchURL);
+
+          // notify search that we are about to begin a site search
+          restler
+            .postJson(searchURL + 'siteIndexBegin', {})
+            .on('complete', function(err) {
+              callback();
+            });
         },
 
         // called for each content item provided by the content source
@@ -26,9 +30,9 @@ module.exports = function (searchURL) {
                 callback();
                 return;
             }
+            count++;
 
             // index the item using the search service
-
             // we only want to index the content item (not andcestors etc.)
             // but we need the url to be included
             var contentItem = item.contentItem;
@@ -54,7 +58,13 @@ module.exports = function (searchURL) {
 
         // called when the content source will provide no more items
         end : function(err, callback) {
-            callback(err);
+
+            console.log('Indexed ' + count + ' items');
+
+            // tell the search service that the indexing is finished.
+            restler
+              .postJson(searchURL + 'siteIndexEnd', {})
+              .on('complete', callback);
         }
     };
 };
