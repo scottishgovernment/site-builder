@@ -8,6 +8,7 @@ function Relationships(renderer) {
 Relationships.prototype.find = function (item) {
     var items = [];
     var seen = {};
+
     seen[item.uuid] = item;
     if (item.relatedItems) {
         items = items.concat(item.relatedItems.hasResponsibleDirectorate);
@@ -32,9 +33,17 @@ Relationships.prototype.find = function (item) {
         }
     }
 
+    // add any 'latest items'
+    for (var property in item.latestItems) {
+        if (item.latestItems.hasOwnProperty(property)) {
+            items.push.apply(items, item.latestItems[property]);
+        }
+    }
+
     items = items.filter(function (rel) {
         return !seen[rel.uuid];
     });
+    
     return items;
 };
 
