@@ -114,6 +114,7 @@ module.exports = function(restler, renderer) {
   function fetchRelatedItems(item, auth, visibility, callback) {
     var relationship = new relationships.Relationships(renderer);
     var relsToFetch = relationship.find(item);
+
     // policy details pages need to fetch their siblings...
     if (item.layout === 'policy-detail.hbs') {
        // MGS-1116, policy details might not have a parent (some states)
@@ -132,13 +133,15 @@ module.exports = function(restler, renderer) {
     } else {
       writeRelatedItems(relsToFetch, auth, visibility, callback);
     }
-  }   
+  }
 
   function writeRelatedItems(itemsToFetch, auth, visibility, callback) {
     var items = {};
+
     async.each(itemsToFetch,
       function(item, cb) {
         var slug = item.url || item.uuid;
+
         loadContent(restler, slug, auth, visibility, function(error, item) {
           if (error) {
             cb(error);
