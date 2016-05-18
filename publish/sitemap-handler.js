@@ -85,6 +85,13 @@ module.exports = function(root, baseUrl) {
                         appendToSitemap(filename, lastModified, url);
                     });
                 }
+
+                if (item.contentItem._embedded.format.name === 'APS_PUBLICATION') {
+                  var pages = item.amphora.publication.pages;
+                  pages.forEach(function (page){
+                    appendToSitemap(filename, lastModified, page.url);
+                  });
+                }
             }
             callback();
         },
