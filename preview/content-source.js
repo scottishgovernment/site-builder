@@ -8,12 +8,16 @@ var slugify = require('../publish/slugify');
 var doctorFormatter = require('../render/doctor-formatter')(config, 'pdfs');
 var amphora = require('../render/amphora/amphora')(config, 'out/pages', 'preview');
 
-var re = /publications\/(.*)?\/pages\/(.*)?\//;
+var pubPage = /publications\/(.*)?\/pages\/(.*)?\//;
 
 module.exports = function(restler, renderer) {
 
   function url(source, visibility) {
-    var aps = (source).match(re);
+    // aps publication pages do not exist as content items in publishing platform
+    // they can not be fetched using the url
+    // if url matches publication page
+    // page part is removed from url
+    var aps = (source).match(pubPage);
     if (aps) {
          source = '/publications/' + aps[1] + '/';
     }
@@ -209,7 +213,7 @@ module.exports = function(restler, renderer) {
 
         // add amphora details
         function(cb) {
-          var aps = (req.path).match(re);
+          var aps = (req.path).match(pubPage);
           if (aps) {
              amphora.handleAmphoraContent(item, aps[2], cb);
           } else {
