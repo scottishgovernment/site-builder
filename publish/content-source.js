@@ -8,7 +8,7 @@ module.exports = function (config, contentFormatter, contentHandler) {
     var referenceDataSource = require('./referenceDataSource')(config, 'out/referenceData.json');
     var doctorFormatter = require('../render/doctor-formatter')(config, 'pages');
 
-    var amphora = require('../render/amphora/amphora')(config, 'out/pages');
+   var amphora = require('../render/amphora/amphora')(config, 'out/pages', 'build');
     
     // return a url for this item (if empty then will return the url for all items)
     function url(id) {
@@ -18,7 +18,7 @@ module.exports = function (config, contentFormatter, contentHandler) {
     function processJson(data, callback){
         var contentItem = contentFormatter.format(JSON.parse(data));
         doctorFormatter.formatDoctorFiles(contentItem, function (err, item) {
-          amphora.handleAmphoraContent(contentItem, function () {
+          amphora.handleAmphoraContent(contentItem, null, function () {
             contentHandler.handleContentItem(contentItem, function() {
               callback(null, item);
             });

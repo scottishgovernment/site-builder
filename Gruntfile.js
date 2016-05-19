@@ -88,6 +88,7 @@ module.exports = function(grunt) {
                 'decommission/*.js',
                 'preview/*.js',
                 'render/*.js',
+                'render/amphora/*.js',
                 'tasks/*.js'
             ],
             options: {

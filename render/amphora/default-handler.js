@@ -32,7 +32,7 @@ module.exports = function () {
 
     return  {
 
-      handle : function (base, amphora, resource, callback) {
+      handle : function (base, amphora, resource, mode, callback) {
              if (resource._links.inline && resource.storage) {
                 var pub = amphora.publication;
                 // use parentslug to group resources
@@ -44,7 +44,12 @@ module.exports = function () {
                 pub[prop].sort(function (a, b) {
                     return a.index - b.index;
                 });
-                download(base, amphora, resource, callback);
+                if (mode === 'preview') {
+                    callback();
+                    return;
+                } else {
+                     download(base, amphora, resource, callback);
+                }
             } else {
                 callback(); 
             }

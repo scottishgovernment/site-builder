@@ -26,7 +26,7 @@ module.exports = function () {
         delete pub.thumbnails;
 	}
 
-	function createPages(target, item) {
+	function createPages(target, item, mode) {
         var pub = item.amphora.publication;
         var pages = pub.pages;
         delete pub.pages;
@@ -39,14 +39,16 @@ module.exports = function () {
 				content: page.content,
 	    		index: page.index,
 	    		prev: page.index === 0 ? null : page.index - 1,
-	    		next: page.index + 1
+	    		next: page.index === pub.toc.length -1 ? null : page.index + 1
 			};
 			if (pub.toc[page.index-1]) {
 				delete pub.toc[page.index-1].current;
 			}
 			pub.toc[page.index].current = true;
-			// create yaml and other required objects for handlebars
-		    createPageObjects(page, item);
+            if (mode !== 'preview') {
+                // create yaml and other required objects for handlebars
+                createPageObjects(page, item);
+            }
 		});
 	}
 
@@ -66,7 +68,8 @@ module.exports = function () {
         '');
     }
 
-	function createToc(pub) {
+	function createToc(pub, currentPage) {
+        var index = currentPage || 0;
 		pub.toc = [];
 		pub.pages = pub.pages || [];
 		// iterate pages and create a tocItem from respective page (amphora resource) details
@@ -81,34 +84,37 @@ module.exports = function () {
 
 	    // by default page zero is current page 
 	    // default content for the publication is first page as well.
-        if (pub.toc[0]) {
-        	pub.toc[0].current = true;
+        if (pub.toc[index]) {
+        	pub.toc[index].current = true;
             pub.publicationSubPage = {
-	            content: pub.pages[0].content,
-	    	    index: 0,
-	    	    prev: null,
-	    	    next: 1
+	            content: pub.pages[index].content,
+	    	    index: index,
+	    	    prev: index === 0 ? null : index - 1,
+	    	    next: index === pub.toc.length - 1 ?  null : index + 1  
 	        }
         }
-  	    
 	}
 
     return {
-    	cleanup : function (target, item, callback) {
+    	cleanup : function (target, item, mode, currentPage, callback) {
     		var pub = item.amphora.publication;
     		// delete images which is not required by hbs
     		delete pub.images;
             // move thumnails to their respective documents
             moveThumbnails(pub);
             // create table of contents
-    		createToc(pub);
-            // clone content item to create publication page yamls from
-            var clone = JSON.parse(JSON.stringify(item))
-            // create yaml and json per page using the clone
-            createPages(target, clone);
+    		createToc(pub, currentPage);
+
+            if (!currentPage) {
+                // clone content item to create publication page yamls from
+                var clone = JSON.parse(JSON.stringify(item));
+                createPages(target, clone, mode, currentPage);
+            }
             // return to amphora
             // create content for search index
-            createHtmlContent(item, pub);
+            if (mode !== 'preview') {
+                createHtmlContent(item, pub);
+            }  
     		callback();
         }
     };

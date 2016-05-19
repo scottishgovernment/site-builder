@@ -6,10 +6,17 @@ var formatter = require('../publish/item-formatter')(config.layoutstrategy);
 var yamlWriter = require('../publish/yaml-writer')('out/contentitems');
 var slugify = require('../publish/slugify');
 var doctorFormatter = require('../render/doctor-formatter')(config, 'pdfs');
+var amphora = require('../render/amphora/amphora')(config, 'out/pages', 'preview');
+
+var re = /publications\/(.*)?\/pages\/(.*)?\//;
 
 module.exports = function(restler, renderer) {
 
   function url(source, visibility) {
+    var aps = (source).match(re);
+    if (aps) {
+         source = '/publications/' + aps[1] + '/';
+    }
     var endpoint = config.buildapi.endpoint.replace(/\/$/, '');
     var base = endpoint + '/' + path.join('urlOrId', source);
     return base + '?visibility=' + visibility;
@@ -181,7 +188,7 @@ module.exports = function(restler, renderer) {
     });
   }
 
-  function postProcess(item, auth, visibility, callback) {
+  function postProcess(item, auth, visibility, req, callback) {
     async.series([
         // fetch related items
         function (cb) {
@@ -198,6 +205,16 @@ module.exports = function(restler, renderer) {
         // write doctor files
         function(cb) {
           doctorFormatter.formatDoctorFiles(item, cb);
+        },
+
+        // add amphora details
+        function(cb) {
+          var aps = (req.path).match(re);
+          if (aps) {
+             amphora.handleAmphoraContent(item, aps[2], cb);
+          } else {
+             amphora.handleAmphoraContent(item, null, cb);
+          }
         }
       ],
 
@@ -216,7 +233,7 @@ module.exports = function(restler, renderer) {
         if (err) {
           callback(err);
         } else {
-          postProcess(item, auth, visibility, callback);
+          postProcess(item, auth, visibility, req, callback);
         }
       });
     }
