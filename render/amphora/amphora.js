@@ -57,6 +57,8 @@ module.exports = function (config, target) {
 
     return {
     	handleAmphoraContent : function (item, callback) {
+            item.url = 'publications/criminal-justice-social-work-statistics-in-scotland-2014-15';
+            item.contentItem._embedded.format['name'] = 'APS_PUBLICATION';
     		if (item.contentItem._embedded.format['name'] === 'APS_PUBLICATION') {
                 // create new amphora
                 var amphora = {};
