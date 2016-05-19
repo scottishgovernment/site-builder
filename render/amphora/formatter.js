@@ -74,6 +74,7 @@ module.exports = function () {
 	    	var tocItem = {
 	    		name: page.shortTitle,
 	    		url:page.url,
+                title: page.header
 	    	}
 	    	pub.toc.push(tocItem);
 	    });
