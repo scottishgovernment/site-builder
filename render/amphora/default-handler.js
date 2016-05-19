@@ -25,7 +25,6 @@ module.exports = function () {
             var stream = fs.createWriteStream(filename);
             response.pipe(stream);
             response.on('end', function() {
-                console.log(resource['path'] + '[' + resource.storage.size.asString + ']');
                 callback();
             });
         });
