@@ -15,13 +15,13 @@ module.exports = function () {
         source.index = resource.ordinal;
         source.details = resource.storage.metadata;
         source.url = resource.metadata.namespace 
-              + (resource.metadata.filename || resource.metadata.slug);
+              + (resource.metadata.filename || slug);
         return source;
     }
 
     function download(base, amphora, resource, callback) {
         var filename = path.join(base, resource.metadata.filename || resource.slug);
-      http.get(resource._links.inline.href, function(response) {
+        http.get(resource._links.inline.href, function(response) {
             var stream = fs.createWriteStream(filename);
             response.pipe(stream);
             response.on('end', function() {
