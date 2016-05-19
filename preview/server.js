@@ -3,6 +3,28 @@ var app = express();
 var cookieParser = require('cookie-parser');
 var path = require('path');
 
+var config = require('config-weaver').config();
+
+
+
+if (config.amphora) {
+    // created proxy for the stored objects
+    // we don't need to download document on each request (i.e doctor does)
+    // documents, images will be served via amphora (for publications only)
+    var proxy = require('express-http-proxy');
+
+    var amphoraStorageProxy = proxy(config.amphora.host, {
+        forwardPath: function (req, res) {
+          return '/storage' + require('url').parse(req.baseUrl).path;
+        }
+    });
+
+    // the files will be served from amphora
+    app.use("/publications/*.*", amphoraStorageProxy);
+}
+
+
+
 // create template engine to render fetched item
 var layouts = 'resources/templates/_layouts';
 var partials = 'resources/templates/_partials';
@@ -19,7 +41,7 @@ var restler = require('restler');
 var contentSource = require('./content-source')(restler, renderer);
 
 // create routes
-var config = require('config-weaver').config();
+
 var referenceDataSource = require('../publish/referenceDataSource')(config, 'out/referenceData.json');
 var routes = require('./routes')(referenceDataSource, contentSource, renderer);
 
