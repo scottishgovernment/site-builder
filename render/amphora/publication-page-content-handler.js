@@ -36,7 +36,7 @@ module.exports = function () {
     return {
     	handle : function (base, amphora, pageContent, mode, callback) {
             var publication = amphora.publication;
-            var page = publication.pages[pageContent.metadata.parentSlug - 1];
+            var page = publication.pages[pageContent.metadata.parentSlug];
             downloadContent(base, pageContent, page, callback); 
         }
     };
