@@ -17,7 +17,7 @@ module.exports = function(restler, renderer) {
     // they can not be fetched using the url
     // if url matches publication page
     // page part is removed from url
-    var aps = (source).match(pubPage);
+    var aps = ((source + '/')).replace(/\/\//g, '/').match(pubPage);
     if (aps) {
          source = '/publications/' + aps[1] + '/';
     }
@@ -213,7 +213,7 @@ module.exports = function(restler, renderer) {
 
         // add amphora details
         function(cb) {
-          var aps = (req.path).match(pubPage);
+          var aps = ((req.path + '/')).replace(/\/\//g, '/').match(pubPage);
           if (aps) {
              amphora.handleAmphoraContent(item, aps[2], cb);
           } else {
