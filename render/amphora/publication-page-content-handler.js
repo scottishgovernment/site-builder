@@ -8,6 +8,8 @@ module.exports = function () {
  
     var http = require('http');
 
+    var cheerio = require('cheerio');
+
     function downloadContent(base, pageContent, page, callback) {
         var body = [];
         // download html content from storage and set it to the page
@@ -17,8 +19,17 @@ module.exports = function () {
             });
              response.on('end', function() {
                 page.content = Buffer.concat(body).toString();
+                addHeader(page);
                 callback();
             });
+        });
+    }
+
+    function addHeader(page) {
+        var dom = cheerio.load(page.content);
+        dom('h3').each(function(index, element) {
+            page.header = dom(element).text();
+            return;
         });
     }
     
