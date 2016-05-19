@@ -12,9 +12,6 @@ module.exports = function (searchURL) {
         start : function(callback) {
           count = 0;
 
-          // clear the index
-          restler.del(searchURL);
-
           // notify search that we are about to begin a site search
           restler
             .postJson(searchURL + 'siteIndexBegin', {})
