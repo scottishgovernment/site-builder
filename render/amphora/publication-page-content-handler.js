@@ -19,16 +19,16 @@ module.exports = function () {
             });
              response.on('end', function() {
                 page.content = Buffer.concat(body).toString();
-                addHeader(page);
+                addTitle(page);
                 callback();
             });
         });
     }
 
-    function addHeader(page) {
+    function addTitle(page) {
         var dom = cheerio.load(page.content);
         dom('h3').each(function(index, element) {
-            page.header = dom(element).text();
+            page.title = dom(element).text();
             return;
         });
     }
