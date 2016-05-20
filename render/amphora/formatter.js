@@ -69,7 +69,7 @@ module.exports = function () {
     }
 
 	function createToc(pub, currentPage) {
-        var index = currentPage || 0;
+        var index = parseInt(currentPage || 0);
 		pub.toc = [];
 		pub.pages = pub.pages || [];
 		// iterate pages and create a tocItem from respective page (amphora resource) details
