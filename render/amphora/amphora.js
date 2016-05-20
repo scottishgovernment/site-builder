@@ -2,7 +2,7 @@
  * Amphora Source - amphora items.
  * eozcan
  **/
-module.exports = function (config, target, mode) {
+module.exports = function (config, mode) {
     
     var fs = require('fs-extra');
     var restler = require('restler');
@@ -34,7 +34,7 @@ module.exports = function (config, target, mode) {
                 callback(data);
             } else {
                 if (data.metadata.required !== false) {
-                    var base =  path.join(target, data.metadata.namespace);
+                    var base =  path.join('out', 'pages', data.metadata.namespace);
                     if (mode !== 'preview') {
                         fs.mkdirsSync(base);
                     }
@@ -64,7 +64,7 @@ module.exports = function (config, target, mode) {
                 var amphora = {};
                 fetchResource(amphora, item.url,function () {
                     item.amphora = amphora;
-                    formatter.cleanup(target, item, mode, currentPage, function() {
+                    formatter.cleanup(item, mode, currentPage, function() {
                         callback();
                     });
                 });

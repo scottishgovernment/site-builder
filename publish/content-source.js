@@ -8,7 +8,7 @@ module.exports = function (config, contentFormatter, contentHandler) {
     var referenceDataSource = require('./referenceDataSource')(config, 'out/referenceData.json');
     var doctorFormatter = require('../render/doctor-formatter')(config, 'pages');
 
-   var amphora = require('../render/amphora/amphora')(config, 'out/pages', 'build');
+   var amphora = require('../render/amphora/amphora')(config, 'site');
     
     // return a url for this item (if empty then will return the url for all items)
     function url(id) {
