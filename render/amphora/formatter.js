@@ -26,7 +26,7 @@ module.exports = function () {
         delete pub.thumbnails;
 	}
 
-	function createPages(target, item, mode) {
+	function createPages(item, mode) {
         var pub = item.amphora.publication;
         var pages = pub.pages;
         delete pub.pages;
@@ -96,7 +96,7 @@ module.exports = function () {
 	}
 
     return {
-    	cleanup : function (target, item, mode, currentPage, callback) {
+    	cleanup : function (item, mode, currentPage, callback) {
     		var pub = item.amphora.publication;
     		// delete images which is not required by hbs
     		delete pub.images;
@@ -108,7 +108,7 @@ module.exports = function () {
             if (!currentPage) {
                 // clone content item to create publication page yamls from
                 var clone = JSON.parse(JSON.stringify(item));
-                createPages(target, clone, mode, currentPage);
+                createPages(clone, mode, currentPage);
             }
             // return to amphora
             // create content for search index

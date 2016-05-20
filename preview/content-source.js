@@ -6,23 +6,15 @@ var formatter = require('../publish/item-formatter')(config.layoutstrategy);
 var yamlWriter = require('../publish/yaml-writer')('out/contentitems');
 var slugify = require('../publish/slugify');
 var doctorFormatter = require('../render/doctor-formatter')(config, 'pdfs');
-var amphora = require('../render/amphora/amphora')(config, 'out/pages', 'preview');
 
-var pubPage = /publications\/(.*)?\/pages\/(.*)?\//;
+// 4 min inactive time out for a publication
+var amphoraCache = require('./amphora-cache')(4, config);
 
 module.exports = function(restler, renderer) {
 
   function url(source, visibility) {
-    // aps publication pages do not exist as content items in publishing platform
-    // they can not be fetched using the url
-    // if url matches publication page
-    // page part is removed from url
-    var aps = ((source + '/')).replace(/\/\//g, '/').match(pubPage);
-    if (aps) {
-         source = '/publications/' + aps[1] + '/';
-    }
     var endpoint = config.buildapi.endpoint.replace(/\/$/, '');
-    var base = endpoint + '/' + path.join('urlOrId', source);
+    var base = endpoint + '/' + path.join('urlOrId', amphoraCache.getUrl(source));
     return base + '?visibility=' + visibility;
   }
 
@@ -213,12 +205,7 @@ module.exports = function(restler, renderer) {
 
         // add amphora details
         function(cb) {
-          var aps = ((req.path + '/')).replace(/\/\//g, '/').match(pubPage);
-          if (aps) {
-             amphora.handleAmphoraContent(item, aps[2], cb);
-          } else {
-             amphora.handleAmphoraContent(item, null, cb);
-          }
+          amphoraCache.update(req, item, cb);
         }
       ],
 
