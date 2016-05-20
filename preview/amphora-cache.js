@@ -40,11 +40,13 @@ module.exports = exports = function(timeout, config) {
             var currentPage = aps ? aps[2]: null;
         	if (!cacheItem  ||  n - cacheItem.stored > inactiveTimeout) { 
         		amphora.handleAmphoraContent(item, currentPage, function() {
-        		    cacheItem = {
-        		    	amphora: item.amphora,
-        		    	stored: n
-        		    };
-        		    cache[item.url] = cacheItem;
+        			if (item.amphora) {
+        				cacheItem = {
+        		    	    amphora: item.amphora,
+        		    	    stored: n
+        		        };
+        		        cache[item.url] = cacheItem;
+        			}
         		    callback();
         		});  
         	}  else if (cacheItem && cacheItem.amphora) {
