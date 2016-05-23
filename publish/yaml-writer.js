@@ -7,6 +7,7 @@ module.exports = function(rootDir) {
     var fs = require('fs-extra');
     var yaml = require('js-yaml');
     var slugify = require('./slugify');
+    var config = require('config-weaver').config();
 
     var context = {
         funding: {
@@ -31,7 +32,6 @@ module.exports = function(rootDir) {
     };
 
     var writeYamlAndJson = function (item) {
-
         var yamlText = itemAsYaml(item);
         var jsonText = JSON.stringify(item, null, 4);
         var base = path.join(rootDir, item.contentItem.uuid);
@@ -42,7 +42,6 @@ module.exports = function(rootDir) {
         fs.mkdirsSync(dir);
         fs.writeFileSync(path.join(dir, 'index.yaml'), yamlText);
         fs.writeFileSync(path.join(dir, 'index.json'), jsonText);
-
     };
 
     var writeGuideItem = function (item) {
@@ -199,6 +198,24 @@ module.exports = function(rootDir) {
             item.canonicalurl = url;
             item.url = url;
             callback();
+        },
+
+        POLICY: function(item, callback) {
+            if (config.policylatest.enabled !== true) {
+              writeYamlAndJson(item);
+              callback();
+              return;
+            }
+
+            // now write the latest' page for this policy item
+            var latestItem = JSON.parse(JSON.stringify(item));
+            latestItem.contentItem.uuid = item.contentItem.uuid + '-latest';
+            latestItem.url = item.url + 'latest/';
+            latestItem.title = 'Latest';
+            latestItem.layout = 'policy-latest.hbs';
+            writeYamlAndJson(latestItem);
+            writeYamlAndJson(item);
+            callback();
         }
     };
 
@@ -224,8 +241,6 @@ module.exports = function(rootDir) {
                 writeYamlAndJson(item);
                 callback();
             }
-
-
         },
 
         // called when the content source will provide no more items

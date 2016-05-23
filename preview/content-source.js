@@ -45,7 +45,7 @@ module.exports = function(restler, renderer) {
    * @param item, the actual guide content
    * @param guidePageSlug, the leaf slug, which is presumably the guide page (sub guide item)
    */
-  function guidify(item, guidePageSlug) {
+  function handleGuide(item, guidePageSlug, callback) {
     var html = require('marked')(item.contentItem.content);
     var $ = require('cheerio').load(html);
     // iterate guide headers
@@ -60,6 +60,24 @@ module.exports = function(restler, renderer) {
         return;
       }
     });
+
+    if (item.contentItem.guidepageslug === undefined) {
+      // we do not recognise this guide page - return a 404
+      callback({ status: 404, message: 'Not found: ' + req.path});
+      return;
+    } else {
+      // this is a guide page
+      callback(null, item);
+      return;
+    }
+  }
+
+  function handlePolicy(item, callback) {
+    item.contentItem.uuid = item.contentItem.uuid + '-latest';
+    item.url = item.url += 'latest/';
+    item.title = 'Latest';
+    item.layout = 'policy-latest.hbs';
+    callback(null, item);
   }
 
   function fetchItem(req, auth, visibility, callback) {
@@ -68,7 +86,8 @@ module.exports = function(restler, renderer) {
         callback(null, item);
         return;
       }
-      // we got an error. Check if the parent is a guide or not.
+
+      // we got an error. If we have a parent then try that
       var route = req.path.split('/').filter(function(x) {
         return x.length;
       });
@@ -81,31 +100,29 @@ module.exports = function(restler, renderer) {
 
       var leaf = route.pop();
       var parentUrl = '/' + route.join('/') + '/';
-      loadContent(restler, parentUrl, auth, visibility, function(guideError, guideItem) {
+
+      // fetch the parent
+      loadContent(restler, parentUrl, auth, visibility, function(parentError, parentItem) {
 
         // we got an error trying to fetch the parent url
-        if (guideError) {
-          callback(guideError);
+        if (parentError) {
+          callback(parentError);
           return;
         }
 
-        // we fetch the parent but it is not a guide.
-        if (guideItem.layout !== 'guide.hbs') {
-          callback(error, null);
-          return;
-        }
-
-        // make sure that we found the item we are looking for
-        guidify(guideItem, leaf);
-
-        if (guideItem.contentItem.guidepageslug === undefined) {
-          // we do not recognise this guide page - return a 404
-          callback({ status: 404, message: 'Not found: ' + req.path});
-          return;
-        } else {
-          // this is a guide page
-          callback(null, guideItem);
-          return;
+        switch (parentItem.layout) {
+          case 'guide.hbs':
+            handleGuide(parentItem, leaf, callback);
+          break;
+          case 'policy.hbs':
+            if (config.policylatest.enabled === true) {
+              handlePolicy(parentItem, callback);
+            } else {
+              callback(parentError);
+            }
+          break;
+          default:
+            callback(error, null);
         }
       });
     });
