@@ -6,7 +6,7 @@
  **/
 module.exports = function () {
     return {
-    	handle : function (base, amphora, page, callback) {
+    	handle : function (base, amphora, page, mode, callback) {
     		var publication = amphora.publication;
     		publication[page.metadata.parentSlug] = publication[page.metadata.parentSlug] || [];
             var source = page.metadata.source;

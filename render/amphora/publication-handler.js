@@ -6,7 +6,7 @@
 module.exports = function () {
 
     return {
-    	handle : function (base, amphora, publication, callback) {
+    	handle : function (base, amphora, publication, mode, callback) {
     		// amphora is the context shared by all the handlers during execution per content item
     		// other handlers might manupulate this context
     		amphora.publication = publication.metadata.source;

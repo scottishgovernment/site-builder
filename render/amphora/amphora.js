@@ -2,8 +2,8 @@
  * Amphora Source - amphora items.
  * eozcan
  **/
-module.exports = function (config, target) {
-
+module.exports = function (config, mode) {
+    
     var fs = require('fs-extra');
     var restler = require('restler');
     var path = require('path');
@@ -34,8 +34,10 @@ module.exports = function (config, target) {
                 callback(data);
             } else {
                 if (data.metadata.required !== false) {
-                    var base =  path.join(target, data.metadata.namespace);
-                    fs.mkdirsSync(base);
+                    var base =  path.join('out', 'pages', data.metadata.namespace);
+                    if (mode !== 'preview') {
+                        fs.mkdirsSync(base);
+                    }
                     handleResource(amphora, data, base, callback);
                 } else {
                     callback();
@@ -48,7 +50,7 @@ module.exports = function (config, target) {
     // generage local copy of amphora resources by fetching the binaries
     // handle thumbnails if necessary
     function handleResource(amphora, resource, base, callback) {
-        handlers.select(resource.metadata.type).handle(base, amphora, resource, function() {
+        handlers.select(resource.metadata.type).handle(base, amphora, resource, mode, function() {
             async.each(resource.resources, function(child, sub) {
                 fetchResource(amphora, child.path, sub);
             }, callback);    
@@ -56,13 +58,13 @@ module.exports = function (config, target) {
     }
 
     return {
-    	handleAmphoraContent : function (item, callback) {
+    	handleAmphoraContent : function (item, currentPage, callback) {
     		if (item.contentItem._embedded.format['name'] === 'APS_PUBLICATION') {
                 // create new amphora
                 var amphora = {};
-                fetchResource(amphora, item.url, function () {
+                fetchResource(amphora, item.url,function () {
                     item.amphora = amphora;
-                    formatter.cleanup(target, item, function() {
+                    formatter.cleanup(item, mode, currentPage, function() {
                         callback();
                     });
                 });

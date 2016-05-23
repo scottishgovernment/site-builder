@@ -7,11 +7,14 @@ var yamlWriter = require('../publish/yaml-writer')('out/contentitems');
 var slugify = require('../publish/slugify');
 var doctorFormatter = require('../render/doctor-formatter')(config, 'pdfs');
 
+// 4 min inactive time out for a publication
+var amphoraCache = require('./amphora-cache')(4, config);
+
 module.exports = function(restler, renderer) {
 
   function url(source, visibility) {
     var endpoint = config.buildapi.endpoint.replace(/\/$/, '');
-    var base = endpoint + '/' + path.join('urlOrId', source);
+    var base = endpoint + '/' + path.join('urlOrId', amphoraCache.getUrl(source));
     return base + '?visibility=' + visibility;
   }
 
@@ -198,7 +201,7 @@ module.exports = function(restler, renderer) {
     });
   }
 
-  function postProcess(item, auth, visibility, callback) {
+  function postProcess(item, auth, visibility, req, callback) {
     async.series([
         // fetch related items
         function (cb) {
@@ -215,6 +218,11 @@ module.exports = function(restler, renderer) {
         // write doctor files
         function(cb) {
           doctorFormatter.formatDoctorFiles(item, cb);
+        },
+
+        // add amphora details
+        function(cb) {
+          amphoraCache.update(req, item, cb);
         }
       ],
 
@@ -233,7 +241,7 @@ module.exports = function(restler, renderer) {
         if (err) {
           callback(err);
         } else {
-          postProcess(item, auth, visibility, callback);
+          postProcess(item, auth, visibility, req, callback);
         }
       });
     }
