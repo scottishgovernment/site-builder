@@ -3,73 +3,65 @@
  * eozcan
  **/
 module.exports = function (config, mode) {
-    
-    var fs = require('fs-extra');
-    var restler = require('restler');
-    var path = require('path');
-    var async = require('async');
-    var formatter = require('./formatter')();
 
-    var handlers = {
-    	objects : {
-    	    'default' : require('./default-handler')(),
-    	    'publication' : require('./publication-handler')(),
-            'publication-page' : require('./publication-page-handler')(),
-            'publication-page-content' : require('./publication-page-content-handler')()
-        },
-        select : function(resourcetype) {
-        	var handler = this.objects[resourcetype];
-        	if (!handler) {
-        		handler = this.objects['default'];
-        	}
-        	return handler;
-        }
-    };
+    var restler = require('restler');
+    var async = require('async');
+    var formatter = require('./publication-formatter')();
+
+    var ph = require('./publication-handler')(mode);
+    var rh = require('./resource-handler')(mode);
+    var pch = require('./page-content-handler')(mode);
+    var dh = require('./download-handler')(mode);
 
      // fetch the resource from amphora with this location
     function fetchResource(amphora, location, callback) {
         var location = config.amphora.endpoint + location;
-        restler.get(location).on("complete", function(data, response) {
-            if (data instanceof Error || response.statusCode !== 200) {
-                callback(data);
+        restler.get(location).on("complete", function(resource, response) {
+            if (resource instanceof Error || response.statusCode !== 200) {
+                callback(resource);
             } else {
-                if (data.metadata.required !== false) {
-                    var base =  path.join('out', 'pages', data.metadata.namespace);
-                    if (mode !== 'preview') {
-                        fs.mkdirsSync(base);
-                    }
-                    handleResource(amphora, data, base, callback);
-                } else {
-                    callback();
-                }
+                handleResource (amphora, resource, callback);
             }
         });
     }
 
-    // handle each resource and the children recursively
-    // generage local copy of amphora resources by fetching the binaries
-    // handle thumbnails if necessary
-    function handleResource(amphora, resource, base, callback) {
-        handlers.select(resource.metadata.type).handle(base, amphora, resource, mode, function() {
-            async.each(resource.resources, function(child, sub) {
+    function handleResource(amphora, resource, callback) {
+        async.series([
+            function (cb) {
+               ph.handle(amphora, resource, cb);
+            },
+            function (cb) {
+               rh.handle(amphora, resource, cb);
+            },
+            function (cb) {
+               dh.handle(amphora, resource, cb);
+            },
+            function (cb) {
+               pch.handle(amphora, resource, cb);
+            }
+        ],
+        function (err, results) {
+           async.each(resource.resources, function(child, sub) {
                 fetchResource(amphora, child.path, sub);
-            }, callback);    
+            }, callback); 
         });
     }
 
     return {
-    	handleAmphoraContent : function (item, currentPage, callback) {
-    		if (item.contentItem._embedded.format['name'] === 'APS_PUBLICATION') {
-                // create new amphora
+    	handleAmphoraContent : function (item, callback, currentPage) {
+            if (item.contentItem._embedded.format['name'] !== 'APS_PUBLICATION') {
+                callback(null, item);
+            } else {
                 var amphora = {};
-                fetchResource(amphora, item.url,function () {
-                    item.amphora = amphora;
-                    formatter.cleanup(item, mode, currentPage, function() {
-                        callback();
-                    });
+                fetchResource(amphora, item.url, function(err) {
+                    if (err) {
+                        console.log(err);
+                        callback(err);
+                    } else {
+                        item.amphora = amphora;
+                        formatter.cleanup(item, mode, callback, currentPage);
+                    }
                 });
-    		} else {
-                callback();
             }
         }
     };
