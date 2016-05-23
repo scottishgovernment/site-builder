@@ -1,7 +1,7 @@
 module.exports = exports = function(timeout, config) {
     
 	var amphora = require('../render/amphora/amphora')(config, 'preview');
-	var formatter = require('../render/amphora/formatter')();
+	var formatter = require('../render/amphora/publication-formatter')();
     // 3 min
 	var inactiveTimeout = 60 * timeout * 1000; 
 
@@ -39,7 +39,7 @@ module.exports = exports = function(timeout, config) {
         	var aps = ((req.path + '/')).replace(/\/\//g, '/').match(reg);
             var currentPage = aps ? aps[2]: null;
         	if (!cacheItem  ||  n - cacheItem.stored > inactiveTimeout) { 
-        		amphora.handleAmphoraContent(item, currentPage, function() {
+        		amphora.handleAmphoraContent(item, function() {
         			if (item.amphora) {
         				cacheItem = {
         		    	    amphora: item.amphora,
@@ -48,13 +48,13 @@ module.exports = exports = function(timeout, config) {
         		        cache[item.url] = cacheItem;
         			}
         		    callback();
-        		});  
+        		}, currentPage);  
         	}  else if (cacheItem && cacheItem.amphora) {
         		item.amphora = JSON.parse(JSON.stringify(cacheItem.amphora));
-            	formatter.cleanup(item, 'preview', currentPage, function() {
+            	formatter.cleanup(item, 'preview', function() {
             		cacheItem.stored = n;
                     callback();
-                });
+                }, currentPage);
         	} else {
             	callback();
             }

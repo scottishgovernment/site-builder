@@ -216,6 +216,32 @@ module.exports = function(rootDir) {
             writeYamlAndJson(latestItem);
             writeYamlAndJson(item);
             callback();
+        },
+
+        APS_PUBLICATION: function(item, callback) {
+            writeYamlAndJson(item);
+            var clone = JSON.parse(JSON.stringify(item));
+            var pub = clone.amphora.publication;
+            var pages = pub.pages;
+            delete pub.pages;
+            pages.forEach(function(page) {
+                // make the url page url so we can generate yaml corresping the page namespace
+                clone.url  = page.url;
+                // update publication with the current page details (each page does it)
+                // all these iteration has to be synch otherwise new clone is required
+                pub.publicationSubPage = {
+                    content: page.content,
+                    index: page.index,
+                    prev: page.index === 0 ? null : page.index - 1,
+                    next: page.index === pub.toc.length -1 ? null : page.index + 1
+                };
+                if (pub.toc[page.index-1]) {
+                    delete pub.toc[page.index-1].current;
+                }
+                pub.toc[page.index].current = true;
+                writeYamlAndJson(clone);
+            });
+            callback();
         }
     };
 
