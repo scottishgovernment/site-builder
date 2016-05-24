@@ -23,7 +23,7 @@ module.exports = function (mode ) {
     function addTitle(page) {
         var dom = cheerio.load(page.content);
         dom('h3').each(function(index, element) {
-            page.title = dom(element).text();
+            page.title = dom(element).text().trim();
             return;
         });
     }

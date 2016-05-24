@@ -35,9 +35,8 @@ module.exports = function () {
 		// iterate pages and create a tocItem from respective page (amphora resource) details
 	    pub.pages.forEach(function(page) {
 	    	var tocItem = {
-	    		name: page.source.shortTitle,
-	    		url:page.url,
-                title: page.title
+	    		title: page.title || page.source.shortTitle,
+	    		url: page.url
 	    	}
 	    	pub.toc.push(tocItem);
 	    });
