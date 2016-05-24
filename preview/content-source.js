@@ -6,6 +6,7 @@ var formatter = require('../publish/item-formatter')(config.layoutstrategy);
 var yamlWriter = require('../publish/yaml-writer')('out/contentitems');
 var slugify = require('../publish/slugify');
 var doctorFormatter = require('../render/doctor-formatter')(config, 'pdfs');
+var policyLatestFormatter = require('../publish/policyLatestFormatter');
 
 // 4 min inactive time out for a publication
 var amphoraCache = require('./amphora-cache')(4, config);
@@ -119,7 +120,8 @@ module.exports = function(restler, renderer) {
           break;
           case 'policy.hbs':
             if (config.policylatest.enabled === true) {
-              handlePolicy(parentItem, callback);
+              var latestItem = policyLatestFormatter.formatLatest(parentItem);
+              callback(null, latestItem);
             } else {
               callback(parentError);
             }
