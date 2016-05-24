@@ -14,6 +14,7 @@ module.exports = exports = function() {
   return {
       formatLatest : function (item) {
         var latestItem = JSON.parse(JSON.stringify(item));
+        latestItem.uuid = item.contentItem.uuid + '-latest';
         latestItem.contentItem.uuid = item.contentItem.uuid + '-latest';
         latestItem.contentItem._embedded.parent = {
           uuid: item.contentItem.uuid,
