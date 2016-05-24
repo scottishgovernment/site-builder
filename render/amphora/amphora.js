@@ -52,13 +52,16 @@ module.exports = function (config, mode) {
             if (item.contentItem._embedded.format['name'] !== 'APS_PUBLICATION') {
                 callback(null, item);
             } else {
-                var amphora = {};
-                fetchResource(amphora, item.url, function(err) {
+                item.amphora = {
+                    publication: {
+                        pages:[]
+                    }
+                };
+                fetchResource(item.amphora, item.url, function(err) {
                     if (err) {
-                        console.log(err);
+                        console.log("Failed to fetch amphora resource: " + err);
                         callback(err);
                     } else {
-                        item.amphora = amphora;
                         formatter.cleanup(item, mode, callback, currentPage);
                     }
                 });
