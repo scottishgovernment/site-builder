@@ -3,10 +3,12 @@
 module.exports = exports = function() {
 
   function ancestorItem(item) {
-    var anc = {};
-    var props = ['uuid', 'url', 'title', 'sortBy', 'summary'];
-    props.forEach(function (prop) { anc[prop] = item[prop]; });
-    return anc;
+    return {
+      uuid: item.uuid,
+      url: item.url,
+      title: item.contentItem.title,
+      summary: item.contentItem.summary
+    };
   }
 
   return {
@@ -21,6 +23,7 @@ module.exports = exports = function() {
         latestItem.title = 'Latest';
         latestItem.ancestors.push(ancestorItem(item));
         latestItem.layout = 'policy-latest.hbs';
+        return latestItem;
       }
   };
 };

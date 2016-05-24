@@ -8,7 +8,7 @@ module.exports = function(rootDir) {
     var yaml = require('js-yaml');
     var slugify = require('./slugify');
     var config = require('config-weaver').config();
-    var policyLatestFormatter = require('./policyLatestFormatter');
+    var policyLatestFormatter = require('./policyLatestFormatter')();
 
     var context = {
         funding: {
@@ -209,7 +209,7 @@ module.exports = function(rootDir) {
             }
 
             // now write the latest' page for this policy item
-            var latestItem = policyLatestFormatter.formatLtest(item);
+            var latestItem = policyLatestFormatter.formatLatest(item);
             writeYamlAndJson(latestItem);
             writeYamlAndJson(item);
             callback();
