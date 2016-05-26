@@ -8,22 +8,21 @@ var config = require('config-weaver').config();
 
 
 if (config.amphora) {
-    // created proxy for the stored objects
-    // we don't need to download document on each request (i.e doctor does)
-    // documents, images will be served via amphora (for publications only)
     var proxy = require('express-http-proxy');
-
     var amphoraStorageProxy = proxy(config.amphora.host, {
         forwardPath: function (req, res) {
           return '/storage' + require('url').parse(req.baseUrl).path;
         }
     });
-
+    var amphoraResourceProxy = proxy(config.amphora.host, {
+        forwardPath: function (req, res) {
+          return require('url').parse(req.baseUrl).path;
+        }
+    });
+    app.use("/resource/publications/", amphoraResourceProxy);
     // the files will be served from amphora
     app.use("/publications/*.*", amphoraStorageProxy);
 }
-
-
 
 // create template engine to render fetched item
 var layouts = 'resources/templates/_layouts';
