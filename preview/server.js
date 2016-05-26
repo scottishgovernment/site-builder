@@ -19,7 +19,7 @@ if (config.amphora) {
           return require('url').parse(req.baseUrl).path;
         }
     });
-    app.use("/resource/publications/", amphoraResourceProxy);
+    app.use("/resource/publications/*", amphoraResourceProxy);
     // the files will be served from amphora
     app.use("/publications/*.*", amphoraStorageProxy);
 }
