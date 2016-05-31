@@ -1,6 +1,6 @@
 module.exports = exports = function(timeout, config) {
     
-	var amphora = require('../render/amphora/amphora')(config, 'preview');
+	var amphora = require('../render/amphora/amphora')(config);
 	var formatter = require('../render/amphora/publication-formatter')();
     // 3 min
 	var inactiveTimeout = 60 * timeout * 1000; 
@@ -51,7 +51,7 @@ module.exports = exports = function(timeout, config) {
         		}, currentPage);  
         	}  else if (cacheItem && cacheItem.amphora) {
         		item.amphora = JSON.parse(JSON.stringify(cacheItem.amphora));
-            	formatter.cleanup(item, 'preview', function() {
+            	formatter.cleanup(item, function() {
             		cacheItem.stored = n;
                     callback();
                 }, currentPage);

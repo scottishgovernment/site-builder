@@ -1,5 +1,5 @@
 
-module.exports = function (mdde) {
+module.exports = function () {
     return {
     	
         supports: function (resource) {
