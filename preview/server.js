@@ -5,6 +5,7 @@ var path = require('path');
 
 var config = require('config-weaver').config();
 
+process.mode = 'preview';
 
 
 if (config.amphora) {

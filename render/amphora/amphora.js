@@ -2,16 +2,18 @@
  * Amphora Source - amphora items.
  * eozcan
  **/
-module.exports = function (config, mode) {
+module.exports = function (config) {
+
+    process.mode  = process.mode || 'site';
 
     var restler = require('restler');
     var async = require('async');
     var formatter = require('./publication-formatter')();
 
-    var ph = require('./publication-handler')(mode);
-    var rh = require('./resource-handler')(mode);
-    var pch = require('./page-content-handler')(mode);
-    var dh = require('./download-handler')(mode);
+    var ph = require('./publication-handler')();
+    var rh = require('./resource-handler')();
+    var pch = require('./page-content-handler')();
+    var dh = require('./download-handler')();
 
      // fetch the resource from amphora with this location
     function fetchResource(amphora, location, callback) {
@@ -62,7 +64,7 @@ module.exports = function (config, mode) {
                         console.log("Failed to fetch amphora resource: " + err);
                         callback(err);
                     } else {
-                        formatter.cleanup(item, mode, callback, currentPage);
+                        formatter.cleanup(item, callback, currentPage);
                     }
                 });
             }

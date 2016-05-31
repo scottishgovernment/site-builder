@@ -1,4 +1,5 @@
-module.exports = function (mode) {
+module.exports = function () {
+    
     var fs = require('fs-extra');
     var path = require('path');
     var http = require('http');
@@ -20,7 +21,7 @@ module.exports = function (mode) {
     return  {
 
         supports: function(resource) {
-            return mode !== 'preview' && resource.metadata.required !== false 
+            return process.mode  !== 'preview' && resource.metadata.required !== false 
                 && resource.metadata.type !== 'publication-page-content' 
                 && (resource._links.inline && resource.storage);
         },

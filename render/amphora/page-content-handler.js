@@ -1,5 +1,5 @@
 
-module.exports = function (mode ) {
+module.exports = function () {
  
     var http = require('http');
 

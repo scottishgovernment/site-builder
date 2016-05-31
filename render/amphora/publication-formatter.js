@@ -54,7 +54,7 @@ module.exports = function () {
 	}
 
     return {
-    	cleanup : function (item, mode, callback, currentPage) {
+    	cleanup : function (item, callback, currentPage) {
     		var pub = item.amphora.publication;
     		// delete images which is not required by hbs
     		delete pub.images;
@@ -63,7 +63,7 @@ module.exports = function () {
             // create table of contents
     		createToc(pub, currentPage);
             // create content for search index
-            if (mode !== 'preview') {
+            if (process.mode !== 'preview') {
                 createHtmlContent(item, pub);
             }  
     		callback(null , item);

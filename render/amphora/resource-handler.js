@@ -1,4 +1,4 @@
-module.exports = function (mode) {
+module.exports = function () {
 
     function mapResource(amphora, resource) {
         var pub = amphora.publication;
