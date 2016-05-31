@@ -10,11 +10,6 @@ module.exports = exports = function(config, target) {
 
     function writeDocument(dir, item, document, callback) {
       var filename = path.join(dir, path.basename(document.doctor.originalName));
-      document.doctor.filename = filename;
-      // MGS-1099 for backwards compatibility with the hbs file
-      if (document.uuid === item.documents[0].uuid) {
-        item.doctor.filename = path.join(item.url, path.basename(document.doctor.originalName));
-      }
       var stream = fs.createWriteStream(filename);
       var doctorURL = config.doctor.url + document.doctor.uuid + '/document';
       http.get(doctorURL, function(response) {
@@ -60,23 +55,20 @@ module.exports = exports = function(config, target) {
                 var doctorUrl = config.doctor.url + document.externalDocumentId;
                 restler.get(doctorUrl).on('complete', function(data, response) {
                     if (data instanceof Error || response.statusCode !== 200) {
-                        console.log("Unable to fetch the json for " + doctorUrl);
-                        console.log(JSON.stringify(data, null, '\t'));
-                        documentsCallback(data, null);
-                        return;
+                      console.log("Unable to fetch the json for " + doctorUrl);
+                      console.log(JSON.stringify(data, null, '\t'));
+                      documentsCallback(data, null);
+                      return;
                     }
-
                     var dir = path.join('out', target, item.url);
                     fs.ensureDirSync(dir);
 
-                    // add doctor fields to the document
                     document.doctor = data;
-                    document.doctor.filename = data.originalName;
-
-                    // MGS-1099 for backwards compatibility with the hbs file
-                    // keeping these fields, setting to the first document..
+                    document.doctor.filename = path.join(item.url, path.basename(data.originalName));
+                    // MGS-1099 for backwards compatibility setting doctor 
+                    // content of first document as contentItem.doctor field.
                     if (document.uuid === item.documents[0].uuid) {
-                        item.doctor = data;
+                      item.doctor = document.doctor;
                     }
 
                     async.series([
