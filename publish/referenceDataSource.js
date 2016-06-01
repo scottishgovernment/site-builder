@@ -5,7 +5,7 @@ module.exports = function (config, path) {
 
     var restler = require('restler');
     var async = require('async');
-    var fs = process.fs || require('fs');
+    var fs = process.previewCache || require('fs');
     var authtoken;
 
     function fetchList(memo, item, callback) {
