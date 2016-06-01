@@ -4,6 +4,9 @@ var config = require('config-weaver').config();
 var restler = require('restler');
 var myArgs = require('optimist').argv;
 var contentItems;
+
+process.mode = 'site';
+
 //If we have an IDs, then put them in an array for later
 if (myArgs.ids) {
     contentItems = String(myArgs.ids).split(",") || undefined;
