@@ -85,7 +85,10 @@ module.exports = function(restler, renderer) {
   }
 
   function fetchItem(req, auth, visibility, callback) {
-    process.previewCache.context = {auth: auth, visibility:visibility, resolve: url, formatter: formatter};
+    if (process.previewCache) {
+      process.previewCache.context = 
+          {auth: auth, visibility:visibility, resolve: url, formatter: formatter};
+    }
     loadContent(restler, req.path, auth, visibility, function(error, item) {
       if (!error) {
         callback(null, item);
