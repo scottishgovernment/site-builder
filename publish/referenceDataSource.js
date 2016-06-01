@@ -5,7 +5,7 @@ module.exports = function (config, path) {
 
     var restler = require('restler');
     var async = require('async');
-    var fs = require('fs');
+    var fs = process.fs || require('fs');
     var authtoken;
 
     function fetchList(memo, item, callback) {
@@ -71,6 +71,7 @@ module.exports = function (config, path) {
                             var lists = JSON.parse(data);
                             async.reduce(lists.lists, {}, fetchList,
                                 function (err, result) {
+
                                     fs.writeFile(path, JSON.stringify(result, null, '\t'), callback);
                                 });
                         } catch (error) {
