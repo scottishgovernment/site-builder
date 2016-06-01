@@ -1,5 +1,7 @@
 module.exports = exports = function() {
 
+    var fs = require('fs');
+
     var timeout = 60000;
     var request = require('sync-request');
 
@@ -34,31 +36,46 @@ module.exports = exports = function() {
           stored: new Date().getTime(), 
           data: value
         };
+        return cache[key];
       }
     };
     
     return {
 
       mkdirsSync: function(key) {
-        // no op
+        if (key.indexOf('out/') !== 0) {
+          fs.mkdirsSync(key);
+        }
       }, 
 
       writeFile: function (key, value, callback) {
-        store(key, value);
-        callback();
+        if (key.indexOf('out/') === 0) {
+          store(key, value);
+          callback();
+        } else {
+          fs.writeFile(key, value, callback);
+        }
       },
        
       readFileSync: function(key) {
-        clean();
-        var cacheItem =  cache[key];
-        if (!cacheItem) {
-          store(key, getContent(key));
+        if (key.indexOf('out/') === 0) {
+          clean();
+          var cacheItem =  cache[key] || cache[key.replace('-latest', '')];
+          if (!cacheItem) {
+            cacheItem = store(key, getContent(key));
+          }
+          return cacheItem.data;
+        } else {
+          return fs.readFileSync(key);
         }
-        return cache[key].data;
       }, 
        
       writeFileSync: function(key, value) {
-        store(key, value);
+        if (key.indexOf('out/') === 0) {
+          store(key, value);
+        } else {
+          fs.writeFileSync(key, value);
+        }
       }
     };
 };
