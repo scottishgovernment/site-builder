@@ -71,7 +71,6 @@ module.exports = function (config, path) {
                             var lists = JSON.parse(data);
                             async.reduce(lists.lists, {}, fetchList,
                                 function (err, result) {
-
                                     fs.writeFile(path, JSON.stringify(result, null, '\t'), callback);
                                 });
                         } catch (error) {
