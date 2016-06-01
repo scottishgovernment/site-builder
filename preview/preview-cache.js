@@ -1,7 +1,5 @@
 module.exports = exports = function() {
 
-    var fs = require('fs');
-
     var timeout = 60000;
     var request = require('sync-request');
 
@@ -17,24 +15,26 @@ module.exports = exports = function() {
     };
 
     function getContent(key) {
+      var context  = process.previewCache.context;
       var slug = key.replace(
         'out/pages', '').replace(
         'out/contentitems', '').replace(
         'index.json', '').replace(
         '.json', '');
-      var context = process.previewContext;
       var res = request('GET', context.resolve(slug, context.visibility));
       var item = context.formatter.format(JSON.parse(res.getBody('utf8')));
       item.body = item.contentItem.content;
-      // TODO handle postprocess synchronously
       return JSON.stringify(item);
     };
 
     function store(key, value) {
-      cache[key] = {
-        stored: new Date().getTime(), 
-        data: value
-      };
+      // store json only
+      if (key.indexOf('.json') > 0 ) {
+        cache[key] = {
+          stored: new Date().getTime(), 
+          data: value
+        };
+      }
     };
     
     return {
