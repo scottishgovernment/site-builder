@@ -21,7 +21,7 @@ module.exports = exports = function() {
         'out/contentitems', '').replace(
         'index.json', '').replace(
         '.json', '');
-      var res = request('GET', context.resolve(slug, context.visibility));
+      var res = request('GET', context.resolve(slug, context.visibility), context.auth);
       var item = context.formatter.format(JSON.parse(res.getBody('utf8')));
       item.body = item.contentItem.content;
       return JSON.stringify(item);
