@@ -217,6 +217,12 @@ module.exports = function(rootDir) {
 
         APS_PUBLICATION: function(item, callback) {
             writeYamlAndJson(item);
+
+            if (!item.amphora) {
+              callback();
+              return;
+            }
+
             var clone = JSON.parse(JSON.stringify(item));
             var pub = clone.amphora.publication;
             var pages = pub.pages;
