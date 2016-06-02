@@ -6,7 +6,6 @@ var path = require('path');
 var config = require('config-weaver').config();
 
 process.mode = 'preview';
-process.previewCache = require('./preview-cache')();
 
 if (config.amphora) {
     var proxy = require('express-http-proxy');
