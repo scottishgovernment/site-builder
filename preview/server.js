@@ -20,10 +20,8 @@ if (config.amphora) {
         }
     });
     app.use("/resource/publications/*", amphoraResourceProxy);
-    // the files will be served from amphora
-    // This conflicts with non-aps publicatoins
-    // Disabled amphora storage proxy and will handle this with aps publications url rewrite tasks
-    // app.use("/publications/*.*", amphoraStorageProxy);
+    app.use("/publications/**/documents/*.*", amphoraStorageProxy);
+    app.use("/publications/**/images/*.*", amphoraStorageProxy);
 }
 
 // create template engine to render fetched item
