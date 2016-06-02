@@ -44,8 +44,6 @@ module.exports = function (searchURL) {
                 });
             }
             contentItem.filterDate = item.filterDate;
-            contentItem.amphora = item.amphora;
-
 
             restler.putJson(searchURL, contentItem)
                 .on('complete', function(err) {
