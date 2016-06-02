@@ -34,7 +34,6 @@
     "restler": "^3.4.0",
     "simplecrawler-referrer-filter": "^0.3.1-1.1",
     "slug": "^0.9.1",
-    "sync-request": "^2.2.0",
     "yfm": "^0.2.0"
   },
   "devDependencies": {
