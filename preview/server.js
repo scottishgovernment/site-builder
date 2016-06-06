@@ -7,6 +7,13 @@ var config = require('config-weaver').config();
 
 process.mode = 'preview';
 
+
+// TODO
+// The amphora secrion contains site specific details just to handle aps publications
+// It is currently a tactical solution to handle preview for aps publications which a
+// publication might consist of many resources need to be proxies
+// The proxy will be moved to nginx soon or a better way to handle resources will be investigated
+// (without being downloaded by preview server before serving) 
 if (config.amphora) {
     var proxy = require('express-http-proxy');
     var amphoraStorageProxy = proxy(config.amphora.host, {
