@@ -46,6 +46,7 @@ module.exports = function () {
         	pub.toc[index].current = true;
             pub.publicationSubPage = {
 	            content: pub.pages[index].content,
+                title: pub.pages[index].title,
 	    	    index: index,
 	    	    prev: index === 0 ? null : index - 1,
 	    	    next: index === pub.toc.length - 1 ?  null : index + 1  
