@@ -228,13 +228,14 @@ module.exports = function(rootDir) {
             var pages = pub.pages;
             delete pub.pages;
             pages.forEach(function(page) {
-                // make the url page url so we can generate yaml corresping the page namespace
+                // make the url page url so we can generate yaml corresponding the page namespace
                 clone.url  = page.url;
                 // update publication with the current page details (each page does it)
                 // all these iteration has to be synch otherwise new clone is required
                 pub.publicationSubPage = {
                     content: page.content,
                     index: page.index,
+                    title: page.title,
                     prev: page.index === 0 ? null : page.index - 1,
                     next: page.index === pub.toc.length -1 ? null : page.index + 1
                 };
