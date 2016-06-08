@@ -4,11 +4,12 @@
 module.exports = function(rootDir) {
 
     var path = require('path');
-    var fs = require('fs-extra');
+    var fs = process.previewCache || require('fs-extra');
     var yaml = require('js-yaml');
     var slugify = require('./slugify');
     var config = require('config-weaver').config();
     var policyLatestFormatter = require('./policyLatestFormatter')();
+
 
     var context = {
         funding: {
