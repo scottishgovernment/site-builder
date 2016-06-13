@@ -9,6 +9,7 @@ module.exports = function () {
 
 	function moveThumbnails(pub) {
         pub.documents = pub.documents || [];
+        reOrderDocuments(pub);
         pub.thumbnails = pub.thumbnails || [];
         // find respective document using _createdFor metadata
 		pub.thumbnails.forEach(function(thumb) {
@@ -21,6 +22,13 @@ module.exports = function () {
 		});
         delete pub.thumbnails;
 	}
+
+    function reOrderDocuments(pub) {
+        // the pdfs should go top
+        pub.documents.sort(function (a, b) {
+            return b.filename.lastIndexOf('.pdf') - a.filename.lastIndexOf('.pdf');
+        });
+    }
 
     function createHtmlContent(item, pub) {
         item.contentItem.htmlContent = pub.pages.reduce(
