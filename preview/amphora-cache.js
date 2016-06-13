@@ -7,7 +7,7 @@ module.exports = exports = function(timeout, config) {
 
 	var cache = {};
 
-	var reg = /publications\/(.*)?\/pages\/(.*)?\//;
+	var reg = /publications\/(.*)?\/pages\/(.*)?\/$/;
 
     // clean up cache from inactive amphoras
 	function clean (n) {
@@ -26,7 +26,7 @@ module.exports = exports = function(timeout, config) {
        // if url matches publication page
        // page part is removed from url
     	getUrl : function(source) {
-    		var aps = ((source + '/')).replace(/\/\//g, '/').match(reg);
+    		var aps = source.replace(/\/\//g, '/').match(reg);
             return aps ? '/publications/' + aps[1] + '/' : source;
     	},
          
