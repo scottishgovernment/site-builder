@@ -229,24 +229,24 @@ module.exports = function(rootDir) {
             var pages = pub.pages;
             delete pub.pages;
             pages.forEach(function(page) {
-                // make the url page url so we can generate yaml corresponding the page namespace
-                clone.url  = page.url;
-                // update publication with the current page details (each page does it)
-                // all these iteration has to be synch otherwise new clone is required
-                pub.publicationSubPage = {
-                    content: page.content,
-                    index: page.index,
-                    title: page.title,
-                    prev: page.index === 0 ? null : page.index - 1,
-                    next: page.index === pub.toc.length - 1 ? null : page.index + 1
-                };
-                if (pub.toc[page.index - 1]) {
-                    delete pub.toc[page.index - 1].current;
+                if (pub.toc[page.index].visible) {
+                    // make the url page url so we can generate yaml corresponding the page namespace
+                    clone.url  = page.url;
+                    // update publication with the current page details (each page does it)
+                    // all these iteration has to be synch otherwise new clone is required
+                    pub.publicationSubPage = {
+                        content: page.content,
+                        index: page.index,
+                        title: page.title,
+                        prev: page.index === 0 ? null : (pub.toc[page.index - 1].visible ? page.index - 1 : null),
+                        next: page.index === pub.toc.length - 1 ? null : page.index + 1
+                    };
+                    if (pub.toc[page.index - 1]) {
+                        delete pub.toc[page.index - 1].current;
+                    }
+                    pub.toc[page.index].current = true;
+                    writeYamlAndJson(clone);
                 }
-                if (pub.toc[page.index]) {
-                     pub.toc[page.index].current = true;
-                }
-                writeYamlAndJson(clone);
             });
             callback();
         }

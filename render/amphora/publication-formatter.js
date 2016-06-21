@@ -50,17 +50,19 @@ module.exports = function () {
 
 	function createToc(pub, currentPage) {
         var index = parseInt(currentPage || 0);
-        index = (index === 0 && pub.pages[index].title === 'Contents' ? 1 : index)
 		pub.toc = [];
 		pub.pages = pub.pages || [];
 		// iterate pages and create a tocItem from respective page (amphora resource) details
 	    pub.pages.forEach(function(page) {
 	    	var tocItem = {
 	    		title: page.title || page.source.shortTitle,
-	    		url: page.url
+	    		url: page.url,
+                visible: page.title !== 'Contents'
 	    	}
             pub.toc.push(tocItem);
 	    });
+        
+        index = pub.toc[index].visible ? index : index + 1;
         // by default page zero is current page, if the first page is content page, it will be removed
 	    // default content for the publication is first page as well.
         if (pub.toc[index]) { 
@@ -72,9 +74,6 @@ module.exports = function () {
 	    	    prev: index === 0 ? null : index - 1,
 	    	    next: index === pub.toc.length - 1 ?  null : index + 1  
 	        }
-        }
-        if (pub.toc[0] && pub.toc[0].title === 'Contents') {
-            delete pub.toc[0];
         }
 	}
 
