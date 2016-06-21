@@ -238,10 +238,10 @@ module.exports = function(rootDir) {
                     index: page.index,
                     title: page.title,
                     prev: page.index === 0 ? null : page.index - 1,
-                    next: page.index === pub.toc.length -1 ? null : page.index + 1
+                    next: page.index === pub.toc.length - 1 ? null : page.index + 1
                 };
-                if (pub.toc[page.index-1]) {
-                    delete pub.toc[page.index-1].current;
+                if (pub.toc[page.index - 1]) {
+                    delete pub.toc[page.index - 1].current;
                 }
                 pub.toc[page.index].current = true;
                 writeYamlAndJson(clone);
