@@ -24,10 +24,22 @@ module.exports = function () {
 	}
 
     function reOrderDocuments(pub) {
-        // the pdfs should go top
+        title = pub.title.trim().replace(/\s+/g, ' ').split(' ');
         pub.documents.sort(function (a, b) {
-            return b.filename.lastIndexOf('.pdf') - a.filename.lastIndexOf('.pdf');
+            return wordCount(title, b) - wordCount(title, a);
         });
+        pub.documents.sort(function (a, b) {
+           return b.filename.lastIndexOf('.pdf') - a.filename.lastIndexOf('.pdf');
+        });
+    }
+
+    function wordCount(title, document) {
+        words = document.source.title.trim().replace(/\s+/g, ' ').split(' ');
+        var wordCount = 0;
+        words.forEach(function(source, i) {
+            source === title[i] ? wordCount++ : wordCount--;
+        });
+        return wordCount;
     }
 
     function createHtmlContent(item, pub) {
