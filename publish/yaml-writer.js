@@ -243,7 +243,9 @@ module.exports = function(rootDir) {
                 if (pub.toc[page.index - 1]) {
                     delete pub.toc[page.index - 1].current;
                 }
-                pub.toc[page.index].current = true;
+                if (pub.toc[page.index]) {
+                     pub.toc[page.index].current = true;
+                }
                 writeYamlAndJson(clone);
             });
             callback();
