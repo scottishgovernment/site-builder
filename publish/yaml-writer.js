@@ -46,7 +46,7 @@ module.exports = function(rootDir) {
         fs.writeFileSync(path.join(dir, 'index.json'), jsonText);
     };
 
-    var writeGuideItem = function (item) {
+    var writeContentItem = function (item) {
         var yamlText = itemAsYaml(item);
         var jsonText = JSON.stringify(item, null, 4);
         var base = path.join(rootDir, item.contentItem.uuid);
@@ -54,10 +54,10 @@ module.exports = function(rootDir) {
         fs.writeFileSync(base + '.json', jsonText);
     };
 
-    var writeGuidePage = function (item) {
+    var writeContentPage = function (item) {
         var yamlText = itemAsYaml(item);
         var jsonText = JSON.stringify(item, null, 4);
-        var dir = path.join('out/pages', item.url);
+        var dir = path.join('out', 'pages', item.url);
         fs.mkdirsSync(dir);
         fs.writeFileSync(path.join(dir, 'index.yaml'), yamlText);
         fs.writeFileSync(path.join(dir, 'index.json'), jsonText);
@@ -180,8 +180,8 @@ module.exports = function(rootDir) {
         },
 
         GUIDE: function(item, callback) {
-            writeGuideItem(item);
-            writeGuidePage(item);
+            writeContentItem(item);
+            writeContentPage(item);
 
             var url = item.url;
             var html = require('marked')(item.contentItem.content);
@@ -194,7 +194,7 @@ module.exports = function(rootDir) {
                 item.contentItem['guidepageslug'] = slug;
                 item.url = url + slug + '/';
                 item.canonicalurl = !index ? url : item.url;
-                writeGuidePage(item);
+                writeContentPage(item);
             });
 
             item.canonicalurl = url;
@@ -245,7 +245,7 @@ module.exports = function(rootDir) {
                         delete pub.toc[page.index - 1].current;
                     }
                     pub.toc[page.index].current = true;
-                    writeYamlAndJson(clone);
+                    writeContentPage(clone);
                 }
             });
             callback();
