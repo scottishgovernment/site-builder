@@ -62,19 +62,21 @@ module.exports = function () {
 	    	}
             pub.toc.push(tocItem);
 	    });
-        
-        index = pub.toc[index].visible ? index : index + 1;
-        // by default page zero is current page, if the first page is content page, it will be removed
-	    // default content for the publication is first page as well.
-        if (pub.toc[index]) { 
-        	pub.toc[index].current = true;
-            pub.publicationSubPage = {
-	            content: pub.pages[index].content,
-                title: pub.pages[index].title,
-	    	    index: index,
-	    	    prev: index === 0 ? null : index - 1,
-	    	    next: index === pub.toc.length - 1 ?  null : index + 1  
-	        }
+
+        if (pub.toc[index]) {
+            index = pub.toc[index].visible ? index : index + 1;
+            // by default page zero is current page, if the first page is content page, it will be removed
+            // default content for the publication is first page as well.
+            if (pub.toc[index]) { 
+                pub.toc[index].current = true;
+                pub.publicationSubPage = {
+                    content: pub.pages[index].content,
+                    title: pub.pages[index].title,
+                    index: index,
+                    prev: index === 0 ? null : index - 1,
+                    next: index === pub.toc.length - 1 ?  null : index + 1  
+                }
+            }
         }
 	}
 
