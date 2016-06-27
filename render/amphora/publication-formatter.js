@@ -57,7 +57,8 @@ module.exports = function () {
 	    	var tocItem = {
 	    		title: page.title || page.source.shortTitle,
 	    		url: page.url,
-                visible: page.title !== 'Contents' && page.title !== 'Table of contents'
+                visible: page.title.toLowerCase() !== 'contents' 
+                     && page.title.toLowerCase() !== 'table of contents'
 	    	}
             pub.toc.push(tocItem);
 	    });

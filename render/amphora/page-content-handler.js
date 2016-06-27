@@ -21,11 +21,10 @@ module.exports = function () {
     }
 
     function addTitle(page) {
-        var dom = cheerio.load(page.content);
-        dom('h3').each(function(index, element) {
-            page.title = dom(element).text().trim();
-            return;
-        });
+        var title = cheerio.load(page.content).('h3').next();
+        if (title) {
+            page.title = title.trim();
+        }
     }
     
     return {
