@@ -21,7 +21,7 @@ module.exports = function () {
     }
 
     function addTitle(page) {
-        var title = cheerio.load(page.content).('h3').next();
+        var title = cheerio.load(page.content)('h3').next();
         if (title) {
             page.title = title.trim();
         }
