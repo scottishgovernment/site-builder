@@ -65,7 +65,7 @@ module.exports = exports = function(config, target) {
 
                     document.doctor = data;
                     document.doctor.filename = path.join(item.url, path.basename(data.originalName));
-                    // MGS-1099 for backwards compatibility setting doctor 
+                    // MGS-1099 for backwards compatibility setting doctor
                     // content of first document as contentItem.doctor field.
                     if (document.uuid === item.documents[0].uuid) {
                       item.doctor = document.doctor;

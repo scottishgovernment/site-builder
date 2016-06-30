@@ -9,7 +9,7 @@ module.exports = function (config, contentFormatter, contentHandler) {
     var doctorFormatter = require('../render/doctor-formatter')(config, 'pages');
 
    var amphora = require('../render/amphora/amphora')(config);
-    
+
     // return a url for this item (if empty then will return the url for all items)
     function url(id) {
         return config.buildapi.endpoint + 'items/' + id + '?visibility=siteBuild';
@@ -76,4 +76,3 @@ module.exports = function (config, contentFormatter, contentHandler) {
         }
     };
 };
-
