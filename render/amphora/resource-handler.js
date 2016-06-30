@@ -29,10 +29,13 @@ module.exports = function () {
     return  {
 
         supports: function (resource) {
-            return resource.metadata.required !== false 
-                && resource.metadata.type !== 'publication-page-content' 
-                &&  (resource.metadata.type === 'publication-page' 
-                    || (resource._links.inline && resource.storage)); 
+            if (resource.metadata.required === false) {
+                return false;
+            }
+            var downloadable = resource._links.inline && resource.storage;
+            var pageContent = resource.metadata.type === 'publication-page-content';
+            var page = resource.metadata.type === 'publication-page';
+            return !pageContent &&  (page || downloadable); 
         }, 
 
         handle : function (amphora, resource, callback) {
