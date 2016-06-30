@@ -154,7 +154,9 @@ module.exports = function(restler, renderer) {
          });
        }  else {
            // MGS-1116, showing error message if policy details does not have parent
-           callback({message: 'Please assign parent to preview this content item (' + item.uuid + ')'});
+           callback({
+             message: 'Please assign parent to preview this content item (' + item.uuid + ')'
+           });
        }
     } else {
       writeRelatedItems(relsToFetch, auth, visibility, callback);
