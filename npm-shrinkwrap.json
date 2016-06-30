@@ -966,7 +966,7 @@
       }
     },
     "grunt-sonar-runner": {
-      "version": "2.4.6"
+      "version": "2.4.7"
     },
     "handlebars": {
       "version": "4.0.5",
@@ -1451,9 +1451,7 @@
                   "version": "1.0.4",
                   "dependencies": {
                     "nan": {
-                      "version": "2.3.5",
-                      "from": "nan@>=2.0.9 <3.0.0",
-                      "resolved": "http://repo.digital.gov.uk/content/groups/npm-all/nan/-/nan-2.3.5.tgz"
+                      "version": "2.3.5"
                     },
                     "node-pre-gyp": {
                       "version": "0.6.9",
@@ -1950,9 +1948,7 @@
             }
           }
         }
-      },
-      "from": "sync-request@2.2.0",
-      "resolved": "http://repo.digital.gov.uk/content/groups/npm-all/sync-request/-/sync-request-2.2.0.tgz"
+      }
     },
     "temp": {
       "version": "0.8.3",
