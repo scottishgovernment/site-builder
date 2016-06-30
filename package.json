@@ -38,7 +38,7 @@
     "yfm": "^0.2.0"
   },
   "devDependencies": {
-    "body-parser": "^1.15.0",
+    "body-parser": "^1.15.2",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-istanbul": "^0.7.0",
     "grunt-jasmine-node": "^0.3.1",
