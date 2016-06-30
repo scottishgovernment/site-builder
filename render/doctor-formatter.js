@@ -43,7 +43,7 @@ module.exports = exports = function(config, target) {
         // for a content item, fetch meta data from doctor and write out any pdf and jpg files
         formatDoctorFiles: function(item, parentCallback) {
             item.documents = item.contentItem._embedded.documents;
-            if (!item.documents || item.documents.length == 0) {
+            if (!item.documents || item.documents.length === 0) {
                 // content item does not have any document references
                 parentCallback();
                 return;

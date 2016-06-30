@@ -5,7 +5,6 @@ module.exports = function(root, baseUrl) {
 
     var fs = require('fs-extra');
     var marked = require('marked');
-    var config = require('config-weaver').config();
 
     var sitemaps = {};
 

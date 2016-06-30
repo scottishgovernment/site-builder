@@ -17,7 +17,9 @@ module.exports = function () {
         if (resource.storage) {
             source.details = resource.storage.metadata;
             source.url = source.namespace + source.filename;
-            source.title = source.title || source.filename;
+            if (!source.title || !source.title.trim()) {
+                source.title = source.filename;
+            } 
         }  else {
             source.url = source.path;
         }
