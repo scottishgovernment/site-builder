@@ -9,7 +9,7 @@ module.exports = function () {
             return a.index - b.index;
         });
     }
-  
+
     function createSource(resource) {
         var source = resource.metadata || {};
         source.path = resource.path;
@@ -19,7 +19,7 @@ module.exports = function () {
             source.url = source.namespace + source.filename;
             if (!source.title || !source.title.trim()) {
                 source.title = source.filename;
-            } 
+            }
         }  else {
             source.url = source.path;
         }
@@ -35,8 +35,8 @@ module.exports = function () {
             var downloadable = resource._links.inline && resource.storage;
             var pageContent = resource.metadata.type === 'publication-page-content';
             var page = resource.metadata.type === 'publication-page';
-            return !pageContent &&  (page || downloadable); 
-        }, 
+            return !pageContent &&  (page || downloadable);
+        },
 
         handle : function (amphora, resource, callback) {
             if (this.supports(resource)) {

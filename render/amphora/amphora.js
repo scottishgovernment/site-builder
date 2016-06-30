@@ -45,12 +45,12 @@ module.exports = function (config) {
         function (err, results) {
            async.each(resource.resources, function(child, sub) {
                 fetchResource(amphora, child.path, sub);
-            }, callback); 
+            }, callback);
         });
     }
 
     return {
-    	handleAmphoraContent : function (item, callback, currentPage) {
+        handleAmphoraContent : function (item, callback, currentPage) {
             if (item.contentItem._embedded.format['name'] !== 'APS_PUBLICATION') {
                 callback(null, item);
             } else {

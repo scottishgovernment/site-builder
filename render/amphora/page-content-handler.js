@@ -1,6 +1,5 @@
-
 module.exports = function () {
- 
+
     var http = require('http');
 
     var cheerio = require('cheerio');
@@ -26,15 +25,15 @@ module.exports = function () {
             page.title = title.text().trim();
         }
     }
-    
+
     return {
 
         supports: function (resource) {
-            return resource.metadata.required !== false 
+            return resource.metadata.required !== false
                 && resource.metadata.type === 'publication-page-content';
         },
 
-    	handle : function (amphora, resource, callback) {
+        handle : function (amphora, resource, callback) {
             if (this.supports(resource)) {
                 var publication = amphora.publication;
                 var page = publication.pages[resource.metadata.parentSlug];
@@ -45,4 +44,3 @@ module.exports = function () {
         }
     };
 };
-
