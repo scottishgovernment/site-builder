@@ -59,7 +59,7 @@ module.exports = function () {
 	    		url: page.url,
                 visible: page.title.toLowerCase() !== 'contents' 
                      && page.title.toLowerCase() !== 'table of contents'
-	    	}
+	    	};
             pub.toc.push(tocItem);
 	    });
 
@@ -75,7 +75,7 @@ module.exports = function () {
                     index: index,
                     prev: index === 0 ? null : index - 1,
                     next: index === pub.toc.length - 1 ?  null : index + 1  
-                }
+                };
             }
         }
 	}

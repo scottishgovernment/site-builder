@@ -8,8 +8,8 @@ module.exports = exports = function() {
     var cache = {};
 
     function clean () {
-      for (var key in cache) { 
-        if (key !== 'out/referenceData.json' 
+      for (var key in cache) {
+        if (key !== 'out/referenceData.json'
           && new Date().getTime() - cache[key].stored > timeout) {
           delete cache[key];
         }
@@ -33,20 +33,20 @@ module.exports = exports = function() {
       // store json only
       if (key.indexOf('.json') > 0 ) {
         cache[key] = {
-          stored: new Date().getTime(), 
+          stored: new Date().getTime(),
           data: value
         };
         return cache[key];
       }
     };
-    
+
     return {
 
       mkdirsSync: function(key) {
         if (key.indexOf('out/') !== 0) {
           fs.mkdirsSync(key);
         }
-      }, 
+      },
 
       writeFile: function (key, value, callback) {
         if (key.indexOf('out/') === 0) {
@@ -56,7 +56,7 @@ module.exports = exports = function() {
           fs.writeFile(key, value, callback);
         }
       },
-       
+
       readFileSync: function(key) {
         if (key.indexOf('out/') === 0) {
           clean();
@@ -68,8 +68,8 @@ module.exports = exports = function() {
         } else {
           return fs.readFileSync(key);
         }
-      }, 
-       
+      },
+
       writeFileSync: function(key, value) {
         if (key.indexOf('out/') === 0) {
           store(key, value);

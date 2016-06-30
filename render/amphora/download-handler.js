@@ -21,9 +21,17 @@ module.exports = function () {
     return  {
 
         supports: function(resource) {
-            return process.mode  !== 'preview' && resource.metadata.required !== false 
-                && resource.metadata.type !== 'publication-page-content' 
-                && (resource._links.inline && resource.storage);
+            // do not download resources on preview
+            if (process.mode === 'preview') {
+                return false;
+            }
+            
+            var downloadable = resource._links.inline && resource.storage;
+            var required = resource.metadata.required !== false;
+            // page contents are already downloaded by page-content-handler
+            var pageContent = resource.metadata.type === 'publication-page-content';
+
+            return !pageContent && required && downloadable; 
         },
 
         handle : function (amphora, resource, callback) {
