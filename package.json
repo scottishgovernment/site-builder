@@ -1,6 +1,6 @@
 {
   "name": "site-builder",
-  "version": "0.0.0",
+  "version": "1.0.306",
   "description": "Static site builder for mygov.scot",
   "main": "index.js",
   "scripts": {
@@ -47,7 +47,7 @@
     "temp": "^0.8.1",
     "xml2js": "^0.4.16"
   },
-  "peerDependencies" : {
+  "peerDependencies": {
     "grunt": ">=0.4.5"
   },
   "publishConfig": {
