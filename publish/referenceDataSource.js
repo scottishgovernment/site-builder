@@ -41,14 +41,6 @@ module.exports = function (config, path) {
                 });
     }
 
-    function headers(authtoken) {
-        return {
-            headers: {
-                'Authorization': 'Bearer ' + authtoken
-            }
-        };
-    }
-
     function login(callback) {
         restler.postJson(config.authentication.endpoint,
             {
@@ -67,7 +59,10 @@ module.exports = function (config, path) {
 
     function fetchReferenceData(callback) {
         var url = config.publishing.endpoint + 'lists';
-        restler.get(url, headers(authtoken))
+        var headers = {
+            'Authorization': 'Bearer ' + authtoken
+        };
+        restler.get(url, { headers: headers })
                 .on('complete', function(data, response) {
                     if (data instanceof Error || response.statusCode !== 200) {
                         callback(data);
@@ -87,7 +82,6 @@ module.exports = function (config, path) {
     }
 
     return {
-
         writeReferenceData : function (callback) {
             login(
                 function() {
