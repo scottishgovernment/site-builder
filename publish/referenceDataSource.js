@@ -1,5 +1,6 @@
 /**
- * CReference data source - fetches and saves reference data (Lookup lists from publishing)
+ * Fetches and saves reference data from the publishing service.
+ * "Reference data" refers to lookup lists such as local authority regions.
  **/
 module.exports = function (config, path) {
 

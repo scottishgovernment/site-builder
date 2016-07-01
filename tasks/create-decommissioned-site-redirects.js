@@ -6,7 +6,7 @@ module.exports = function(grunt) {
     var config = require('config-weaver').config();
 
     var name = 'create-decommissioned-site-redirects';
-    var description = 'generate nginx config for decommissioned sites'
+    var description = 'generate nginx config for decommissioned sites';
 
     grunt.registerTask(name, description, function() {
         var release = this.async();
