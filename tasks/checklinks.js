@@ -151,7 +151,8 @@ module.exports = function(grunt) {
                 console.log('healthcheck disbaled' ['red'].bold);
                 return;
             }
-            var timeoutMillis = config.healthcheck.crawlTimeoutMins * 60 * 1000;
+            var timeoutMins = config.healthcheck.crawlTimeoutMins;
+            var timeoutMillis = timeoutMins * 60 * 1000;
             console.log('Timeout millis is ' + timeoutMillis);
             var release = this.async();
 
@@ -160,7 +161,7 @@ module.exports = function(grunt) {
                 var elapsed = now - lastActivity;
 
                 if (elapsed > timeoutMillis) {
-                    console.log(('No activity for ' + config.healthcheck.crawlTimeoutMins + ' mins, stopping')['red'].bold);
+                    console.log(('No activity for ' + timeoutMins + ' mins, stopping')['red'].bold);
                     release();
                 }
             }

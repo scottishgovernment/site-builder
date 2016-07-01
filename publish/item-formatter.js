@@ -154,7 +154,7 @@ module.exports = exports = function(layoutstrategy) {
     function redactLinks(o) {
         delete o.links;
         for (var i in o) {
-            if (o[i] !== null && typeof(o[i]) === 'object') {
+            if (o[i] !== null && typeof o[i] === 'object') {
                 redactLinks(o[i]);
             }
         }
@@ -171,10 +171,9 @@ module.exports = exports = function(layoutstrategy) {
             redactLinks(item);
 
             // assign a page title (meta page title if set, title otherwise)
-            item.pagetitle = item.contentItem.metapagetitle ? item.contentItem.metapagetitle : item.contentItem.title;
-            if (item.pagetitle) {
-                item.pagetitle = item.pagetitle.trim();
-            }
+            var contentItem = item.contentItem;
+            var title = contentItem.metapagetitle || contentItem.title || '';
+            item.pagetitle = title.trim();
 
             // do any format specific formatting
             if ('ORG_LIST' === item.contentItem._embedded.format.name) {

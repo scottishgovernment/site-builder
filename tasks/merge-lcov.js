@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Combines LCOV coverage data for Grunt tasks and client-side JavaScript into a single LCOV file.
  *

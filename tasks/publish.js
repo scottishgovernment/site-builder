@@ -1,5 +1,10 @@
 'use strict';
 
+/**
+ * Grunt tasks used when publishing the site.
+ * The copy-site and copy-redirects tasks run a shell script that copies the
+ * generated site to a directory or S3 bucket, depending on configuration.
+ */
 module.exports = function(grunt) {
 
     var config = require('config-weaver').config();
