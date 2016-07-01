@@ -1,3 +1,9 @@
+'use strict';
+
+/**
+ * Grunt task for starting preview service.
+ * Use `npm run preview` instead - it's faster.
+ */
 module.exports = function(grunt) {
 
     var cp = require('child_process'),
