@@ -31,7 +31,7 @@ module.exports = exports = function() {
 
     function store(key, value) {
       // store json only
-      if (key.indexOf('.json') > 0 ) {
+      if (key.indexOf('.json') >= 0) {
         cache[key] = {
           stored: new Date().getTime(),
           data: value

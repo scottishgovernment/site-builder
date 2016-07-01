@@ -14,7 +14,7 @@ module.exports = function(grunt) {
     var decoder = new StringDecoder('utf8');
     var cheerio = require('cheerio');
     var async = require('async');
-    var Crawler = require("simplecrawler-referrer-filter");
+    var Crawler = require('simplecrawler-referrer-filter');
     var crawler = Crawler.crawl(config.healthcheck.crawlUrl);
     var urlToUUIDMap = {};
     var crawlNumber = 1;
@@ -116,7 +116,7 @@ module.exports = function(grunt) {
 
     function crawl(callback) {
         crawler
-            .on("fetchcomplete", function(queueItem, responseBuffer) {
+            .on('fetchcomplete', function(queueItem, responseBuffer) {
                 // parse out the uuid and then map it to its url
                 var decodedResponse = decoder.write(responseBuffer);
                 var $ = cheerio.load(decodedResponse);
@@ -126,19 +126,19 @@ module.exports = function(grunt) {
                 // record the issue
                 recordIssue(queueItem);
             })
-            .on("fetch404", function(queueItem) {
+            .on('fetch404', function(queueItem) {
                 recordIssue(queueItem);
             })
-            .on("fetcherror", function(queueItem) {
+            .on('fetcherror', function(queueItem) {
                 recordIssue(queueItem);
             })
-            .on("fetchclienterror", function(queueItem) {
+            .on('fetchclienterror', function(queueItem) {
                 recordIssue(queueItem);
             })
-            .on("fetchredirect", function(queueItem) {
+            .on('fetchredirect', function(queueItem) {
                 recordIssue(queueItem);
             })
-            .on("complete", function() {
+            .on('complete', function() {
                 console.log('Crawl Complete.');
                 callback();
             });

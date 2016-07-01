@@ -66,7 +66,7 @@ module.exports = function(grunt) {
             }
 
             var items = files.filter(function (file) {
-                return file.endsWith(".yaml");
+                return file.endsWith('.yaml');
             }).length;
 
             post({

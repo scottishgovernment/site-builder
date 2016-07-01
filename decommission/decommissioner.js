@@ -9,6 +9,7 @@ module.exports = function (config) {
     var pagesTemplateSrc = fs.readFileSync(__dirname + '/decommissioned-sites.hbs', 'UTF-8');
     var pagesTemplate = handlebars.compile(pagesTemplateSrc);
 
+    var sites;
     var authtoken;
 
     function headers() {
@@ -26,8 +27,8 @@ module.exports = function (config) {
         }
         restler.postJson(config.authentication.endpoint,
             {
-                "userName": config.authentication.user,
-                "plainPassword": config.authentication.password
+                'userName': config.authentication.user,
+                'plainPassword': config.authentication.password
             })
         .on('complete', function(data) {
             if (data instanceof Error) {
@@ -76,15 +77,14 @@ module.exports = function (config) {
     }
 
     function sourceUrl(page) {
-
-        var url = page.srcUrl;
+        var srcUrl = page.srcUrl;
 
         if (page.type === 'EXACT') {
-            url = escapeRegExpChars(decodeURI(url));
+            srcUrl = escapeRegExpChars(decodeURI(srcUrl));
         }
 
-        var endsWithSlash = url.charAt(url.length - 1) === '/';
-        return '(?i)^' + url + (endsWithSlash ? '?' : '/?') + '$';
+        var endsWithSlash = srcUrl.charAt(srcUrl.length - 1) === '/';
+        return '(?i)^' + srcUrl + (endsWithSlash ? '?' : '/?') + '$';
     }
 
     // if the target url is a fully qualified url then just use it as the target url.

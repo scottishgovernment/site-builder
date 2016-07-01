@@ -27,9 +27,9 @@ if (config.amphora) {
           return require('url').parse(req.baseUrl).path;
         }
     });
-    app.use("/resource/publications/*", amphoraResourceProxy);
-    app.use("/publications/**/documents/*.*", amphoraStorageProxy);
-    app.use("/publications/**/images/*.*", amphoraStorageProxy);
+    app.use('/resource/publications/*', amphoraResourceProxy);
+    app.use('/publications/**/documents/*.*', amphoraStorageProxy);
+    app.use('/publications/**/images/*.*', amphoraStorageProxy);
 }
 
 // create template engine to render fetched item
@@ -56,11 +56,14 @@ var routes = require('./routes')(referenceDataSource, contentSource, renderer);
 if (config.preview && config.preview.watch) {
 
   var Gaze = require('gaze').Gaze;
-  var gaze = new Gaze([layouts+'/**/*', partials+'/**/*', helpers+'/**/*' ] ,
-    { 'mode': 'poll'},
-    function() {
+  var watchPaths = [
+      layouts + '/**/*',
+      partials + '/**/*',
+      helpers + '/**/*'
+  ];
+  var gaze = new Gaze(watchPaths, { 'mode': 'poll' }, function() {
       console.log('Watching for changes in layouts, partials or helpers');
-      gaze.on('all', function(event, filepath) {
+      gaze.on('all', function() {
         console.log('Layouts, partials or helpers changed');
         renderer.reload();
       });
@@ -71,9 +74,10 @@ if (config.preview && config.preview.watch) {
 
 // fetch the reference data
 app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
+  res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Visibility, X-Accept-Encoding");
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, ' +
+    'Content-Type, Accept, Authorization, X-Visibility, X-Accept-Encoding');
   next();
 });
 
@@ -99,7 +103,7 @@ app.route('/*')
 app.route('*').all(function(req, res) {
     res.status(404).send({
         status: 404,
-        message: "Not Found"
+        message: 'Not Found'
     });
 });
 
