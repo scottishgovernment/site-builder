@@ -1072,21 +1072,18 @@
       }
     },
     "js-yaml": {
-      "version": "3.0.2",
+      "version": "3.6.1",
       "dependencies": {
         "argparse": {
-          "version": "0.1.16",
+          "version": "1.0.7",
           "dependencies": {
-            "underscore": {
-              "version": "1.7.0"
-            },
-            "underscore.string": {
-              "version": "2.4.0"
+            "sprintf-js": {
+              "version": "1.0.3"
             }
           }
         },
         "esprima": {
-          "version": "1.0.4"
+          "version": "2.7.2"
         }
       }
     },
@@ -2035,6 +2032,25 @@
             },
             "rimraf": {
               "version": "2.2.8"
+            }
+          }
+        },
+        "js-yaml": {
+          "version": "3.0.2",
+          "dependencies": {
+            "argparse": {
+              "version": "0.1.16",
+              "dependencies": {
+                "underscore": {
+                  "version": "1.7.0"
+                },
+                "underscore.string": {
+                  "version": "2.4.0"
+                }
+              }
+            },
+            "esprima": {
+              "version": "1.0.4"
             }
           }
         },
