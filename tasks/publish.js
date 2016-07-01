@@ -24,7 +24,7 @@ module.exports = function(grunt) {
 
     function runPublishScript(script, target, callback) {
         if (!target) {
-            console.log("No copy target configured.");
+            console.log('No copy target configured.');
             callback(true);
         } else {
             publish(script, target, callback);

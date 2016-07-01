@@ -15,9 +15,9 @@ module.exports = function(grunt) {
 
     function lcov(callback) {
         process.execFile(executable, [
-                "-o", "test/coverage/lcov.info",
-                "-a", "test/coverage/reports/lcov.info",
-                "-a", "test/coverage/phantomjs/lcov.info"],
+                '-o', 'test/coverage/lcov.info',
+                '-a', 'test/coverage/reports/lcov.info',
+                '-a', 'test/coverage/phantomjs/lcov.info'],
             {},
             function (cb) {
                 if (cb) {
@@ -32,7 +32,7 @@ module.exports = function(grunt) {
             if (exists) {
                 lcov(callback);
             } else {
-                console.warn("LCOV not found");
+                console.warn('LCOV not found');
                 callback();
             }
         });
