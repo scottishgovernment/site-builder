@@ -1,7 +1,9 @@
+'use strict';
+
 /**
  * Fetches and saves reference data from the publishing service.
  * "Reference data" refers to lookup lists such as local authority regions.
- **/
+ */
 module.exports = function (config, path) {
 
     var restler = require('restler');
