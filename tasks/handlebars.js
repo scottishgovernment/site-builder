@@ -4,6 +4,10 @@ module.exports = function(grunt) {
 
     var path = require('path');
 
+    /**
+     * Grunt task to generate HTML from YAML files.
+     * It is assumed that the YAML files are already on disk.
+     */
     grunt.registerTask('handlebars', '', function() {
         var render = require('../render/render.js');
         var done = this.async();

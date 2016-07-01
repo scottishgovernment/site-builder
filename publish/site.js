@@ -1,3 +1,5 @@
+'use strict';
+
 var path = require('path');
 var fs = require('fs-extra');
 var glob = require('glob');
@@ -17,13 +19,18 @@ var frontMatterDelimiter = ['~~~', '~~~'];
 var fileOptions = {encoding: 'utf-8'};
 var layoutsDir;
 
-
+/**
+ * Generates a site by walking a directory tree of YAML files, rendering them as HTML.
+ */
 function Site(yamlDir, htmlDir, renderer) {
     this.yamlDir = yamlDir;
     this.htmlDir = htmlDir;
     this.renderer = renderer;
 }
 
+/**
+ * Walks a directory tree of YAML files, rendering them to HTML.
+ */
 Site.prototype.build = function(done) {
     var that = this;
     var yamlGlob = path.join(this.yamlDir, '**/*.yaml');
@@ -39,6 +46,9 @@ Site.prototype.build = function(done) {
     });
 };
 
+/**
+ * Read YAML files and create a map of content item ID to URL.
+ */
 Site.prototype.indexFiles = function (files, callback) {
     var urlById = {};
     var summary = function(file, callback) {

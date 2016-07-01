@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Provides functions used for collecting and rewriting links in Markdown.
  */
@@ -6,7 +8,11 @@ var path = require('path');
 var url = require('url');
 var idRegex = /^[A-Z]+-[0-9]+/;
 
-function createRewriter(index) {
+/**
+ * Link visitor returns the URL for a content item ID by querying an site index.
+ * The index is a map of content item IDs to URLs.
+ */
+function createRewriter (index) {
     return function(href) {
         var match = href.match(idRegex);
         if (match) {
@@ -19,6 +25,9 @@ function createRewriter(index) {
     };
 }
 
+/**
+ * Link visitor that builds an array of content item IDs referenced by the links.
+ */
 function collector() {
     var ids = [];
     var fn = function(href) {
