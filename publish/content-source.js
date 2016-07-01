@@ -31,7 +31,7 @@ module.exports = function (config, contentFormatter, contentHandler) {
         var itemUrl = url(id);
         restler
             .get(itemUrl)
-                .on("complete", function(data, response) {
+                .on('complete', function(data, response) {
                     if (data instanceof Error || response.statusCode !== 200) {
                         callback(data);
                     } else {

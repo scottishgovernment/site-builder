@@ -154,7 +154,7 @@ module.exports = exports = function(layoutstrategy) {
     function redactLinks(o) {
         delete o.links;
         for (var i in o) {
-            if (o[i] !== null && typeof(o[i])==="object") {
+            if (o[i] !== null && typeof(o[i]) === 'object') {
                 redactLinks(o[i]);
             }
         }

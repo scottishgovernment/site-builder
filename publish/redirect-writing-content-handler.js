@@ -9,7 +9,10 @@ module.exports = function(dir) {
   var template = handlebars.compile(templateText);
 
   function addRedirect(redirect) {
-    if (!redirect.url || redirect.url.length === 0 || !redirect.alias || redirect.alias.length === 0) {
+    if (!redirect.url ||
+        redirect.url.length === 0 ||
+        !redirect.alias ||
+        redirect.alias.length === 0) {
       console.log('skipping invalid redirect:', JSON.stringify(redirect));
       return;
     }
@@ -38,13 +41,13 @@ module.exports = function(dir) {
       }
 
       console.log('Loading url_aliases.csv');
-      require("fast-csv").fromPath("resources/url_aliases.csv")
-        .on("data", function(data) {
+      require('fast-csv').fromPath('resources/url_aliases.csv')
+        .on('data', function(data) {
           addRedirect({
             url: data[1],
             alias: data[0]
           });
-        }).on("end", function() {
+        }).on('end', function() {
           console.log('Loaded ' + redirects.length + ' redirects from url_aliases.csv');
           callback();
         });

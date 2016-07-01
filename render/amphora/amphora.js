@@ -18,7 +18,7 @@ module.exports = function (config) {
      // fetch the resource from amphora with this location
     function fetchResource(amphora, location, callback) {
         var location = config.amphora.endpoint + location;
-        restler.get(location).on("complete", function(resource, response) {
+        restler.get(location).on('complete', function(resource, response) {
             if (resource instanceof Error || response.statusCode !== 200) {
                 callback(resource);
             } else {
@@ -61,7 +61,7 @@ module.exports = function (config) {
                 };
                 fetchResource(item.amphora, item.url, function(err) {
                     if (err) {
-                        console.log("Failed to fetch amphora resource: " + err);
+                        console.log('Failed to fetch amphora resource: ' + err);
                         callback(err);
                     } else {
                         formatter.cleanup(item, callback, currentPage);

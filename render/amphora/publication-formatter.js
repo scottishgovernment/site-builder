@@ -24,7 +24,7 @@ module.exports = function () {
     }
 
     function reOrderDocuments(pub) {
-        title = pub.title.trim().replace(/\s+/g, ' ').split(' ');
+        var title = pub.title.trim().replace(/\s+/g, ' ').split(' ');
         pub.documents.sort(function (a, b) {
             return wordCount(title, b) - wordCount(title, a);
         });
@@ -34,7 +34,7 @@ module.exports = function () {
     }
 
     function wordCount(title, document) {
-        words = document.source.title.trim().replace(/\s+/g, ' ').split(' ');
+        var words = document.source.title.trim().replace(/\s+/g, ' ').split(' ');
         var wordCount = 0;
         words.forEach(function(source, i) {
             source === title[i] ? wordCount++ : wordCount--;

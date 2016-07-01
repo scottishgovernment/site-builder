@@ -14,7 +14,7 @@ module.exports = function(grunt) {
 
         // called when the content source is starting
         start: function(callback) {
-            log("Start", "", "");
+            log('Start', '', '');
             callback();
             count = 0;
         },
@@ -22,7 +22,7 @@ module.exports = function(grunt) {
         // called for each content item provided by the content source
         handleContentItem: function(item, callback) {
             count++;
-            log("processing", item.contentItem.slug, "OK");
+            log('processing', item.contentItem.slug, 'OK');
             callback();
         },
 

@@ -14,8 +14,8 @@ module.exports = function(grunt) {
 
             try {
                 reports = JSON.parse(fs.readFileSync('.sonar/sonar-report.json'));
-            } catch (Error) {
-                console.log("Sonar reports not found ignoring inspection");
+            } catch (e) {
+                console.log('Sonar reports not found ignoring inspection');
                 reports = {
                     issues: []
                 };

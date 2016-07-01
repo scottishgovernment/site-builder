@@ -47,8 +47,8 @@ module.exports = function (config, path) {
     function login(callback) {
         restler.postJson(config.authentication.endpoint,
             {
-                "userName": config.authentication.user,
-                "plainPassword": config.authentication.password
+                'userName': config.authentication.user,
+                'plainPassword': config.authentication.password
             })
         .on('complete', function(data) {
             if (data instanceof Error) {
@@ -71,7 +71,8 @@ module.exports = function (config, path) {
                             var lists = JSON.parse(data);
                             async.reduce(lists.lists, {}, fetchList,
                                 function (err, result) {
-                                    fs.writeFile(path, JSON.stringify(result, null, '\t'), callback);
+                                    var json = JSON.stringify(result, null, '\t');
+                                    fs.writeFile(path, json, callback);
                                 });
                         } catch (error) {
                             callback(error);
