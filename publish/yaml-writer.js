@@ -188,7 +188,6 @@ module.exports = function(rootDir) {
             var $ = require('cheerio').load(html);
 
             $('h1').each(function(index, element) {
-                //var slug = $(element).text().toLowerCase().replace(/[^\w|\']+/g, '-');
                 var slug = slugify($(element).text());
                 item.contentItem['guidepage'] = $(element).text();
                 item.contentItem['guidepageslug'] = slug;
@@ -234,11 +233,15 @@ module.exports = function(rootDir) {
                     clone.url  = page.url;
                     // update publication with the current page details (each page does it)
                     // all these iteration has to be synch otherwise new clone is required
+                    var prev = null;
+                    if (page.index !== 0 && pub.toc[page.index - 1].visible) {
+                        prev = page.index - 1;
+                    }
                     pub.publicationSubPage = {
                         content: page.content,
                         index: page.index,
                         title: page.title,
-                        prev: page.index === 0 ? null : (pub.toc[page.index - 1].visible ? page.index - 1 : null),
+                        prev: prev,
                         next: page.index === pub.toc.length - 1 ? null : page.index + 1
                     };
                     if (pub.toc[page.index - 1]) {

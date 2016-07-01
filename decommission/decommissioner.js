@@ -101,16 +101,11 @@ module.exports = function (config) {
     //It can only have the values redirect or permanent, lower-case, and default
     //to permanent
     function sanitiseRedirectType(page) {
-        if(page.redirectType) {
-            var redirect = page.redirectType.toLowerCase();
+        var type = page.redirectType;
+        if (type && type.toLowerCase() === 'redirect') {
+            return 'redirect';
         }
-
-        if(redirect === 'redirect' || redirect === 'permanent') {
-            return redirect;
-        } else {
-            return 'permanent';
-        }
-
+        return 'permanent';
     }
 
     function fetchPageForSite(site, callback) {

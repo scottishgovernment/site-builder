@@ -26,7 +26,6 @@ function Renderer(layouts, partials, helpers) {
 
 Renderer.prototype.reload = function() {
     var that = this;
-    var marked = require('marked');
     var handlebars = require('handlebars').create();
     this.handlebars = handlebars;
     this.templates = {};
@@ -108,7 +107,7 @@ Renderer.prototype.render = function(item, options) {
     var format = item.layout;
     if (!format) {
         var itemJson = JSON.stringify(item, null, 2);
-        throw new Error("Item does not specify a layout\n" + itemJson);
+        throw new Error('Item does not specify a layout\n' + itemJson);
     }
     var template = this.loadTemplate(format);
     options = options || {};

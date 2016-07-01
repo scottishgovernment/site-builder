@@ -44,7 +44,7 @@ Site.prototype.indexFiles = function (files, callback) {
     var summary = function(file, callback) {
         readFile(file, function(err, item) {
             if (err) {
-                callback("Could not read file: " + file);
+                callback('Could not read file: ' + file);
             } else {
                 if (!item.contentItem.guidepageslug) {
                   urlById[item.uuid] = item.url;
@@ -76,7 +76,7 @@ Site.prototype.processFile = function(src, cb) {
 function readFile(file, callback) {
     fs.readFile(file, fileOptions, function (err, data) {
         if (err) {
-            callback("Could not read file: " + file);
+            callback('Could not read file: ' + file);
         }
         var item;
         try {
@@ -84,7 +84,7 @@ function readFile(file, callback) {
             item = parsed.context;
             item.body = parsed.content;
         } catch (e) {
-            callback("Could not parse file: " + file + "\n" + e.message);
+            callback('Could not parse file: ' + file + '\n' + e.message);
         }
         callback(null, item);
     });
@@ -102,7 +102,7 @@ Site.prototype.renderYamlToFile = function(data, cb) {
             cb();
         }
     } catch (e) {
-        e.message = "Failed on item: " + item.uuid + "\n" + e.message;
+        e.message = 'Failed on item: ' + item.uuid + '\n' + e.message;
         throw e;
     }
 };
@@ -119,7 +119,7 @@ Site.prototype.renderItemToFile = function(item, cb) {
     var html = this.renderer.render(item, context);
     var url = item.url;
     if (!url) {
-        throw new Error("Item does not specify a URL.");
+        throw new Error('Item does not specify a URL.');
     }
     var dir = path.join(this.htmlDir, item.url);
     fs.mkdirs(dir, function() {

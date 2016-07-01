@@ -7,7 +7,7 @@ var contentItems;
 
 //If we have an IDs, then put them in an array for later
 if (myArgs.ids) {
-    contentItems = String(myArgs.ids).split(",") || undefined;
+    contentItems = String(myArgs.ids).split(',') || undefined;
 }
 
 // Grunt task that fetches content from the content repo and constructs the site

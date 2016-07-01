@@ -55,7 +55,7 @@ module.exports = exports = function(config, target) {
                 var doctorUrl = config.doctor.url + document.externalDocumentId;
                 restler.get(doctorUrl).on('complete', function(data, response) {
                     if (data instanceof Error || response.statusCode !== 200) {
-                      console.log("Unable to fetch the json for " + doctorUrl);
+                      console.log('Unable to fetch the json for ' + doctorUrl);
                       console.log(JSON.stringify(data, null, '\t'));
                       documentsCallback(data, null);
                       return;
