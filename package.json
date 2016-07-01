@@ -16,12 +16,12 @@
     "async": "^1.5.2",
     "cheerio": "^0.20.0",
     "config-weaver": "0.0.15",
-    "cookie-parser": "^1.4.1",
+    "cookie-parser": "^1.4.3",
     "express": "^4.14.0",
-    "express-http-proxy": "^0.6.0",
+    "express-http-proxy": "^0.7.2",
     "fast-csv": "^1.1.0",
     "fs-extra": "^0.30.0",
-    "gaze": "^1.0.0",
+    "gaze": "^1.1.0",
     "glob": "^7.0.5",
     "handlebars": "^4.0.5",
     "js-yaml": "^3.6.1",
@@ -33,7 +33,7 @@
     "restler": "^3.4.0",
     "simplecrawler-referrer-filter": "^0.3.1-1.1",
     "slug": "^0.9.1",
-    "sync-request": "^2.2.0",
+    "sync-request": "^3.0.1",
     "yfm": "^0.2.0"
   },
   "devDependencies": {
@@ -47,7 +47,7 @@
     "temp": "^0.8.1",
     "xml2js": "^0.4.16"
   },
-  "peerDependencies" : {
+  "peerDependencies": {
     "grunt": ">=0.4.5"
   },
   "publishConfig": {
