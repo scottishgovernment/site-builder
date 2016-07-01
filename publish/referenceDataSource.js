@@ -9,7 +9,11 @@ module.exports = function (config, path) {
     var authtoken;
 
     function fetchList(memo, item, callback) {
-        restler.get(item.links[0].href, { headers: { Accept: 'application/hal+json', 'Authorization': 'Bearer ' + authtoken}})
+        var headers = {
+          'Accept': 'application/hal+json',
+          'Authorization': 'Bearer ' + authtoken
+        };
+        restler.get(item.links[0].href, { headers: headers })
                 .on('complete', function(data, response) {
                     if (data instanceof Error || response.statusCode !== 200) {
                         callback(data);
