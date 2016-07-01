@@ -35,19 +35,29 @@ module.exports = function(root, baseUrl) {
 
     var prepareFile = function(item) {
         var filename = getFilename(item);
+        var header =
+            '<?xml version="1.0" encoding="UTF-8"?>\n' +
+            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
         if (!sitemaps[filename]) {
-            fs.appendFileSync(root + filename, '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n');
+            fs.appendFileSync(root + filename, header);
             sitemaps[filename] = true;
         }
     };
 
     var closeFiles = function() {
         var rootSitemap = root + '/sitemap.xml';
-        fs.appendFileSync(rootSitemap, '<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' );
+        var header =
+            '<?xml version="1.0" encoding="UTF-8"?>\n' +
+            '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+        fs.appendFileSync(rootSitemap, header);
         for (var sitemap in sitemaps) {
             if (sitemaps.hasOwnProperty(sitemap)) {
                 fs.appendFileSync(root + sitemap, '</urlset>\n' );
-                fs.appendFileSync(rootSitemap, '<sitemap><loc>' + baseUrl + addSlash(sitemap) + '</loc></sitemap>\n');
+                var line =
+                    '<sitemap><loc>' +
+                    baseUrl + addSlash(sitemap) +
+                    '</loc></sitemap>\n'
+                fs.appendFileSync(rootSitemap, line);
             }
         }
         fs.appendFileSync(rootSitemap, '</sitemapindex>\n' );
