@@ -17,7 +17,7 @@
     "cheerio": "^0.20.0",
     "config-weaver": "0.0.15",
     "cookie-parser": "^1.4.1",
-    "express": "^4.13.4",
+    "express": "^4.14.0",
     "express-http-proxy": "^0.6.0",
     "fast-csv": "^1.1.0",
     "fs-extra": "^0.30.0",
