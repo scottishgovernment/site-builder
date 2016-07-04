@@ -33,13 +33,6 @@ Relationships.prototype.find = function (item) {
         }
     }
 
-    // add any 'latest items'
-    for (var property in item.latestItems) {
-        if (item.latestItems.hasOwnProperty(property)) {
-            items.push.apply(items, item.latestItems[property]);
-        }
-    }
-
     items = items.filter(function (rel) {
         return !seen[rel.uuid];
     });
