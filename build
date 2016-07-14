@@ -1,5 +1,5 @@
 #!/bin/sh -el
-CHECKSUM=node_modules/package.json.sha1
+VERSION=${VERSION:-0.$(date +%Y%m%d%H%M)}
 
 if ! test -t 1; then
   grunt_opts="--no-color"
@@ -14,19 +14,6 @@ while test $# -gt 0; do
   esac
   shift
 done
-
-VERSION=${VERSION:-0.$(date +%Y%m%d%H%M)}
-PREVIOUS=$(test -f "$CHECKSUM" && cat "$CHECKSUM" || true)
-CURRENT=$(shasum -a1 package.json | awk '{print $1}')
-if [ "$PREVIOUS" != "$CURRENT" ]; then
-  if [ -d node_modules ]; then
-    echo "Pruning old node modules"
-    npm prune
-  fi
-  echo "Installing new node modules"
-  npm install
-  echo "$CURRENT" > "$CHECKSUM"
-fi
 
 grunt --no-color test
 if [ -z "$ci" ]; then
