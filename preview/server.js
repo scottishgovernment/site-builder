@@ -19,12 +19,12 @@ if (config.amphora) {
     var proxy = require('express-http-proxy');
     var amphoraStorageProxy = proxy(config.amphora.host, {
         forwardPath: function (req, res) {
-          return '/storage' + require('url').parse(req.baseUrl).path;
+          return '/amphora/storage' + require('url').parse(req.baseUrl).path;
         }
     });
     var amphoraResourceProxy = proxy(config.amphora.host, {
         forwardPath: function (req, res) {
-          return require('url').parse(req.baseUrl).path;
+          return '/amphora' + require('url').parse(req.baseUrl).path;
         }
     });
     app.use('/resource/publications/*', amphoraResourceProxy);
