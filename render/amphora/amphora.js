@@ -61,7 +61,7 @@ module.exports = function (config) {
                 };
                 fetchResource(item.amphora, item.url, function(err) {
                     if (err) {
-                        console.log('Failed to fetch amphora resource: ' + err);
+                        console.log('Failed to fetch amphora resource: ' + JSON.stringify(err));
                         callback(err);
                     } else {
                         formatter.cleanup(item, callback, currentPage);
