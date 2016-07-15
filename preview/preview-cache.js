@@ -30,6 +30,8 @@ module.exports = exports = function() {
     };
 
     function store(key, value) {
+
+      console.log('stroe ', key);
       // store json only
       if (key.indexOf('.json') >= 0) {
         cache[key] = {
@@ -60,7 +62,7 @@ module.exports = exports = function() {
       readFileSync: function(key) {
         if (key.indexOf('out/') === 0) {
           clean();
-          var cacheItem =  cache[key] || cache[key.replace('-latest', '')];
+          var cacheItem =  cache[key];
           if (!cacheItem) {
             cacheItem = store(key, getContent(key));
           }

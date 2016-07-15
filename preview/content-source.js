@@ -76,14 +76,6 @@ module.exports = function(restler, renderer) {
     }
   }
 
-  function handlePolicy(item, callback) {
-    item.contentItem.uuid = item.contentItem.uuid + '-latest';
-    item.url = item.url += 'latest/';
-    item.title = 'Latest';
-    item.layout = 'policy-latest.hbs';
-    callback(null, item);
-  }
-
   function fetchItem(req, auth, visibility, callback) {
     if (process.previewCache) {
       process.previewCache.context =
@@ -211,6 +203,16 @@ module.exports = function(restler, renderer) {
 
   function postProcess(item, auth, visibility, req, callback) {
     async.series([
+        function (cb) {
+          // if this is a policy then write out the latest page
+          if (item.layout === 'policy.hbs') {
+            var latestItem = policyLatestFormatter.formatLatest(item);
+            yamlWriter.handleContentItem(latestItem, cb);
+          } else {
+            cb();
+          }
+        },
+
         // fetch related items
         function (cb) {
           fetchRelatedItems(item, auth, visibility, function(err, related) {
