@@ -82,6 +82,9 @@ module.exports = function(root, baseUrl) {
 
                 var filename = getFilename(item);
                 var lastModified = item.contentItem.dateModified;
+                if (lastModified === undefined) {
+                  lastModified = item.contentItem.dateCreated;
+                }
                 appendToSitemap(filename, lastModified, item.url);
 
                 // if it is a guide then also add its sub-pages
