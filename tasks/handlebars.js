@@ -12,8 +12,8 @@ module.exports = function(grunt) {
         var templatePath = templatePath || 'resources/templates';
         var render = require('../render/render.js');
         var done = this.async();
-        var layouts = path.join(process.cwd(), 'resources/templates/_layouts');
-        var partials = path.join(process.cwd(), 'resources/templates/_partials');
+        var layouts = path.join(process.cwd(), templatePath + '/_layouts');
+        var partials = path.join(process.cwd(), templatePath + '/_partials');
         var helpers = path.join(process.cwd(), 'resources/_helpers');
         var renderer = new render.Renderer(layouts, partials, helpers);
         renderer.on('render', function(src, dst, item) {
