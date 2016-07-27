@@ -15,9 +15,11 @@ module.exports = function (config) {
     var pch = require('./page-content-handler')();
     var dh = require('./download-handler')();
 
+    var publicationUrlReg = /publications\/(.*)?\/pages\/(.*)?\/$/;
+
      // fetch the resource from amphora with this location
     function fetchResource(amphora, location, callback) {
-        var location = config.amphora.endpoint + location;
+        var location = config.amphora.endpoint + 'assemble/' + location;
         restler.get(location).on('complete', function(resource, response) {
             if (resource instanceof Error || response.statusCode !== 200) {
                 callback(resource);
@@ -44,12 +46,23 @@ module.exports = function (config) {
         ],
         function (err, results) {
            async.each(resource.resources, function(child, sub) {
-                fetchResource(amphora, child.path, sub);
+                handleResource(amphora, child, sub);
             }, callback);
         });
     }
 
     return {
+        
+        getPageNumber : function(source) {
+            var aps = (source + '/').replace(/\/\//g, '/').match(publicationUrlReg);
+            return aps ? aps[2]: null;
+        },
+
+        getUrl : function(source) {
+            var aps = source.replace(/\/\//g, '/').match(publicationUrlReg);
+            return aps ? '/publications/' + aps[1] + '/' : source;
+        },
+
         handleAmphoraContent : function (item, callback, currentPage) {
             if (item.contentItem._embedded.format['name'] !== 'APS_PUBLICATION') {
                 callback(null, item);

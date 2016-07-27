@@ -1,8 +1,13 @@
 module.exports = function () {
 
+    function getParentSlug(resource) {
+        var paths = resource.path.split('/');
+        return paths[paths.length - 3];
+    }
+
     function mapResource(amphora, resource) {
         var pub = amphora.publication;
-        var prop = resource.metadata.parentSlug;
+        var prop = getParentSlug(resource);
         pub[prop] = pub[prop] || [];
         pub[prop].push(createSource(resource));
         pub[prop].sort(function (a, b) {
@@ -28,14 +33,14 @@ module.exports = function () {
 
     return  {
 
+       
         supports: function (resource) {
             if (resource.metadata.required === false) {
                 return false;
             }
             var downloadable = resource._links.inline && resource.storage;
-            var pageContent = resource.metadata.type === 'publication-page-content';
             var page = resource.metadata.type === 'publication-page';
-            return !pageContent &&  (page || downloadable);
+            return page || downloadable;
         },
 
         handle : function (amphora, resource, callback) {

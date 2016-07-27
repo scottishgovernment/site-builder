@@ -6,16 +6,14 @@ var formatter = require('../publish/item-formatter')(config.layoutstrategy);
 var yamlWriter = require('../publish/yaml-writer')('out/contentitems');
 var slugify = require('../publish/slugify');
 var doctorFormatter = require('../render/doctor-formatter')(config, 'pdfs');
+var amphora = require('../render/amphora/amphora')(config);
+
 var policyLatestFormatter = require('../publish/policyLatestFormatter')();
-
-// 4 min inactive time out for a publication
-var amphoraCache = require('./amphora-cache')(4, config);
-
 module.exports = function(restler, renderer) {
 
   function url(source, visibility) {
     var endpoint = config.buildapi.endpoint.replace(/\/$/, '');
-    var base = endpoint + '/' + path.join('urlOrId', amphoraCache.getUrl(source));
+    var base = endpoint + '/' + path.join('urlOrId', amphora.getUrl(source));
     return base + '?visibility=' + visibility;
   }
 
@@ -232,14 +230,16 @@ module.exports = function(restler, renderer) {
 
         // add amphora details
         function(cb) {
-          amphoraCache.update(req, item, cb);
+            amphora.handleAmphoraContent(item, function() {
+              cb();
+            }, amphora.getPageNumber(req.path));
         }
       ],
 
       function (err, results) {
         callback(err, {
           item: item,
-          index: results[1]
+          index: results[2]
         });
       }
     );
