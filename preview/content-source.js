@@ -180,8 +180,11 @@ module.exports = function(restler, renderer) {
     var links = relationship.collectLinks(item).map(function (link) {
       return link.uuid;
     });
+
     // add the id of this content item
     links.push(item.uuid);
+
+    console.log('collected links:' + JSON.stringify(links));
 
     var idsParam = links.join(',');
     var fetchIndexUrl = config.publishing.endpoint + 'items/urlsById?ids=' + idsParam;
@@ -237,6 +240,8 @@ module.exports = function(restler, renderer) {
       ],
 
       function (err, results) {
+
+        console.log('results:' + JSON.stringify(results));
         callback(err, {
           item: item,
           index: results[2]
