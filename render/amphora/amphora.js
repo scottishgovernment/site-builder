@@ -52,7 +52,7 @@ module.exports = function (config) {
     }
 
     return {
-        
+
         getPageNumber : function(source) {
             var aps = (source + '/').replace(/\/\//g, '/').match(publicationUrlReg);
             return aps ? aps[2]: null;
