@@ -1,25 +1,16 @@
 module.exports = function () {
 
     var http = require('http');
-
     var cheerio = require('cheerio');
 
-    function downloadContent(pageContent, page, callback) {
-        var body = [];
-        // download html content from storage and set it to the page
-        http.get(pageContent._links.inline.href, function(response) {
-            response.on('data', function(chunk) {
-                body.push(chunk);
-            });
-             response.on('end', function() {
-                page.content = Buffer.concat(body).toString();
-                addTitle(page);
-                callback();
-            });
-        });
+    function getParentSlug(resource) {
+        var paths = resource.path.split('/');
+        return paths[paths.length - 3];
     }
 
-    function addTitle(page) {
+    function updatePage(amphora, resource) {
+        var page = amphora.publication.pages[getParentSlug(resource)];
+        page.content = new Buffer(resource.storageContent, 'base64').toString('utf8');
         var title = cheerio.load(page.content)('h3').first();
         if (title) {
             page.title = title.text().trim();
@@ -35,12 +26,9 @@ module.exports = function () {
 
         handle : function (amphora, resource, callback) {
             if (this.supports(resource)) {
-                var publication = amphora.publication;
-                var page = publication.pages[resource.metadata.parentSlug];
-                downloadContent(resource, page, callback);
-            } else {
-                callback();
-            }
+                updatePage(amphora, resource);
+            } 
+            callback();
         }
     };
 };
