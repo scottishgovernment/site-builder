@@ -33,7 +33,6 @@ module.exports = function () {
 
     return  {
 
-       
         supports: function (resource) {
             if (resource.metadata.required === false) {
                 return false;

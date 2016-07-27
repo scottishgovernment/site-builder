@@ -1,6 +1,4 @@
 module.exports = function () {
-
-    var http = require('http');
     var cheerio = require('cheerio');
 
     function getParentSlug(resource) {
@@ -23,11 +21,10 @@ module.exports = function () {
             return resource.metadata.required !== false
                 && resource.metadata.type === 'publication-page-content';
         },
-
         handle : function (amphora, resource, callback) {
             if (this.supports(resource)) {
                 updatePage(amphora, resource);
-            } 
+            }
             callback();
         }
     };
