@@ -2,6 +2,10 @@
 
 Generates a static web site from content in the publishing system.
 
+## Common
+
+Contains utilities and helpers shared between both MyGov and gov.scot.
+
 ## Dependencies
 
 npm dependencies are listed in the package.json file.
