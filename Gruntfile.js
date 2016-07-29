@@ -32,6 +32,7 @@ module.exports = function(grunt) {
                 projectVersion: grunt.package.version,
                 projectDescription: grunt.package.description,
                 sources: [
+                    'common',
                     'decommission',
                     'preview',
                     'publish',
@@ -84,6 +85,7 @@ module.exports = function(grunt) {
 
         instrument: {
             files: [
+                'common/*.js',
                 'publish/*.js',
                 'decommission/*.js',
                 'preview/*.js',

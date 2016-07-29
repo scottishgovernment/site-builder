@@ -4,7 +4,7 @@ var async = require('async');
 var relationships = require('./relationships');
 var formatter = require('../publish/item-formatter')(config.layoutstrategy);
 var yamlWriter = require('../publish/yaml-writer')('out/contentitems');
-var slugify = require('../publish/slugify');
+var slugify = require('../common/slugify');
 var doctorFormatter = require('../render/doctor-formatter')(config, 'pdfs');
 var amphora = require('../render/amphora/amphora')(config);
 

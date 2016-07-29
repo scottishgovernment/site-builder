@@ -1,3 +1,4 @@
+common           /usr/lib/node_modules/site-builder
 decommission     /usr/lib/node_modules/site-builder
 grunt            /usr/lib/node_modules/site-builder
 preview          /usr/lib/node_modules/site-builder

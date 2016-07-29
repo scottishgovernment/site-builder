@@ -6,7 +6,7 @@ module.exports = function(rootDir) {
     var path = require('path');
     var fs = process.previewCache || require('fs-extra');
     var yaml = require('js-yaml');
-    var slugify = require('./slugify');
+    var slugify = require('../common/slugify');
     var config = require('config-weaver').config();
     var policyLatestFormatter = require('./policyLatestFormatter')();
 
