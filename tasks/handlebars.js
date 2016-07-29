@@ -8,11 +8,12 @@ module.exports = function(grunt) {
      * Grunt task to generate HTML from YAML files.
      * It is assumed that the YAML files are already on disk.
      */
-    grunt.registerTask('handlebars', '', function() {
+    grunt.registerTask('handlebars', '', function(templatePath) {
+        var templatePath = templatePath || 'resources/templates';
         var render = require('../render/render.js');
         var done = this.async();
-        var layouts = path.join(process.cwd(), 'resources/templates/_layouts');
-        var partials = path.join(process.cwd(), 'resources/templates/_partials');
+        var layouts = path.join(process.cwd(), templatePath + '/_layouts');
+        var partials = path.join(process.cwd(), templatePath + '/_partials');
         var helpers = path.join(process.cwd(), 'resources/_helpers');
         var renderer = new render.Renderer(layouts, partials, helpers);
         renderer.on('render', function(src, dst, item) {
