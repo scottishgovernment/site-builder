@@ -83,7 +83,12 @@ module.exports = function () {
 
     return {
         cleanup : function (item, callback, currentPage) {
+            
             var pub = item.amphora.publication;
+            // override title and description with the rubric metadata
+            pub.title = item.contentItem.title;
+            pub.description = item.contentItem.summary;
+
             // delete images which is not required by hbs
             delete pub.images;
             // move thumnails to their respective documents
@@ -94,6 +99,7 @@ module.exports = function () {
             if (process.mode !== 'preview') {
                 createHtmlContent(item, pub);
             }
+
             callback(null , item);
         }
     };
