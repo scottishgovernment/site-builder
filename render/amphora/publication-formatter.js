@@ -85,9 +85,6 @@ module.exports = function () {
         cleanup : function (item, callback, currentPage) {
             
             var pub = item.amphora.publication;
-            // override title and description with the rubric metadata
-            pub.title = item.contentItem.title;
-            pub.description = item.contentItem.summary;
 
             // delete images which is not required by hbs
             delete pub.images;
@@ -99,6 +96,10 @@ module.exports = function () {
             if (process.mode !== 'preview') {
                 createHtmlContent(item, pub);
             }
+
+             // override title and description with the rubric metadata
+            pub.title = item.contentItem.title;
+            pub.description = item.contentItem.summary;
 
             callback(null , item);
         }
