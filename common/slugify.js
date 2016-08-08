@@ -3,7 +3,7 @@
 /**
  * Creates slugs for use in URLs or anchor tags for a given string.
  */
-var slugify = function slug(string) {
+var slugify = function(string) {
 
     return string
         // Make lower-case
