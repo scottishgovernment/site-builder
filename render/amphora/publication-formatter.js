@@ -92,14 +92,14 @@ module.exports = function () {
             moveThumbnails(pub);
             // create table of contents
             createToc(pub, currentPage);
+            // override title and description with the rubric metadata
+            pub.title = item.contentItem.title;
+            pub.description = item.contentItem.summary;
+
             // create content for search index
             if (process.mode !== 'preview') {
                 createHtmlContent(item, pub);
             }
-
-             // override title and description with the rubric metadata
-            pub.title = item.contentItem.title;
-            pub.description = item.contentItem.summary;
 
             callback(null , item);
         }
