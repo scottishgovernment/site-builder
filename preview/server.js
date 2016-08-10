@@ -63,7 +63,7 @@ if (config.preview && config.preview.watch) {
   var gaze = new Gaze(watchPaths, { 'mode': 'poll' }, function() {
       console.log('Watching for changes in layouts, partials');
       gaze.on('all', function() {
-        console.log('Layouts, partials or helpers changed');
+        console.log('Layouts, partials changed');
         renderer.reload();
       });
     }
