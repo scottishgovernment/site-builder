@@ -58,11 +58,10 @@ if (config.preview && config.preview.watch) {
   var Gaze = require('gaze').Gaze;
   var watchPaths = [
       layouts + '/**/*',
-      partials + '/**/*',
-      helpers + '/**/*'
+      partials + '/**/*'
   ];
   var gaze = new Gaze(watchPaths, { 'mode': 'poll' }, function() {
-      console.log('Watching for changes in layouts, partials or helpers');
+      console.log('Watching for changes in layouts, partials');
       gaze.on('all', function() {
         console.log('Layouts, partials or helpers changed');
         renderer.reload();
