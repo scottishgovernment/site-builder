@@ -61,9 +61,9 @@ if (config.preview && config.preview.watch) {
       partials + '/**/*'
   ];
   var gaze = new Gaze(watchPaths, { 'mode': 'poll' }, function() {
-      console.log('Watching for changes in layouts, partials');
+      console.log('Watching for changes in layouts or partials');
       gaze.on('all', function() {
-        console.log('Layouts, partials changed');
+        console.log('Layouts or partials changed');
         renderer.reload();
       });
     }
