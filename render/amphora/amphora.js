@@ -1,6 +1,14 @@
 /**
  * Amphora Source - amphora items.
- * eozcan
+
+    login logout per publication (site-build only, preview uses current security context)
+    there used to be top level login and logout at the end of build process
+    that is gone and each mnodule (i.e referenceData, decommissioner) 
+    manages its own authenentication and leaves session record,(logout is no longer called)
+    amphora calls login logout per publication to delete session record
+    Rather prefer login is done only once per site build and logout is called at the end of the
+    create yaml process however that has been removed
+
  **/
 module.exports = function (config) {
 
@@ -21,7 +29,7 @@ module.exports = function (config) {
 
      // fetch the resource from amphora with this location
     function fetchResource(amphora, location, auth, callback) {
-        var location = config.amphora.endpoint + 'assemble/' + location;
+        location = config.amphora.endpoint + 'assemble/' + location;
         restler.get(location, auth).on('complete', function(resource, response) {
             if (resource instanceof Error || response.statusCode !== 200) {
                 callback(resource);
@@ -91,13 +99,6 @@ module.exports = function (config) {
                         pages:[]
                     }
                 };
-                // login logout per authentication (site-build only, preview uses current security context)
-                // there used to be top level login and logout at the end of build process
-                // that is gone and each mnodule (i.e referenceData, decommissioner) 
-                // manages its own authenentication and leaves session record,(logout is no longer called)
-                // amphora calls login logout per publication to delete session record
-                // Rather prefer login is done only once per site build and logout is called at the end of the
-                // create yaml process however that has been removed
                 withAuth(auth, function(auth) {
                     fetchResource(item.amphora, item.url, auth, function(err) {
                         auth.done(function() {
@@ -106,7 +107,7 @@ module.exports = function (config) {
                                 callback(err);
                             } else {
                                 formatter.cleanup(item, callback, currentPage);
-                            } 
+                            }
                         });
                     });
                 });
