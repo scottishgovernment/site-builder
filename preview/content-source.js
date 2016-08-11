@@ -233,7 +233,7 @@ module.exports = function(restler, renderer) {
 
         // add amphora details
         function(cb) {
-            amphora.handleAmphoraContent(item, function() {
+            amphora.handleAmphoraContent(item, auth, function() {
               cb();
             }, amphora.getPageNumber(req.path));
         }
