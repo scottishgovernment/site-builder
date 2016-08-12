@@ -30,8 +30,6 @@ module.exports = exports = function() {
     };
 
     function store(key, value) {
-
-      console.log('stroe ', key);
       // store json only
       if (key.indexOf('.json') >= 0) {
         cache[key] = {
