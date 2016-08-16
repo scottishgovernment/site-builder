@@ -5,8 +5,7 @@
 // The proxy will be moved to nginx soon or a better way to handle resources will be investigated
 // (without being downloaded by preview server before serving)
 module.exports = exports = function(config) {
-
-	var proxy = require('express-http-proxy');
+    var proxy = require('express-http-proxy');
 
     var amphoraStorageProxy = proxy(config.amphora.host, {
         forwardPath: function (req) {
