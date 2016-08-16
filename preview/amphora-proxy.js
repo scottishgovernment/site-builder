@@ -9,23 +9,23 @@ module.exports = exports = function(config) {
 
     var amphoraStorageProxy = proxy(config.amphora.host, {
         forwardPath: function (req) {
-          return '/amphora/storage' + require('url').parse(req.baseUrl).path;
+            return '/amphora/storage' + require('url').parse(req.baseUrl).path;
         }
     });
 
     var amphoraResourceProxy = proxy(config.amphora.host, {
         forwardPath: function (req) {
-          return '/amphora' + require('url').parse(req.baseUrl).path;
+           return '/amphora' + require('url').parse(req.baseUrl).path;
         }
     });
 
     return {
         use: function(app) {
-        	if (config.amphora) {
-        		app.use('/resource/publications/*', amphoraResourceProxy);
+            if (config.amphora) {
+        	    app.use('/resource/publications/*', amphoraResourceProxy);
                 app.use('/publications/**/documents/*.*', amphoraStorageProxy);
                 app.use('/publications/**/images/*.*', amphoraStorageProxy);
-        	}
+            }
         }
     };
 };
