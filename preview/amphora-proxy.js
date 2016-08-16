@@ -22,7 +22,7 @@ module.exports = exports = function(config) {
     return {
         use: function(app) {
             if (config.amphora) {
-        	    app.use('/resource/publications/*', amphoraResourceProxy);
+                app.use('/resource/publications/*', amphoraResourceProxy);
                 app.use('/publications/**/documents/*.*', amphoraStorageProxy);
                 app.use('/publications/**/images/*.*', amphoraStorageProxy);
             }
