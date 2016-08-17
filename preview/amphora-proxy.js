@@ -7,7 +7,6 @@
 module.exports = exports = function(config) {
     var amphoraStorageProxy;
     var amphoraResourceProxy;
-    
     if (config.amphora) {
         var proxy = require('express-http-proxy');
         amphoraStorageProxy = proxy(config.amphora.host, {
