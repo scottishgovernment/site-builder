@@ -5,19 +5,22 @@
 // The proxy will be moved to nginx soon or a better way to handle resources will be investigated
 // (without being downloaded by preview server before serving)
 module.exports = exports = function(config) {
-    var proxy = require('express-http-proxy');
-
-    var amphoraStorageProxy = proxy(config.amphora.host, {
-        forwardPath: function (req) {
-            return '/amphora/storage' + require('url').parse(req.baseUrl).path;
-        }
-    });
-
-    var amphoraResourceProxy = proxy(config.amphora.host, {
-        forwardPath: function (req) {
-           return '/amphora' + require('url').parse(req.baseUrl).path;
-        }
-    });
+    var amphoraStorageProxy;
+    var amphoraResourceProxy;
+    
+    if (config.amphora) {
+        var proxy = require('express-http-proxy');
+        amphoraStorageProxy = proxy(config.amphora.host, {
+            forwardPath: function (req) {
+                return '/amphora/storage' + require('url').parse(req.baseUrl).path;
+            }
+        });
+        amphoraResourceProxy = proxy(config.amphora.host, {
+            forwardPath: function (req) {
+                return '/amphora' + require('url').parse(req.baseUrl).path;
+            }
+        });
+    }
 
     return {
         use: function(app) {
