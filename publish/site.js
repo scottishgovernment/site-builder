@@ -7,6 +7,7 @@ var yaml = require('js-yaml');
 var yfm = require('yfm');
 var async = require('async');
 var links = require('../render/links');
+var images = require('../render/images');
 
 if (!String.prototype.startsWith) {
     String.prototype.startsWith = function(searchString, position){
@@ -41,7 +42,13 @@ Site.prototype.build = function(done) {
         }
         that.indexFiles(files, function(err, index) {
             that.index = index;
-            async.eachLimit(files, 4, that.processFile.bind(that), done);
+            that.imageLink = images.collector(function (url) { return url; });
+            async.eachLimit(files, 4, that.processFile.bind(that), function() {
+                var json = JSON.stringify(that.imageLink.urls);
+                console.log(json);
+                fs.writeFileSync('/tmp/foo.json', json);
+                done();
+            });
         });
     });
 };
@@ -124,7 +131,8 @@ function shouldRender(item) {
 
 Site.prototype.renderItemToFile = function(item, cb) {
     var context = {
-        rewriteLink: links.createRewriter(this.index)
+        rewriteLink: links.createRewriter(this.index),
+        imageLink: this.imageLink
     };
     var html = this.renderer.render(item, context);
     var url = item.url;

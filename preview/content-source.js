@@ -184,8 +184,6 @@ module.exports = function(restler, renderer) {
     // add the id of this content item
     links.push(item.uuid);
 
-    console.log('collected links:' + JSON.stringify(links));
-
     var idsParam = links.join(',');
     var fetchIndexUrl = config.publishing.endpoint + 'items/urlsById?ids=' + idsParam;
     restler.get(fetchIndexUrl).on('complete', function(data, response) {
