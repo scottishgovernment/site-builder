@@ -52,6 +52,34 @@ Renderer.prototype.reload = function() {
         return new handlebars.SafeString(content);
     });
 
+    // Helper to output a responsive image tag
+    handlebars.registerHelper('img', function (options) {
+        var linkFn = options.data.root.imageLink;
+        console.log(options.hash);
+        var img = options.hash;
+
+        if (!options.data.root.imgUrls) {
+            options.data.root.imgUrls = [];
+        }
+
+        // record all of the img urls
+        img.srcset.split(',').forEach(function (part) {
+            var imgUrl = part.trim().split(/(\s+)/)[0];
+            linkFn(imgUrl);
+        });
+
+        var attrib= function (name, value) { return name + '="' + value + '"'; };
+        var attribs = [
+            attrib('alt', img.alt),
+            attrib('class', img.class),
+            attrib('src', img.src),
+            attrib('srcset', img.srcset),
+            attrib('sizes', img.sizes),
+        ].join(' ');
+
+        return new handlebars.SafeString('<img ' + attribs + '/>');
+    });
+
 };
 
 Renderer.prototype.createRenderer = function (rewriteLink) {
@@ -112,6 +140,7 @@ Renderer.prototype.render = function(item, options) {
     var template = this.loadTemplate(format);
     options = options || {};
     item.rewriteLink = options.rewriteLink;
+    item.imageLink = options.imageLink || new Function();
     item.config = config;
     return template(item);
 };
