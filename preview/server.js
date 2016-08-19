@@ -26,11 +26,8 @@ process.on('uncaughtException', function(ex) {
 // create content-source to fetch item
 var restler = require('restler');
 var contentSource = require('./content-source')(restler, renderer);
-
-// create routes
-
 var referenceDataSource = require('../publish/referenceDataSource')(config, 'out/referenceData.json');
-var routes = require('./routes')(referenceDataSource, contentSource, renderer);
+var pagePreview = require('./page-preview')(referenceDataSource, contentSource, renderer);
 
 // If configured, setup watching for changes
 if (config.preview && config.preview.watch) {
@@ -73,7 +70,7 @@ app.use('/',
     );
 
 app.route('/*')
-    .get(routes.preview)
+    .get(pagePreview.preview)
     .options(function (req, res) {
         res.status(200).end();
     })

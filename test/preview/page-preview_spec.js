@@ -1,5 +1,5 @@
-var sutPath = '../../out/instrument/preview/routes';
-describe('routes', function() {
+var sutPath = '../../out/instrument/preview/page-preview';
+describe('page preview', function() {
 
     var referenceDataSource = {
       writeReferenceData : function (callback) {
