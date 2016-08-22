@@ -8,10 +8,6 @@ var config = require('config-weaver').config();
 process.mode = 'preview';
 process.previewCache = require('./preview-cache')();
 
-
-var amphoraProxy = require('./amphora-proxy')(config);
-amphoraProxy.use(app);
-
 // create template engine to render fetched item
 var layouts = 'resources/templates/_layouts';
 var partials = 'resources/templates/_partials';
@@ -48,14 +44,16 @@ if (config.preview && config.preview.watch) {
 
 }
 
-// fetch the reference data
-app.use(function(req, res, next) {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, ' +
-    'Content-Type, Accept, Authorization, X-Visibility, X-Accept-Encoding');
-  next();
-});
+var routerPath = path.join(process.cwd(), 'src/routes/route.js');
+if (require('fs').existsSync(routerPath)) {
+    var siteRouter = require(routerPath);
+    var router = require('./router');
+    var routing = router.create(siteRouter.create(config));
+    app.use(routing);
+}
+
+var amphoraProxy = require('./amphora-proxy')(config);
+amphoraProxy.use(app);
 
 // cookieParser provides access to the authentication token via req.cookies
 app.use(cookieParser());

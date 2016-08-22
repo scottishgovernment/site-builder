@@ -18,7 +18,7 @@
     "config-weaver": "0.0.15",
     "cookie-parser": "^1.4.3",
     "express": "^4.14.0",
-    "express-http-proxy": "^0.7.2",
+    "express-http-proxy": "^0.7.4",
     "fast-csv": "^2.0.0",
     "fs-extra": "^0.30.0",
     "gaze": "^1.1.0",
