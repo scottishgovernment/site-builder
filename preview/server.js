@@ -44,7 +44,7 @@ if (config.preview && config.preview.watch) {
 
 }
 
-var routerPath = path.join(process.cwd(), 'src/routes/route.js');
+var routerPath = path.join(process.cwd(), 'resources/routes/route.js');
 if (require('fs').existsSync(routerPath)) {
     var siteRouter = require(routerPath);
     var router = require('./router');
