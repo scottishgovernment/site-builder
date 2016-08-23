@@ -2,8 +2,8 @@ var sutPath = '../../out/instrument/publish/indexing-content-handler';
 
 describe('indexing-content-handler', function() {
 
-    function item(url, format, siteSearchable) {
-        return {
+    function item(url, format, siteSearchable, topics) {
+        var item = {
             url : url,
             contentItem : {
                 _embedded: {
@@ -16,6 +16,10 @@ describe('indexing-content-handler', function() {
                 }
             }
         }
+        if (topics) {
+            item.contentItem._embedded.topics = topics;
+        }
+        return item;
     }
 
     var testPort = 9999;
@@ -27,7 +31,7 @@ describe('indexing-content-handler', function() {
         // ARRANGE
         var items = [
             item('/multi/segement/url', 'CATEGORY_LIST', false),
-            item('/single-segment-url', 'ARTICLE', true),
+            item('/single-segment-url', 'ARTICLE', true, [{name: 'topic1'}, {name: 'topics2'}]),
             item('/organisations', 'ORG_LIST', true)
         ];
         var testSearchServer = require('./test-search-server')();
