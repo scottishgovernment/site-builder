@@ -1,5 +1,5 @@
-//var sutPath = '../../out/instrument/preview/relationships';
-var sutPath = '../../preview/relationships';
+var sutPath = '../../out/instrument/preview/relationships';
+
 describe('relationships', function() {
 
     function testItem(layout) {
