@@ -1,6 +1,5 @@
 module.exports = function (config, restler) {
     return {
-        
         login: function(callback) {
             restler.postJson(config.authentication.endpoint, {
                 'userName': config.authentication.user,

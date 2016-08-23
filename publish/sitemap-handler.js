@@ -56,7 +56,7 @@ module.exports = function(root, baseUrl) {
                 var line =
                     '<sitemap><loc>' +
                     baseUrl + addSlash(sitemap) +
-                    '</loc></sitemap>\n'
+                    '</loc></sitemap>\n';
                 fs.appendFileSync(rootSitemap, line);
             }
         }
