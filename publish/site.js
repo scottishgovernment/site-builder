@@ -44,7 +44,7 @@ Site.prototype.build = function(done) {
             that.index = index;
             that.imageLink = images.collector(function (url) { return url; });
             async.eachLimit(files, 4, that.processFile.bind(that), function() {
-                var json = JSON.stringify(that.imageLink.urls);
+                var json = JSON.stringify(that.imageLink.urls, null, '\t');
                 console.log(json);
                 fs.writeFileSync('/tmp/foo.json', json);
                 done();

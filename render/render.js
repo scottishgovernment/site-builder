@@ -52,32 +52,29 @@ Renderer.prototype.reload = function() {
         return new handlebars.SafeString(content);
     });
 
-    // Helper to output a responsive image tag
+    // Helper to output a responsive image tag and collect the image links
     handlebars.registerHelper('img', function (options) {
         var linkFn = options.data.root.imageLink;
-        console.log(options.hash);
-        var img = options.hash;
-
-        if (!options.data.root.imgUrls) {
-            options.data.root.imgUrls = [];
-        }
 
         // record all of the img urls
-        img.srcset.split(',').forEach(function (part) {
-            var imgUrl = part.trim().split(/(\s+)/)[0];
-            linkFn(imgUrl);
-        });
+        if (options.hash.src) {
+            linkFn(options.hash.src);
+        }
 
-        var attrib= function (name, value) { return name + '="' + value + '"'; };
-        var attribs = [
-            attrib('alt', img.alt),
-            attrib('class', img.class),
-            attrib('src', img.src),
-            attrib('srcset', img.srcset),
-            attrib('sizes', img.sizes),
-        ].join(' ');
+        if (options.hash.srcset) {
+            options.hash.srcset.split(',').forEach(function (part) {
+                var imgUrl = part.trim().split(/(\s+)/)[0];
+                linkFn(imgUrl);
+            });
+        }
 
-        return new handlebars.SafeString('<img ' + attribs + '/>');
+        var attribs = [];
+        for (var property in options.hash) {
+            if (options.hash.hasOwnProperty(property)) {
+                attribs.push(property + '="' + options.hash[property] + '"');
+            }
+        }
+        return new handlebars.SafeString('<img ' + attribs.join(" ") + '/>');
     });
 
 };
