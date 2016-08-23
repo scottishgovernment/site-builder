@@ -7,7 +7,9 @@
 function collector(handleUrl) {
     var urls = {};
     var fn = function (url) {
-        urls[url] = handleUrl(url);
+        var parsedUrl = require('url').parse(url);
+        var urlPath = parsedUrl.path;
+        urls[urlPath] = handleUrl(urlPath);
     };
     fn.urls = urls;
     return fn;
