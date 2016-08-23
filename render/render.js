@@ -74,7 +74,7 @@ Renderer.prototype.reload = function() {
                 attribs.push(property + '="' + options.hash[property] + '"');
             }
         }
-        return new handlebars.SafeString('<img ' + attribs.join(" ") + '/>');
+        return new handlebars.SafeString('<img ' + attribs.join(' ') + '/>');
     });
 
 };
