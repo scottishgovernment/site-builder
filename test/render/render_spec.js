@@ -28,4 +28,13 @@ describe('render', function() {
         expect(html).toContain("<p><b>hello</b></p>");
     });
 
+    it('Render img', function() {
+        var html = renderer.render({
+            layout: 'layout.hbs',
+            content: '{{#img src="/images/smallsquarenic.jpg"}}{{/img}}'
+        });
+        expect(html).toContain('<img src="/images/smallsquarenic.jpg"/>');
+    });
+
+
 });
