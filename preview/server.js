@@ -9,8 +9,8 @@ process.mode = 'preview';
 process.previewCache = require('./preview-cache')();
 
 // create template engine to render fetched item
-var layouts = 'src/templates/_layouts';
-var partials = 'src/templates/_partials';
+var layouts = 'resources/templates/_layouts';
+var partials = 'resources/templates/_partials';
 var helpers = path.join(process.cwd(), 'resources/_helpers');
 var render = require(path.join(__dirname, '../render/render'));
 var renderer = new render.Renderer(layouts, partials, helpers);
@@ -41,7 +41,6 @@ if (config.preview && config.preview.watch) {
       });
     }
   );
-
 }
 
 var routerPath = path.join(process.cwd(), 'resources/routes/route.js');
