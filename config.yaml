@@ -15,5 +15,5 @@ sitemaps:
     - STATUS
   exclude_slugs:
     - search
-doctor:
-    url: http://localhost:6573/
+amphora:
+  endpoint: http://localhost:8093/amphora/

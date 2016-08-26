@@ -226,7 +226,7 @@ module.exports = function(restler, renderer) {
 
         // write doctor files
         function(cb) {
-          doctorFormatter.formatDoctorFiles(item, cb);
+          doctorFormatter.formatDoctorFiles(item, auth, cb);
         },
 
         // add amphora details
