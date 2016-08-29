@@ -43,11 +43,10 @@ if (config.preview && config.preview.watch) {
   );
 }
 
-var routerPath = path.join(process.cwd(), 'resources/routes/route.js');
-if (require('fs').existsSync(routerPath)) {
-    var siteRouter = require(routerPath);
+var site = require('../common/site')();
+if (site.router) {
     var router = require('./router');
-    var routing = router.create(siteRouter.create(config));
+    var routing = router.create(site.router());
     app.use(routing);
 }
 
