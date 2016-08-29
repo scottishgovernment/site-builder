@@ -1,3 +1,6 @@
+/**
+ * Provide authentication for amphora.
+ **/
 module.exports = function (config, restler) {
     return {
         login: function(callback) {
