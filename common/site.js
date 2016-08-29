@@ -1,5 +1,6 @@
 'use strict';
 
+// load the site specific site.js
 var path = require('path');
 
 module.exports = function () {
