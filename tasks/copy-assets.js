@@ -1,35 +1,38 @@
 'use strict';
 
+var fs = require('fs');
+
+/**
+ * Grunt tasked used to copy dynamic assets as a part of the site build.
+ **/
+function assetCopier() {
+    var site = require('../common/site')();
+    var router = site.router();
+    return require('../publish/asset-copier.js').create(router);
+}
+
+function loadIndex() {
+
+    var index = JSON.parse(fs.readFileSync('out/assets.json'));
+    var assetUrls = [];
+    for (var assetUrl in index) {
+       if (index.hasOwnProperty(assetUrl)) {
+           assetUrls.push(assetUrl);
+       }
+    }
+    return assetUrls;
+}
+
 module.exports = function(grunt) {
 
-    var fs = require('fs');
     var assetCount = 0;
     var skipped = {};
-
-    //  create the asset copier
-    function assetCopier() {
-        var site = require('../common/site')();
-        var router = site.router();
-        return require('../publish/asset-copier.js').create(router);
-    }
-
-    function loadIndex() {
-
-        var index = JSON.parse(fs.readFileSync('out/assets.json'));
-        var assetUrls = [];
-        for (var assetUrl in index) {
-           if (index.hasOwnProperty(assetUrl)) {
-               assetUrls.push(assetUrl);
-           }
-        }
-        return assetUrls;
-    }
 
     function onStart(index, targetDir) {
         grunt.log.writeln('Copying assets to ', targetDir['cyan']);
     }
 
-    function onCopied(from, downstream, to) {
+    function onCopied() {
         assetCount++;
     }
 
