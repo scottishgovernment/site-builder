@@ -6,7 +6,6 @@ module.exports = exports = function(config, target) {
     var request = require('request');
     var async = require('async');
     var authentication = require('./amphora/authentication')(config, restler);
-
     var thumbnailWidths = [107, 165, 214, 330];
 
     function writeDocument(dir, item, document, auth, callback) {
@@ -55,19 +54,14 @@ module.exports = exports = function(config, target) {
     }
 
     return {
-        // for a content item, fetch meta data from doctor and write out any pdf and jpg files
         formatDoctorFiles: function(item, auth, parentCallback) {
             item.documents = item.contentItem._embedded.documents;
             if (!item.documents || item.documents.length === 0) {
-                // content item does not have any document references
                 parentCallback();
                 return;
             }
-
             async.each(item.documents,
               function(document, documentsCallback) {
-                //Get the JSON for the document.uuid
-                //Then use this to download the document and the thumbnails
                 withAuth(auth, function(auth) {
                   var amphoraUrl = config.amphora.endpoint + 'resource/docs/' + document.externalDocumentId;
                   restler.get(amphoraUrl, auth).on('complete', function(data, response) {
@@ -80,9 +74,7 @@ module.exports = exports = function(config, target) {
                       }
                       var dir = path.join('out', target, item.url);
                       fs.ensureDirSync(dir);
-
                       document.amphora = data;
-
                       async.parallel([
                           function (cb) { writeDocument(dir, item, document, auth, cb); },
                           function (cb) { writeThumbnails(dir, item, document, auth, cb);}
@@ -100,7 +92,6 @@ module.exports = exports = function(config, target) {
                   parentCallback(err, item);
               }
             );
-
         }
     };
 };
