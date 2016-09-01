@@ -9,7 +9,7 @@ module.exports = function (config, restler) {
                 'plainPassword': config.authentication.password
             }).on('complete', function(data) {
                 if (data instanceof Error) {
-                    throw data;
+                    callback(data);
                 } else {
                     callback(null, JSON.parse(data).sessionId);
                 }
