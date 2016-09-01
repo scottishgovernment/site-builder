@@ -1,3 +1,4 @@
+//Publication handler
 module.exports = function () {
     return {
 

@@ -12,7 +12,7 @@ var writeDocument = function(dir, item, document, auth, callback) {
   request.get(downloadUrl, auth)
     .on('end', callback)
     .pipe(stream);
-}
+};
 
 var writeThumbnail = function(width, dir, item, document, auth, callback) {
   var originalName = document.amphora.metadata.filename;
@@ -24,7 +24,7 @@ var writeThumbnail = function(width, dir, item, document, auth, callback) {
   request.get(imageUrl, auth)
     .on('end', callback)
     .pipe(stream);
-}
+};
 
 var writeThumbnails = function(dir, item, document, auth, callback) {
   async.each(thumbnailWidths,
@@ -33,27 +33,33 @@ var writeThumbnails = function(dir, item, document, auth, callback) {
     },
     callback
   );
-}
+};
 
 module.exports = exports = function(config, target) {
     process.mode  = process.mode || 'site';
 
     var authentication = require('./amphora/authentication')(config, restler);
 
+    var login = function(auth, callback) {
+        authentication.login(
+        function(err, token) {
+            auth = {headers: {'Authorization' : 'Bearer ' + token}};
+            auth.done = function(cb) {
+                authentication.logout(token, cb);
+            };
+            callback(auth);
+        });
+    };
+
     var withAuth = function(auth, callback) {
         if (process.mode === 'site') {
-            authentication.login(function(err, token) {
-                auth = {headers: {'Authorization' : 'Bearer ' + token}};
-                auth.done = function(cb) {
-                    authentication.logout(token, cb);
-                }; callback(auth);
-            });
+            login(auth, callback);
         } else {
             auth.done = function(cb) {
                 cb();
             }; callback(auth);
         }
-    }
+    };
 
     return {
         // for a content item, fetch meta data from doctor and write out any pdf and jpg files
