@@ -1,44 +1,46 @@
+var restler = require('restler');
+var path = require('path');
+var fs = require('fs-extra');
+var request = require('request');
+var async = require('async');
+var thumbnailWidths = [107, 165, 214, 330];
+
+var writeDocument = function(dir, item, document, auth, callback) {
+  var filename = path.join(dir, path.basename(document.amphora.metadata.filename));
+  var stream = fs.createWriteStream(filename);
+  var downloadUrl = document.amphora._links.attachment.href;
+  request.get(downloadUrl, auth)
+    .on('end', callback)
+    .pipe(stream);
+}
+
+var writeThumbnail = function(width, dir, item, document, auth, callback) {
+  var originalName = document.amphora.metadata.filename;
+  var filename = path.join(dir,
+    path.basename(originalName, path.extname(originalName))
+    + '.' + width + '.jpg');
+  var stream = fs.createWriteStream(filename);
+  var imageUrl = document.amphora._links.inline.href + '?size=' + width;
+  request.get(imageUrl, auth)
+    .on('end', callback)
+    .pipe(stream);
+}
+
+var writeThumbnails = function(dir, item, document, auth, callback) {
+  async.each(thumbnailWidths,
+    function (width, cb) {
+      writeThumbnail(width, dir, item, document, auth, cb);
+    },
+    callback
+  );
+}
+
 module.exports = exports = function(config, target) {
     process.mode  = process.mode || 'site';
-    var restler = require('restler');
-    var path = require('path');
-    var fs = require('fs-extra');
-    var request = require('request');
-    var async = require('async');
+
     var authentication = require('./amphora/authentication')(config, restler);
-    var thumbnailWidths = [107, 165, 214, 330];
 
-    function writeDocument(dir, item, document, auth, callback) {
-      var filename = path.join(dir, path.basename(document.amphora.metadata.filename));
-      var stream = fs.createWriteStream(filename);
-      var downloadUrl = document.amphora._links.attachment.href;
-      request.get(downloadUrl, auth)
-        .on('end', callback)
-        .pipe(stream);
-    }
-
-    function writeThumbnail(width, dir, item, document, auth, callback) {
-      var originalName = document.amphora.metadata.filename;
-      var filename = path.join(dir,
-        path.basename(originalName, path.extname(originalName))
-        + '.' + width + '.jpg');
-      var stream = fs.createWriteStream(filename);
-      var imageUrl = document.amphora._links.inline.href + '?size=' + width;
-      request.get(imageUrl, auth)
-        .on('end', callback)
-        .pipe(stream);
-    }
-
-    function writeThumbnails(dir, item, document, auth, callback) {
-      async.each(thumbnailWidths,
-        function (width, cb) {
-          writeThumbnail(width, dir, item, document, auth, cb);
-        },
-        callback
-      );
-    }
-
-    function withAuth(auth, callback) {
+    var withAuth = function(auth, callback) {
         if (process.mode === 'site') {
             authentication.login(function(err, token) {
                 auth = {headers: {'Authorization' : 'Bearer ' + token}};
@@ -77,6 +79,13 @@ module.exports = exports = function(config, target) {
                       var dir = path.join('out', target, item.url);
                       fs.ensureDirSync(dir);
                       document.amphora = data;
+                      document.amphora.filename = path.join(item.url, path.basename(data.metadata.filename));
+                      // MGS-1099 for backwards compatibility setting doctor
+                      // content of first document as contentItem.doctor field.
+                      if (document.uuid === item.documents[0].uuid) {
+                        item.doctor = document.amphora;
+                      }
+
                       async.parallel([
                           function (cb) { writeDocument(dir, item, document, auth, cb); },
                           function (cb) { writeThumbnails(dir, item, document, auth, cb);}
