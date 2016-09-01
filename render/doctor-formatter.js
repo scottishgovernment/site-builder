@@ -89,7 +89,7 @@ module.exports = exports = function(config, target) {
                       // MGS-1099 for backwards compatibility setting doctor
                       // content of first document as contentItem.doctor field.
                       if (document.uuid === item.documents[0].uuid) {
-                        item.doctor = document.amphora;
+                        item.amphora = document.amphora;
                       }
 
                       async.parallel([
