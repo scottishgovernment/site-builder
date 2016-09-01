@@ -1,3 +1,4 @@
+//Resource handler
 module.exports = function () {
 
     function getParentSlug(resource) {

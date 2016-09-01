@@ -83,7 +83,7 @@ module.exports = function () {
 
     return {
         cleanup : function (item, callback, currentPage) {
-            
+
             var pub = item.amphora.publication;
 
             // delete images which is not required by hbs
