@@ -226,12 +226,12 @@ module.exports = function(restler, renderer) {
 
         // write doctor files
         function(cb) {
-          doctorFormatter.formatDoctorFiles(item, auth, cb);
+          doctorFormatter.formatDoctorFiles(item, auth, visibility, cb);
         },
 
         // add amphora details
         function(cb) {
-            amphora.handleAmphoraContent(item, auth, function() {
+            amphora.handleAmphoraContent(item, auth, visibility, function() {
               cb();
             }, amphora.getPageNumber(req.path));
         }
