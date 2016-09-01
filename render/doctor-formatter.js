@@ -51,8 +51,8 @@ module.exports = exports = function(config, target) {
         });
     };
 
-    var withAuth = function(auth, callback) {
-        if (process.mode === 'site') {
+    var withAuth = function(auth, visibility, callback) {
+        if (process.mode === 'site' || visibility === 'stage' ) {
             login(auth, callback);
         } else {
             auth.done = function(cb) {
@@ -63,7 +63,7 @@ module.exports = exports = function(config, target) {
 
     return {
         // for a content item, fetch meta data from doctor and write out any pdf and jpg files
-        formatDoctorFiles: function(item, auth, parentCallback) {
+        formatDoctorFiles: function(item, auth, visibility, parentCallback) {
             item.documents = item.contentItem._embedded.documents;
             if (!item.documents || item.documents.length === 0) {
                 // content item does not have any document references
@@ -72,7 +72,7 @@ module.exports = exports = function(config, target) {
             }
             async.each(item.documents,
               function(document, documentsCallback) {
-                withAuth(auth, function(auth) {
+                withAuth(auth, visibility, function(auth) {
                   var amphoraUrl = config.amphora.endpoint + 'resource/docs/' + document.externalDocumentId;
                   restler.get(amphoraUrl, auth).on('complete', function(data, response) {
                       if (data instanceof Error || response.statusCode !== 200) {

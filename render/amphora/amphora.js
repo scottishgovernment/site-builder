@@ -49,8 +49,8 @@ module.exports = function (config) {
         });
     }
 
-    function withAuth(auth, callback) {
-        if (process.mode === 'site') {
+    function withAuth(auth, visibility, callback) {
+        if (process.mode === 'site' || visibility === 'stage') {
             authentication.login(function(err, token) {
                 auth = {headers: {'Authorization' : 'Bearer ' + token}};
                 auth.done = function(cb) {
@@ -76,12 +76,12 @@ module.exports = function (config) {
             return aps ? '/publications/' + aps[1] + '/' : source;
         },
 
-        handleAmphoraContent : function (item, auth, callback, currentPage) {
+        handleAmphoraContent : function (item, auth, visibility, callback, currentPage) {
             if (item.contentItem._embedded.format['name'] !== 'APS_PUBLICATION') {
                 callback(null, item);
             } else {
                 item.amphora = {publication: {pages:[]}};
-                withAuth(auth, function(auth) {
+                withAuth(auth, visibility, function(auth) {
                     fetchResource(item.amphora, item.url, auth, function(err) {
                         auth.done(function() {
                             if (err) {

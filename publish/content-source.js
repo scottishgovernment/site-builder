@@ -17,8 +17,8 @@ module.exports = function (config, contentFormatter, contentHandler) {
 
     function processJson(data, callback){
         var contentItem = contentFormatter.format(JSON.parse(data));
-        doctorFormatter.formatDoctorFiles(contentItem, null, function (err, item) {
-          amphora.handleAmphoraContent(contentItem, null, function () {
+        doctorFormatter.formatDoctorFiles(contentItem, null, 'siteBuild', function (err, item) {
+          amphora.handleAmphoraContent(contentItem, null, 'siteBuild', function () {
             contentHandler.handleContentItem(contentItem, function() {
               callback(null, item);
             });
