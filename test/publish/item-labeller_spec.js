@@ -1,5 +1,4 @@
-//var sut = require('../../out/instrument/publish/item-labeller')();
-var sut = require('../../publish/item-labeller')();
+var sut = require('../../out/instrument/publish/item-labeller')();
 
 describe('item-labeller', function() {
 
@@ -113,14 +112,6 @@ describe('item-labeller', function() {
         // ARRANGE
         var input = item(formatObj('MAP', 'publications-non-aps'));
         var expected = 'PUBLICATION - MAP';
-
-        console.log('-----');
-        console.log('-----');
-        console.log('-----');
-        console.log(JSON.stringify(input, null, '\t'));
-        console.log('-----');
-        console.log('-----');
-        console.log('-----');
 
         // ACT
         var actual = sut.label(input);
