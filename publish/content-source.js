@@ -49,7 +49,7 @@ module.exports = function (config, contentFormatter, contentHandler) {
                 } else {
                     try {
                         var ids = JSON.parse(data);
-                        async.each(ids, fetchItem, callback );
+                        async.eachLimit(ids, 50, fetchItem, callback );
                     } catch (error) {
                         callback(error);
                     }
