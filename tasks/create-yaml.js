@@ -55,7 +55,9 @@ module.exports = function(grunt) {
             var contentHandler = module('composite-content-handler')(handlers);
 
             // create the formatter
-            var contentFormatter = module('item-formatter')(config.layoutstrategy);
+            var contentLabeller = module('item-labeller')();
+            var contentFormatter
+                = module('item-formatter')(config.layoutstrategy, contentLabeller);
 
             // create the contentsource
             var contentSource = module('content-source')(config, contentFormatter, contentHandler);

@@ -3,7 +3,7 @@
 //
 // Currently we assign a layout and group descendants for ORG_LIST's
 //
-module.exports = exports = function(layoutstrategy) {
+module.exports = exports = function(layoutstrategy, labeller) {
 
     // Assign layout based on the format.
     //
@@ -166,6 +166,11 @@ module.exports = exports = function(layoutstrategy) {
         format : function (item) {
             // assign a layout based up the format
             item.layout = layout(item);
+
+            if (labeller) {
+                item.label = labeller.label(item);
+            }
+
 
             // redact any info we do not want
             redactLinks(item);
