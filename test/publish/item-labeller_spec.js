@@ -2,9 +2,10 @@ var sut = require('../../out/instrument/publish/item-labeller')();
 
 describe('item-labeller', function() {
 
-    function formatObj(name, categoryId) {
+    function formatObj(name, description, categoryId) {
         return {
             name: name,
+            description: description,
             _embedded: {
                 category: {
                     id : categoryId
@@ -16,7 +17,7 @@ describe('item-labeller', function() {
     function item(format, publicationType) {
 
         if (typeof format === 'string') {
-            format = formatObj(format, '');
+            format = formatObj(format, '', '');
         }
         return {
             contentItem : {
@@ -41,11 +42,11 @@ describe('item-labeller', function() {
         expect(actual).toEqual(expected);
     });
 
-    it('PRESS_RELEASE assigns NEWS', function() {
+    it('PRESS_RELEASE assigns "news"', function() {
 
         // ARRANGE
         var input = item('PRESS_RELEASE');
-        var expected = 'NEWS';
+        var expected = 'news';
 
         // ACT
         var actual = sut.label(input);
@@ -54,11 +55,11 @@ describe('item-labeller', function() {
         expect(actual).toEqual(expected);
     });
 
-    it('POLICY assigns POLICY', function() {
+    it('POLICY assigns "policy"', function() {
 
         // ARRANGE
         var input = item('POLICY');
-        var expected = 'POLICY';
+        var expected = 'policy';
 
         // ACT
         var actual = sut.label(input);
@@ -67,11 +68,11 @@ describe('item-labeller', function() {
         expect(actual).toEqual(expected);
     });
 
-    it('POLICY_DETAIL assigns POLICY', function() {
+    it('POLICY_DETAIL assigns "policy"', function() {
 
         // ARRANGE
         var input = item('POLICY_DETAIL');
-        var expected = 'POLICY';
+        var expected = 'policy';
 
         // ACT
         var actual = sut.label(input);
@@ -80,11 +81,11 @@ describe('item-labeller', function() {
         expect(actual).toEqual(expected);
     });
 
-    it('POLICY_LATEST assigns POLICY', function() {
+    it('POLICY_LATEST assigns "policy"', function() {
 
         // ARRANGE
         var input = item('POLICY_LATEST');
-        var expected = 'POLICY';
+        var expected = 'policy';
 
         // ACT
         var actual = sut.label(input);
@@ -94,11 +95,11 @@ describe('item-labeller', function() {
     });
 
 
-    it('APS_PUBLICATION assigns PUBLICATION - publicationType', function() {
+    it('APS_PUBLICATION assigns "publication - [publicationType]"', function() {
 
         // ARRANGE
         var input = item('APS_PUBLICATION', 'MAP');
-        var expected = 'PUBLICATION - MAP';
+        var expected = 'publication - map';
 
         // ACT
         var actual = sut.label(input);
@@ -107,11 +108,11 @@ describe('item-labeller', function() {
         expect(actual).toEqual(expected);
     });
 
-    it('non-aps-publicaiton assigns PUBLICATION - formatName', function() {
+    it('non-aps-publication assigns "publication - [formatDescription]"', function() {
 
         // ARRANGE
-        var input = item(formatObj('MAP', 'publications-non-aps'));
-        var expected = 'PUBLICATION - MAP';
+        var input = item(formatObj('ADVICE_GUIDANCE', 'Advice and guidance', 'publications-non-aps'));
+        var expected = 'publication - advice and guidance';
 
         // ACT
         var actual = sut.label(input);

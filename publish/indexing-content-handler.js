@@ -44,6 +44,7 @@ module.exports = function (searchURL) {
                 });
             }
             contentItem.filterDate = item.filterDate;
+            contentItem.label = item.label;
 
             restler.putJson(searchURL, contentItem)
                 .on('complete', function(err) {
