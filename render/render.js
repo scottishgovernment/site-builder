@@ -8,7 +8,6 @@ var glob = require('glob');
 var fs = require('fs-extra');
 var config = require('config-weaver').config();
 
-var frontMatterDelimiter = ['~~~', '~~~'];
 var fileOptions = {encoding: 'utf-8'};
 
 function Renderer(layouts, partials, helpers) {
