@@ -10,26 +10,30 @@
  var labelMap = {};
 
  ['POLICY','POLICY_DETAIL', 'POLICY_LATEST'].forEach(function (format) {
-     labelMap[format] = 'POLICY';
+     labelMap[format] = 'policy';
+ });
+
+ ['ROLE', 'FEATURED_ROLE', 'PERSON'].forEach(function (format) {
+     labelMap[format] = 'role';
  });
 
  ['APS_PUBLICATION', 'publications-non-aps'].forEach(function (format) {
-     labelMap[format] = 'PUBLICATION';
+     labelMap[format] = 'publication';
  });
 
- labelMap['PRESS_RELEASE'] = 'NEWS';
+ labelMap['PRESS_RELEASE'] = 'news';
 
 // decide what 'type' of labelling to use for this content item
 function type(item) {
     var isNonAPSPublication
         = item.contentItem._embedded.format._embedded.category.id === 'publications-non-aps';
     if (isNonAPSPublication) {
-        return 'non-aps-publicaiton';
+        return 'non-aps-publication';
     }
 
     var isAPSPublication = item.contentItem._embedded.format.name === 'APS_PUBLICATION';
     if (isAPSPublication) {
-        return 'aps-publicaiton';
+        return 'aps-publication';
     }
 
     var formatName = item.contentItem._embedded.format.name;
@@ -43,7 +47,7 @@ function type(item) {
 function nonAPSPublicationParts(item) {
     var parts = [];
     parts.push(labelMap['publications-non-aps']);
-    parts.push(item.contentItem._embedded.format.name);
+    parts.push(item.contentItem._embedded.format.description);
     return parts;
 }
 
@@ -62,11 +66,11 @@ module.exports = exports = function() {
             var labelParts = [];
 
             switch (type(item)) {
-                case 'aps-publicaiton':
+                case 'aps-publication':
                     labelParts = apsPublicationParts(item);
                 break;
 
-                case 'non-aps-publicaiton':
+                case 'non-aps-publication':
                     labelParts = nonAPSPublicationParts(item);
                 break;
 
@@ -78,7 +82,7 @@ module.exports = exports = function() {
 
             // make everything upper case
             labelParts = labelParts.map(function (part) {
-                return part.toUpperCase();
+                return part.toLowerCase();
             });
 
             // join the parts with a hyphen
