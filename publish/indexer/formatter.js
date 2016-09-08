@@ -16,7 +16,7 @@ function format(item, srcdir, callback) {
     var formatted = JSON.parse(JSON.stringify(item.contentItem));
 
     var fieldsToPromote = ['url', 'filterDate', 'label'];
-    fieldsToPomote.forEach(function (field) {
+    fieldsToPromote.forEach(function (field) {
         formatted[field] = item[field];
     });
     formatted._embedded.format.name = item.contentItem._embedded.format.name.toLowerCase();
