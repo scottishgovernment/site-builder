@@ -29,8 +29,7 @@ module.exports = function(grunt) {
             var target = grunt.config('site.contentitems'),
                 sitemap = grunt.config('site.sitemap'),
                 baseUrl = grunt.config('site.homepage'),
-                nginx = grunt.config('site.nginx'),
-                searchUrl = config.search.endpoint;
+                nginx = grunt.config('site.nginx');
 
             var release = this.async();
 
@@ -45,10 +44,7 @@ module.exports = function(grunt) {
                 module('yaml-writer')(target),
 
                 // handler to write sitemap.xml files
-                module('sitemap-handler')(sitemap, baseUrl),
-
-                // handler to index content
-                module('indexing-content-handler')(searchUrl)
+                module('sitemap-handler')(sitemap, baseUrl)
             ];
 
             // create a composite content handler to marshal the tasks that need to happen
