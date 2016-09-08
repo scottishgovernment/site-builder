@@ -86,7 +86,7 @@ module.exports = function(grunt) {
         instrument: {
             files: [
                 'common/*.js',
-                'publish/*.js',
+                'publish/**/*.js',
                 'decommission/*.js',
                 'preview/*.js',
                 'render/*.js',
