@@ -66,6 +66,9 @@ function enrichRoleWithPersonData(item, formatted, srcdir, callback) {
                 formatted[field] = [item.contentItem[field], incumbent.contentItem[field]].join('\n');
             });
 
+        // copy the title to incumbentTitle
+        formatted['incumbentTitle'] = item.contentItem.title;
+
         // append the incumbent tags to the role tags
         incumbent.contentItem.tags.forEach(function (tag) {
             formatted.tags.push(tag);

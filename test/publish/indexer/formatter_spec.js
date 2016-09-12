@@ -21,6 +21,7 @@ describe('formatter', function() {
             url: 'url',
             filterDate: 'filterDate',
             contentItem: {
+                title: 'item title',
                 content: 'item content',
                 additionalContent: 'item additionalContent',
                 tags: ['tag1', 'tag2'],
@@ -156,6 +157,7 @@ describe('formatter', function() {
         var incumbent = {
             uuid: 'incumbent-uuid',
             contentItem: {
+                title: 'item title',
                 content: 'incumbent content',
                 additionalContent : 'incumbent additionalContent',
                 tags: ['incumbent-tag1', 'incumbent-tag2']
@@ -167,6 +169,7 @@ describe('formatter', function() {
 
         var expected = JSON.parse(JSON.stringify(input)).contentItem;
         expected.url = 'url';
+        expected.incumbentTitle = 'item title';
         expected.filterDate = 'filterDate';
         expected.topicNames = []
         expected._embedded.format.name = 'role';
