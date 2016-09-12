@@ -69,6 +69,9 @@ function enrichRoleWithPersonData(item, formatted, srcdir, callback) {
         // copy the title to incumbentTitle
         formatted['incumbentTitle'] = incumbent.contentItem.title;
 
+        // copy the incumbent image
+        formatted['image'] = incumbent.contentItem.image;
+
         // append the incumbent tags to the role tags
         incumbent.contentItem.tags.forEach(function (tag) {
             formatted.tags.push(tag);

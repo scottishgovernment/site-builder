@@ -158,6 +158,7 @@ describe('formatter', function() {
             uuid: 'incumbent-uuid',
             contentItem: {
                 title: 'item title',
+                image: 'incumbent-image',
                 content: 'incumbent content',
                 additionalContent : 'incumbent additionalContent',
                 tags: ['incumbent-tag1', 'incumbent-tag2']
@@ -170,6 +171,7 @@ describe('formatter', function() {
         var expected = JSON.parse(JSON.stringify(input)).contentItem;
         expected.url = 'url';
         expected.incumbentTitle = 'item title';
+        expected.image = 'incumbent-image';
         expected.filterDate = 'filterDate';
         expected.topicNames = []
         expected._embedded.format.name = 'role';
