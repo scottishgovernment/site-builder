@@ -84,6 +84,18 @@ module.exports = function(rootDir) {
     };
 
     var customHandlers = {
+        PERSON : function (item, callback) {
+
+            // If this person has a listed role then only write this to
+            // out/contentitems but not pages.
+            if (item.contentItem.roleType == 'Listed') {
+                writeContentItem(item);
+            } else {
+                writeYamlAndJson(item);
+            }
+            callback();
+        },
+
         STRUCTURAL_CATEGORY_LIST : function (item, callback) {
           // do nothing, no yaml needs to be written
           callback();
