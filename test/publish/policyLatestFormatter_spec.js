@@ -10,7 +10,9 @@ describe('policyLatestFormatter', function() {
                 title : 'item title',
                 summary : 'item summary',
                 _embedded : {
-
+                    format: {
+                        _embedded: {}
+                    }
                 }
             },
             ancestors : []
