@@ -16,6 +16,7 @@ module.exports = exports = function() {
         var latestItem = JSON.parse(JSON.stringify(item));
         latestItem.uuid = item.contentItem.uuid + '-latest';
         latestItem.contentItem.uuid = item.contentItem.uuid + '-latest';
+        latestItem.contentItem._embedded.format._embedded.siteSearchable = false;
         latestItem.contentItem._embedded.parent = {
           uuid: item.contentItem.uuid,
           name: item.contentItem.title
