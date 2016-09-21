@@ -232,14 +232,14 @@ module.exports = function(rootDir) {
             var publicationDate = new Date(item.contentItem.publicationDate),
                 compareDate;
 
-            if (context.lists.publication.minDateTime) {
-                compareDate = context.lists.publication.minDateTime;
+            if (context.lists.publications.minDateTime) {
+                compareDate = context.lists.publications.minDateTime;
             } else {
                 compareDate = new Date();
             }
 
             if (publicationDate.getTime() < compareDate.getTime()) {
-                context.lists.publication.minDateTime = new Date(item.contentItem.publicationDate);
+                context.lists.publications.minDateTime = new Date(item.contentItem.publicationDate);
             }
 
             writeYamlAndJson(item);
@@ -324,6 +324,11 @@ module.exports = function(rootDir) {
             // 2. Press release landing
             if (context.lists.pressRelease.landing) {
                 writeYamlAndJson(context.lists.pressRelease.landing);
+            }
+
+            // 3. Publications landing
+            if (context.lists.publications.landing) {
+                writeYamlAndJson(context.lists.publications.landing);
             }
             callback(err);
         }
