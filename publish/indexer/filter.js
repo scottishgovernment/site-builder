@@ -12,10 +12,8 @@ module.exports = {
             return false;
         }
 
-        if (item.contentItem._embedded.format.name === 'PERSON') {
-            if (item.inverseRelatedItems.hasIncumbent.length > 0) {
-                return false;
-            }
+        if (item.contentItem._embedded.format.name === 'PERSON' && item.inverseRelatedItems.hasIncumbent.length > 0) {
+            return false;
         }
 
         return true;
