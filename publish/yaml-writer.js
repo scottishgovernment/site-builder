@@ -22,7 +22,8 @@ module.exports = function(rootDir) {
         },
 
         lists: {
-            pressRelease: {}
+            pressRelease: {},
+            publications: {}
         }
     };
 
@@ -228,6 +229,19 @@ module.exports = function(rootDir) {
         },
 
         APS_PUBLICATION: function(item, callback) {
+            var publicationDate = new Date(item.contentItem.publicationDate),
+                compareDate;
+
+            if (context.lists.publication.minDateTime) {
+                compareDate = context.lists.publication.minDateTime;
+            } else {
+                compareDate = new Date();
+            }
+
+            if (publicationDate.getTime() < compareDate.getTime()) {
+                context.lists.publication.minDateTime = new Date(item.contentItem.publicationDate);
+            }
+
             writeYamlAndJson(item);
 
             if (!item.amphora) {
@@ -263,6 +277,14 @@ module.exports = function(rootDir) {
                     writeContentPage(clone);
                 }
             });
+            callback();
+        },
+
+        PUBLICATION_LANDING: function (item, callback) {
+            item.contentItem.minDateTime = context.lists.publications.minDateTime;
+
+            context.lists.publications.landing = item;
+
             callback();
         }
     };
