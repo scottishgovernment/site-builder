@@ -20,7 +20,7 @@ var writeThumbnail = function(width, dir, item, document, auth, callback) {
     path.basename(originalName, path.extname(originalName))
     + '.' + width + '.jpg');
   var stream = fs.createWriteStream(filename);
-  var imageUrl = document.amphora._links.inline.href + '?size=' + width;
+  var imageUrl = document.amphora._links.inline.href + '?type=jpg&size=' + width;
   request.get(imageUrl, auth)
     .on('end', callback)
     .pipe(stream);
