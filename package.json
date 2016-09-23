@@ -4,7 +4,10 @@
   "description": "Static site builder for mygov.scot",
   "main": "index.js",
   "scripts": {
-    "test": "grunt test"
+    "test": "grunt test",
+    "postshrinkwrap": ".bin/sealant",
+    "prepublish": "mkdir -p out && cp npm-shrinkwrap.json out/shrinkwrap.json && npm shrinkwrap",
+    "postpublish": "cp out/shrinkwrap.json npm-shrinkwrap.json"
   },
   "author": {
     "name": "mygov.scot team",
@@ -43,6 +46,7 @@
     "grunt-jasmine-node": "^0.3.1",
     "grunt-sonar-runner": "^2.4.7",
     "load-grunt-config": "^0.19.2",
+    "sealant": "0.0.2",
     "temp": "^0.8.1",
     "xml2js": "^0.4.16"
   },
