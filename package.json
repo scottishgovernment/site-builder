@@ -5,9 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "grunt test",
-    "postshrinkwrap": ".bin/sealant",
-    "prepublish": "mkdir -p out && cp npm-shrinkwrap.json out/shrinkwrap.json && npm shrinkwrap",
-    "postpublish": "cp out/shrinkwrap.json npm-shrinkwrap.json"
+    "postshrinkwrap": ".bin/sealant"
   },
   "author": {
     "name": "mygov.scot team",
