@@ -4,24 +4,19 @@ var sutPath = '../../out/instrument/publish/asset-copier';
 describe('asset-copier', function() {
 
     var tempDir;
-    var fs = require('fs');
+    var fs = require('fs-extra');
 
-    beforeEach(function(done) {
-        var temp = require('temp');
-        temp.mkdir('',
-            function(err, dirPath) {
-                tempDir = dirPath;
-                done();
-            }
-        );
-    });
+    function createTestDir(testname) {
+        tempDir = 'out/test/asset-copier/' + testname;
+        fs.ensureDirSync(tempDir);
+    };
 
     var testPort = 10000;
 
     it('green path', function(done) {
 
         // ARRANGE
-
+        createTestDir('greenpath');
         var index = {
             '/image1.jpg': '/image1.jpg',
             '/image2.jpg': '/image2.jpg'
@@ -55,6 +50,7 @@ describe('asset-copier', function() {
     it('skips unroutable assets', function(done) {
 
         // ARRANGE
+        createTestDir('skipsunroutableassets');
         var index = {
             '/image1.jpg': '/image1.jpg',
             '/image2.jpg': '/image2.jpg'
@@ -83,6 +79,7 @@ describe('asset-copier', function() {
     it('404 is skipped', function(done) {
 
         // ARRANGE
+        createTestDir('skips404s');
         var index = {
             '/image1.jpg': '/image1.jpg',
             '/image2.jpg': '/image2.jpg'
@@ -117,11 +114,11 @@ describe('asset-copier', function() {
 
     it('Failure to create directory causes error', function(done) {
         // ARRANGE
+        createTestDir('failtocreatedircauseserror');
         var index = {
             '/blocked/image1.jpg': '/blocked/image1.jpg',
             '/blocked/image2.jpg': '/blocked/image2.jpg'
         };
-
         // note, we are not starting a test server
 
         // create a file that has the name of the directory we want to create
@@ -147,6 +144,7 @@ describe('asset-copier', function() {
     it('http error causes error (server not running)', function(done) {
 
         // ARRANGE
+        createTestDir('httperrorcauseserror');
         var index = {
             '/image1.jpg': '/image1.jpg',
             '/image2.jpg': '/image2.jpg'
