@@ -322,7 +322,8 @@ module.exports = function(rootDir) {
 
             // 2. Press release landing
             if (context.lists.pressRelease.landing) {
-                context.lists.pressRelease.landing.contentItem.minDateTime = context.lists.pressRelease.minDateTime;
+                context.lists.pressRelease.landing.contentItem.minDateTime
+                    = context.lists.pressRelease.minDateTime;
                 writeYamlAndJson(context.lists.pressRelease.landing);
             }
 
