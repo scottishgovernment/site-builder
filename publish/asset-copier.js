@@ -97,9 +97,13 @@ AssetCopier.prototype.fetch = function(downstreamUrl, assetUrl, targetUrl, callb
                 that.fire('copied', assetUrl, downstreamUrl, targetUrl);
             });
         }).on('error', function(httpErr) {
-          // got an error from http
-          fs.unlink(targetUrl);
-          callback(httpErr);
+            // got an error from http
+            fs.exists(targetUrl, function (exists) {
+                if (exists) {
+                    fs.unlink(targetUrl);
+                }
+                callback(httpErr);
+          });
         });
 };
 
