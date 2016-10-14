@@ -26,7 +26,7 @@ module.exports = function(grunt) {
     grunt.registerTask('create-yaml', 'generate content in the resources dir',
         function() {
 
-            var target = grunt.config('site.contentitems'),
+            var target = grunt.config('site.temp'),
                 sitemap = grunt.config('site.sitemap'),
                 baseUrl = grunt.config('site.homepage'),
                 nginx = grunt.config('site.nginx');
