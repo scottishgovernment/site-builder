@@ -61,11 +61,13 @@ describe('yaml-writer', function() {
 
         ];
 
-        var yamlDir = 'out/contentitems';
-        var pagesDir = 'out/pages';
+        var rootDir = 'out/temp'
+
+        var yamlDir = 'out/temp/contentitems';
+        var pagesDir = 'out/temp/pages';
         fs.mkdirsSync(yamlDir);
         fs.mkdirsSync(pagesDir);
-        var sut = require(sutPath)(yamlDir);
+        var sut = require(sutPath)(rootDir);
 
         // ACT - manually drive the handler
         var cb = function() {};
@@ -101,11 +103,12 @@ describe('yaml-writer', function() {
             cb;
 
         beforeEach(function () {
-            yamlDir = 'out/contentitems';
-            pagesDir = 'out/pages';
+
+            yamlDir = 'out/temp/contentitems';
+            pagesDir = 'out/temp/pages';
             fs.mkdirsSync(yamlDir);
             fs.mkdirsSync(pagesDir);
-            sut = require(sutPath)(yamlDir);
+            sut = require(sutPath)('out/temp');
 
             // ACT - manually drive the handler
             cb = function() {};
