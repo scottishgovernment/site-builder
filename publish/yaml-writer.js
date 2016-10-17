@@ -37,11 +37,11 @@ module.exports = function(rootDir) {
     var writeYamlAndJson = function (item) {
         var yamlText = itemAsYaml(item);
         var jsonText = JSON.stringify(item, null, 4);
-        var base = path.join(rootDir, 'contentitems', item.contentItem.uuid);
+        var base = path.join(rootDir, item.contentItem.uuid);
         fs.writeFileSync(base + '.yaml', yamlText);
         fs.writeFileSync(base + '.json', jsonText);
 
-        var dir = path.join(rootDir, 'pages', item.url);
+        var dir = path.join('out', 'pages', item.url);
         fs.mkdirsSync(dir);
         fs.writeFileSync(path.join(dir, 'index.yaml'), yamlText);
         fs.writeFileSync(path.join(dir, 'index.json'), jsonText);
@@ -50,7 +50,7 @@ module.exports = function(rootDir) {
     var writeContentItem = function (item) {
         var yamlText = itemAsYaml(item);
         var jsonText = JSON.stringify(item, null, 4);
-        var base = path.join(rootDir, 'contentitems' ,item.contentItem.uuid);
+        var base = path.join(rootDir, item.contentItem.uuid);
         fs.writeFileSync(base + '.yaml', yamlText);
         fs.writeFileSync(base + '.json', jsonText);
     };
@@ -58,7 +58,7 @@ module.exports = function(rootDir) {
     var writeContentPage = function (item) {
         var yamlText = itemAsYaml(item);
         var jsonText = JSON.stringify(item, null, 4);
-        var dir = path.join(rootDir, 'pages', item.url);
+        var dir = path.join('out', 'pages', item.url);
         fs.mkdirsSync(dir);
         fs.writeFileSync(path.join(dir, 'index.yaml'), yamlText);
         fs.writeFileSync(path.join(dir, 'index.json'), jsonText);
@@ -294,8 +294,7 @@ module.exports = function(rootDir) {
         start: function(callback) {
             // clean out the directory
             fs.removeSync(rootDir);
-            fs.mkdirsSync(path.join(rootDir, 'contentitems'));
-            fs.mkdirsSync(path.join(rootDir, 'pages'));
+            fs.mkdirsSync(rootDir);
             callback();
         },
 
