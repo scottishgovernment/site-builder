@@ -12,6 +12,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-istanbul');
     grunt.loadNpmTasks('grunt-sonar-runner');
 
+    var packageJSON = grunt.file.readJSON('package.json');
     var tokenFile = path.join(process.env.HOME, '.sonar/token');
     var token;
     if (fs.existsSync(tokenFile)) {
@@ -29,8 +30,8 @@ module.exports = function(grunt) {
                 },
                 projectKey: "site-builder",
                 projectName: "Site Builder",
-                projectVersion: grunt.package.version,
-                projectDescription: grunt.package.description,
+                projectVersion: packageJSON.version,
+                projectDescription: packageJSON.description,
                 sources: [
                     'common',
                     'decommission',
