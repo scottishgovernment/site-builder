@@ -24,7 +24,7 @@ module.exports = function () {
     }
 
     function reOrderDocuments(pub) {
-        var title = pub.title.trim().replace(/\s+/g, ' ').split(' ');
+        var title = pub.title ? pub.title.trim().replace(/\s+/g, ' ').split(' ') : '';
         pub.documents.sort(function (a, b) {
             return wordCount(title, b) - wordCount(title, a);
         });
@@ -34,10 +34,10 @@ module.exports = function () {
     }
 
     function wordCount(title, document) {
-        var words = document.source.title.trim().replace(/\s+/g, ' ').split(' ');
+        var words = document.source.title ? document.source.title.trim().replace(/\s+/g, ' ').split(' ') : [];
         var wordCount = 0;
         words.forEach(function(source, i) {
-            source === title[i] ? wordCount++ : wordCount--;
+            wordCount = source === title[i] ? wordCount + 1 : wordCount - 1;
         });
         return wordCount;
     }
@@ -58,8 +58,8 @@ module.exports = function () {
             var tocItem = {
                 title: page.title,
                 url: page.url,
-                visible: page.title.toLowerCase() !== 'contents'
-                     && page.title.toLowerCase() !== 'table of contents'
+                visible: page.title.toLowerCase() !== 'contents' &&
+                    page.title.toLowerCase() !== 'table of contents'
             };
             pub.toc.push(tocItem);
         });
