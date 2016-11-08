@@ -5,31 +5,31 @@ var request = require('request');
 var async = require('async');
 var thumbnailWidths = [107, 165, 214, 330];
 
-var writeDocument = function(dir, item, document, auth, callback) {
+var writeDocument = function(dir, item, document, callback) {
   var filename = path.join(dir, path.basename(document.amphora.metadata.filename));
   var stream = fs.createWriteStream(filename);
   var downloadUrl = document.amphora._links.attachment.href;
-  request.get(downloadUrl, auth)
+  request.get(downloadUrl)
     .on('end', callback)
     .pipe(stream);
 };
 
-var writeThumbnail = function(width, dir, item, document, auth, callback) {
+var writeThumbnail = function(width, dir, item, document, callback) {
   var originalName = document.amphora.metadata.filename;
   var filename = path.join(dir,
     path.basename(originalName, path.extname(originalName))
     + '.' + width + '.jpg');
   var stream = fs.createWriteStream(filename);
   var imageUrl = document.amphora._links.inline.href + '?type=jpg&size=' + width;
-  request.get(imageUrl, auth)
+  request.get(imageUrl)
     .on('end', callback)
     .pipe(stream);
 };
 
-var writeThumbnails = function(dir, item, document, auth, callback) {
+var writeThumbnails = function(dir, item, document, callback) {
   async.each(thumbnailWidths,
     function (width, cb) {
-      writeThumbnail(width, dir, item, document, auth, cb);
+      writeThumbnail(width, dir, item, document, cb);
     },
     callback
   );
@@ -37,29 +37,6 @@ var writeThumbnails = function(dir, item, document, auth, callback) {
 
 module.exports = exports = function(config, target) {
     process.mode  = process.mode || 'site';
-
-    var authentication = require('./amphora/authentication')(config, restler);
-
-    var login = function(auth, callback) {
-        authentication.login(
-        function(err, token) {
-            auth = {headers: {'Authorization' : 'Bearer ' + token}};
-            auth.done = function(cb) {
-                authentication.logout(token, cb);
-            };
-            callback(auth);
-        });
-    };
-
-    var withAuth = function(auth, visibility, callback) {
-        if (process.mode === 'site' || visibility === 'stage' ) {
-            login(auth, callback);
-        } else {
-            auth.done = function(cb) {
-                cb();
-            }; callback(auth);
-        }
-    };
 
     return {
         // for a content item, fetch meta data from doctor and write out any pdf and jpg files
@@ -72,14 +49,10 @@ module.exports = exports = function(config, target) {
             }
             async.each(item.documents,
               function(document, documentsCallback) {
-                withAuth(auth, visibility, function(auth) {
                   var amphoraUrl = config.amphora.endpoint + 'resource/docs/' + document.externalDocumentId;
-                  restler.get(amphoraUrl, auth).on('complete', function(data, response) {
+                  restler.get(amphoraUrl).on('complete', function(data, response) {
                       if (data instanceof Error || response.statusCode !== 200) {
                         console.log('Unable to fetch the json for ' + amphoraUrl);
-                        auth.done(function() {
-                          documentsCallback(data, null);
-                        });
                         return;
                       }
                       var dir = path.join('out', target, item.url);
@@ -91,18 +64,14 @@ module.exports = exports = function(config, target) {
                       if (document.uuid === item.documents[0].uuid) {
                         item.amphora = document.amphora;
                       }
-
                       async.parallel([
-                          function (cb) { writeDocument(dir, item, document, auth, cb); },
-                          function (cb) { writeThumbnails(dir, item, document, auth, cb);}
+                          function (cb) { writeDocument(dir, item, document, cb); },
+                          function (cb) { writeThumbnails(dir, item, document, cb);}
                         ],
                         function (err, data) {
-                          auth.done(function() {
                             documentsCallback(err, data);
-                          });
                         });
                   });
-                });
               },
               function(err, data) {
                   console.log('DONE, calling parent callback');
