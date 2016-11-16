@@ -2,65 +2,68 @@
 
 var config = require('config-weaver').config();
 var restler = require('restler');
-var myArgs = require('optimist').argv;
-var contentItems;
+var args = require('optimist').argv;
+var fs = require('fs-extra');
+var path = require('path');
 
-//If we have an IDs, then put them in an array for later
-if (myArgs.ids) {
-    contentItems = String(myArgs.ids).split(',') || undefined;
-}
 
 // Grunt task that fetches content from the content repo and constructs the site
 //
 // It does this by calling a ContentSource with ContentHandlers set up to handle each item in turn.
 // These handlers create the yaml, index the content and create the search page
+var loadModule = function(name) {
+    return require(path.join('../publish', name));
+};
+
+var getHandlers = function(app, grunt) {
+
+    var tempDir = grunt.config('site.temp');
+    var sitemap = grunt.config('site.sitemap');
+    var baseUrl = grunt.config('site.homepage');
+    var nginx = grunt.config('site.nginx');
+
+    var handlers = [
+        // handler to index content
+        loadModule('logger-handler')(app, grunt),
+
+        // handler to create redirects
+        loadModule('redirect-writing-content-handler')(app, nginx),
+
+        // handler to write yaml files to disk
+        loadModule('save-item')(app, tempDir, fs),
+
+        // handler to write sitemap.xml files
+        loadModule('sitemap-handler')(app, sitemap, baseUrl)
+    ];
+    return handlers;
+};
 
 module.exports = function(grunt) {
-
-    var path = require('path');
-
-    function module(name) {
-        return require(path.join('../publish', name));
-    }
 
     grunt.registerTask('create-yaml', 'generate content in the resources dir',
         function() {
 
-            var target = grunt.config('site.contentitems'),
-                sitemap = grunt.config('site.sitemap'),
-                baseUrl = grunt.config('site.homepage'),
-                nginx = grunt.config('site.nginx');
+            var site = require('../common/site')();
 
+            var app = require('../publishing/app')(config, site, false);
+            //If we have an IDs, then put them in an array for later
+            if (args.ids) {
+                app.context.ids = String(args.ids).split(',') || undefined;
+            }
             var release = this.async();
-
-            var handlers = [
-                // handler to index content
-                module('logger-handler')(grunt),
-
-                // handler to create redirects
-                module('redirect-writing-content-handler')(nginx),
-
-                // handler to write yaml files to disk
-                module('yaml-writer')(target),
-
-                // handler to write sitemap.xml files
-                module('sitemap-handler')(sitemap, baseUrl)
-            ];
-
             // create a composite content handler to marshal the tasks that need to happen
-            var contentHandler = module('composite-content-handler')(handlers);
+            var contentHandler = loadModule('composite-content-handler')(
+                getHandlers(app, grunt));
+            var items = loadModule('items')(app, contentHandler);
+            items.generate(function(err) {
 
-            // create the formatter
-            var contentLabeller = module('item-labeller')();
-            var contentFormatter
-                = module('item-formatter')(config.layoutstrategy, contentLabeller);
-
-            // create the contentsource
-            var contentSource = module('content-source')(config, contentFormatter, contentHandler);
-            contentSource.getContent(
-                 function() {
-                    release(true);
-                 }, contentItems);
+                if (err || app.context.errors.length > 0) {
+                    console.log('Errors: ');
+                    console.log(err || '');
+                    console.log(app.context.errors);
+                }
+                release(true);
+            });
         }
     );
 };

@@ -171,16 +171,16 @@ describe('asset-copier', function() {
 
     // router that just apends /routed to every url
     function simpleRouter(baseUrl) {
-        return function (req) {
+        return function (req, callback) {
             var routedUrl = baseUrl + 'routed' + req.url;
-            return require('url').parse(routedUrl);
+            callback(require('url').parse(routedUrl));
         };
     }
 
     // a router that doesnt know how to rout anything
     function stupidRouter(baseUrl) {
-        return function (req) {
-            return null;
+        return function (req, callback) {
+            callback(null);
         };
     }
 

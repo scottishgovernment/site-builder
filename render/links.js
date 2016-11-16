@@ -30,14 +30,17 @@ function createRewriter (index) {
  */
 function collector() {
     var ids = [];
+    var list = [];
     var fn = function(href) {
         var match = href.match(idRegex);
         if (match) {
             var id = match[0];
             ids.push({uuid: id});
+            list.push(id);
         }
     };
     fn.ids = ids;
+    fn.list = list;
     return fn;
 }
 

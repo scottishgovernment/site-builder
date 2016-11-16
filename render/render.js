@@ -17,7 +17,7 @@ function Renderer(layouts, partials, helpers) {
     this.reload();
 
     this.callbacks = {
-        'render': function(src, dst, item) {
+        'render': function(src, dst) {
             console.log(dst);
         }
     };

@@ -19,10 +19,10 @@ function AssetCopier(router) {
     // default do nothing callbacks. Override by using 'on'
     this.callbacks = {
         // Called when the copy is about to start: index, targetDir
-        start : [],
+        start: [],
 
         // called when an asset has been copied: src, downstream, to
-        copied : [],
+        copied: [],
 
         // calleed if an asset has been skipped due to no routing information: assetUrl, reason
         skipped: [],
@@ -38,21 +38,21 @@ AssetCopier.prototype.copy = function(index, targetDir) {
 
     /// AGH, when you limit this to 1 we get a Fatal error: EBADF, close
     async.eachLimit(index, 10,
-        function (assetUrl, callback) {
+        function(assetUrl, callback) {
             // route the asset url to determine where to fetch it from
-            var routed = that.router({method: 'GET', url: assetUrl});
-
-            if (routed instanceof url.Url) {
-                // we go a url, copy the asset
-                var targetUrl = targetDir + assetUrl;
-                that.copyAsset(assetUrl, routed.href, targetUrl, callback);
-            } else {
-                // the router did not give us a url, skip it.
-                that.fire('skipped', assetUrl, 'router did not return a downstream url');
-                callback();
-            }
+            that.router({ method: 'GET', url: assetUrl }, function(routed) {
+                if (routed instanceof url.Url) {
+                    // we go a url, copy the asset
+                    var targetUrl = targetDir + assetUrl;
+                    that.copyAsset(assetUrl, routed.href, targetUrl, callback);
+                } else {
+                    // the router did not give us a url, skip it.
+                    that.fire('skipped', assetUrl, 'router did not return a downstream url');
+                    callback();
+                }
+            });
         },
-        function (err) {
+        function(err) {
             that.fire('done', err);
         }
     );
@@ -65,11 +65,11 @@ AssetCopier.prototype.copyAsset = function(assetUrl, downstreamUrl, targetUrl, c
     async.series(
         [
             //async.apply(fs.ensureDir(dir)),
-            function (cb) { fs.ensureDir(dir, cb); },
-            function (cb) { that.fetch(downstreamUrl, assetUrl, targetUrl, cb); }
+            function(cb) { fs.ensureDir(dir, cb); },
+            function(cb) { that.fetch(downstreamUrl, assetUrl, targetUrl, cb); }
         ],
 
-        function (err) { callback(err); }
+        function(err) { callback(err); }
     );
 };
 
@@ -97,14 +97,14 @@ AssetCopier.prototype.fetch = function(downstreamUrl, assetUrl, targetUrl, callb
                 that.fire('copied', assetUrl, downstreamUrl, targetUrl);
             });
         }).on('error', function(httpErr) {
-            // got an error from http
-            fs.exists(targetUrl, function (exists) {
-                if (exists) {
-                    fs.unlink(targetUrl);
-                }
-                callback(httpErr);
-          });
+        // got an error from http
+        fs.exists(targetUrl, function(exists) {
+            if (exists) {
+                fs.unlink(targetUrl);
+            }
+            callback(httpErr);
         });
+    });
 };
 
 // register a listener for a given event
@@ -114,11 +114,11 @@ AssetCopier.prototype.on = function(event, callback) {
 };
 
 // fire an event
-AssetCopier.prototype.fire = function (event) {
+AssetCopier.prototype.fire = function(event) {
     var args = Array.prototype.slice.call(arguments);
     // get rid of the 'event' argument, the callback dont need it
     args.shift();
-    this.callbacks[event].forEach(function (cb) {
+    this.callbacks[event].forEach(function(cb) {
         cb.apply(cb, args);
     });
 };

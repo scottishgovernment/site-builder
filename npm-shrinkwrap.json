@@ -2014,6 +2014,10 @@
     "mime-types": {
       "version": "2.1.12"
     },
+    "mockery": {
+      "version": "2.0.0",
+      "dev": true
+    },
     "needle": {
       "version": "1.0.0",
       "dependencies": {

@@ -1,7 +1,7 @@
 // ContentHandler that writes sitemap xml files to the web doc root
 //
 // The ContentSource will call the method of this object as it fetched the content.
-module.exports = function(root, baseUrl) {
+module.exports = function(applicationContext, root, baseUrl) {
 
     var fs = require('fs-extra');
     var marked = require('marked');
@@ -16,9 +16,9 @@ module.exports = function(root, baseUrl) {
         }
     };
 
-    var getFilename = function(item) {
-       if ( item.ancestors.length > 1 ) {
-           var ancestorUrl = item.ancestors[1].url;
+    var getFilename = function(content) {
+       if ( content.ancestors.length > 1 ) {
+           var ancestorUrl = content.ancestors[1].url;
            var category = ancestorUrl.replace(/\//g, '.');
            var filename = '/sitemap'+category+'xml';
            return filename;
@@ -33,8 +33,8 @@ module.exports = function(root, baseUrl) {
           '</loc><lastmod>'+lastModified+'</lastmod></url>\n');
     };
 
-    var prepareFile = function(item) {
-        var filename = getFilename(item);
+    var prepareFile = function(content) {
+        var filename = getFilename(content);
         var header =
             '<?xml version="1.0" encoding="UTF-8"?>\n' +
             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
@@ -63,8 +63,8 @@ module.exports = function(root, baseUrl) {
         fs.appendFileSync(rootSitemap, '</sitemapindex>\n' );
     };
 
-    var isIncluded = function(item) {
-        return item.contentItem._embedded.format._embedded.internetSearchable;
+    var isIncluded = function(content) {
+        return content.contentItem._embedded.format._embedded.internetSearchable;
     };
 
     return {
@@ -76,30 +76,35 @@ module.exports = function(root, baseUrl) {
         },
 
         // called for each content item provided by the content source
-        handleContentItem: function(item, callback) {
-            if (isIncluded(item)) {
-                prepareFile(item);
+        handleContentItem: function(context, content, callback) {
+            if (isIncluded(content)) {
+                prepareFile(content);
 
-                var filename = getFilename(item);
-                var lastModified = item.contentItem.dateModified;
+                var filename = getFilename(content);
+                var lastModified = content.contentItem.dateModified;
                 if (lastModified === undefined) {
-                  lastModified = item.contentItem.dateCreated;
+                  lastModified = content.contentItem.dateCreated;
                 }
-                appendToSitemap(filename, lastModified, item.url);
+                appendToSitemap(filename, lastModified, content.url);
+
+
+                // TODO:  this is site / format specific code that does not belong
+                // in site builder. The sitmap should perhaps be generated from
+                // out/pages
 
                 // if it is a guide then also add its sub-pages
-                if (item.contentItem._embedded.format.name === 'GUIDE') {
-                    var html = marked(item.contentItem.content);
+                if (content.contentItem._embedded.format.name === 'GUIDE') {
+                    var html = marked(content.contentItem.content);
                     var $ = require('cheerio').load(html);
                     $('h1').each(function(index, element) {
                         var slug = $(element).text().toLowerCase().replace(/[^\w]+/g, '-');
-                        var url = item.url + slug + '/';
+                        var url = content.url + slug + '/';
                         appendToSitemap(filename, lastModified, url);
                     });
                 }
 
-                if (item.contentItem._embedded.format.name === 'APS_PUBLICATION') {
-                  var pages = item.amphora.publication.pages;
+                if (content.contentItem._embedded.format.name === 'APS_PUBLICATION') {
+                  var pages = content.amphora.publication.pages;
                   pages.forEach(function (page){
                     appendToSitemap(filename, lastModified, page.url);
                   });

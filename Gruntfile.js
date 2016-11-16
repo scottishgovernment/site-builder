@@ -88,6 +88,7 @@ module.exports = function(grunt) {
             files: [
                 'common/*.js',
                 'publish/**/*.js',
+                'publishing/**/*.js',
                 'decommission/*.js',
                 'preview/*.js',
                 'render/*.js',
