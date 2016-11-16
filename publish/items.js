@@ -32,7 +32,7 @@ module.exports = function(app, contentHandler) {
             async.each(app.context.ids, generateItem, callback);
         } else {
             app.contentSource.fetchItems(null, 'siteBuild', function(err, ids) {
-                async.eachLimit(ids, 80, generateItem, callback);
+                async.eachLimit(ids, 30, generateItem, callback);
             });
         }
     };
