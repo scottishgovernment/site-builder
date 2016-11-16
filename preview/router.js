@@ -1,28 +1,44 @@
 'use strict';
 
-var http = require('http');
 var url = require('url');
 var proxy = require('express-http-proxy');
+
 
 /**
  * Allows a site to define a custom route for a URL path in preview.
  * If the site router returns a URL, preview will use that as an upstream Server
  * and proxy the request to it.
  */
-function Router(siteRouter) {
-  this.router = siteRouter;
+function Router(siteRouter, app) {
+    this.router = siteRouter;
+    this.router.app = app;
 }
 
-Router.prototype.apply = function (req, res, next) {
-    var route = this.router(req);
-    if (route instanceof url.Url) {
-        this.proxy(req, res, route);
-    } else {
-        next();
+function createContext(router, req, res) {
+    var token = null;
+    if (res) {
+        token = req.query.token || req.cookies.preview_token;
+        res.cookie('preview_token', token);
     }
+    var visibility = req.headers['x-visibility'] || 'preview';
+    return router.app.createPrepareContext(visibility, token);
+}
+
+
+Router.prototype.apply = function(req, res, next) {
+    if (this.router.app) {
+        req.context = createContext(this.router, req, res);
+    }
+    this.router(req, (route) => {
+        if (route instanceof url.Url) {
+            this.proxy(req, res, route);
+        } else {
+            next();
+        }
+    });
 };
 
-Router.prototype.proxy = function (request, response, upstream) {
+Router.prototype.proxy = function(request, response, upstream) {
     proxy(upstream.host, {
         forwardPath: function() {
             return upstream.path;
@@ -33,12 +49,12 @@ Router.prototype.proxy = function (request, response, upstream) {
     })(request, response);
 };
 
-function create(siteRouter) {
-    var router = new Router(siteRouter);
+function create(siteRouter, app) {
+    var router = new Router(siteRouter, app);
     return router.apply.bind(router);
 }
 
 module.exports = {
-  create: create,
-  Router: Router
+    create: create,
+    Router: Router
 };

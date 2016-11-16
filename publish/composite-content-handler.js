@@ -15,11 +15,11 @@ module.exports = function(handlers) {
                 });
         },
 
-        handleContentItem: function(contentItem, callback) {
+        handleContentItem: function(context, content, callback) {
             async.eachSeries(handlers,
                 // for each call the handler
                 function(handler, eachCallback) {
-                    handler.handleContentItem(contentItem, eachCallback);
+                    handler.handleContentItem(context, content, eachCallback);
                 },
                 // called when all are finished
                 function(err) {

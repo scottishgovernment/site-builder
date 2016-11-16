@@ -1,4 +1,4 @@
-module.exports = function(dir) {
+module.exports = function(app, dir) {
 
   var redirects = [];
 
@@ -54,13 +54,12 @@ module.exports = function(dir) {
     },
 
     // called for each content item provided by the content source
-    handleContentItem: function(item, callback) {
-
-      if (item.contentItem._embedded.urlaliases) {
-        item.contentItem._embedded.urlaliases.forEach(
+    handleContentItem: function(context, content, callback) {
+      if (content.contentItem._embedded.urlaliases) {
+        content.contentItem._embedded.urlaliases.forEach(
           function(alias) {
             addRedirect({
-              url: item.url,
+              url: content.url,
               alias: alias.url
             });
           });

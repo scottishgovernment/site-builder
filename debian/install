@@ -3,6 +3,7 @@ decommission     /usr/lib/node_modules/site-builder
 grunt            /usr/lib/node_modules/site-builder
 preview          /usr/lib/node_modules/site-builder
 publish          /usr/lib/node_modules/site-builder
+publishing       /usr/lib/node_modules/site-builder
 render           /usr/lib/node_modules/site-builder
 scripts          /usr/lib/node_modules/site-builder
 tasks            /usr/lib/node_modules/site-builder

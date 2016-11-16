@@ -14,11 +14,34 @@ describe('redirect-writing-content-handler', function() {
         }
     }
 
+    var getRuntime = function() {
+        return {
+            referenceData: {},
+            config: {},
+            templates: {
+                render: {}
+            },
+            rubricContentContext: function() {
+                return {
+                    attributes: {},
+                    headers: {},
+                    fetchItem: function(path, callback) {
+                        callback(null, 'content');
+                    },
+                    runtime: this
+                }
+            }
+        }
+    };
+
     beforeEach(function() {
         fs.removeSync('redirects.txt');
     });
 
     it('green path', function(done) {
+
+        var runtime = getRuntime();
+        var context = runtime.rubricContentContext();
 
         // ARRANGE
         var items = [
@@ -33,7 +56,7 @@ describe('redirect-writing-content-handler', function() {
             }])
         ];
 
-        var sut = require(sutPath)('/tmp/');
+        var sut = require(sutPath)(runtime, '/tmp/');
 
         var expectedContent = 'rewrite ^/url1/alias1(/?|/.*)$ /url1$1 permanent ;\n' +
             'rewrite ^/url1/alias2(/?|/.*)$ /url1$1 permanent ;\n' +
@@ -43,7 +66,7 @@ describe('redirect-writing-content-handler', function() {
         var cb = function() {};
         sut.start(cb);
         items.forEach(function(item) {
-            sut.handleContentItem(item, cb);
+            sut.handleContentItem(context, item, cb);
         });
         sut.end(null, function() {
             // ASSERT - the temp directory should contain the expected files

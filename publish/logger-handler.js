@@ -1,10 +1,11 @@
-// ContentHandler that logs the content items being handled.
-var config = require('config-weaver').config();
-
-module.exports = function(grunt) {
+module.exports = function(app, grunt) {
 
     var needle = require('needle');
     var count = 0;
+    var killerItem = {
+        time: 0,
+        uuid: ''
+    };
 
     function log(method, data, status) {
         grunt.log.writeln('Create YAML ' + data['cyan'] + ' ' + status['green']);
@@ -20,9 +21,17 @@ module.exports = function(grunt) {
         },
 
         // called for each content item provided by the content source
-        handleContentItem: function(item, callback) {
+        handleContentItem: function(context, content, callback) {
             count++;
-            log('processing', item.contentItem.slug, 'OK');
+            var ended = new Date().getTime();
+            var elapsed = (ended - context.attributes[content.uuid].fetched);
+            var requestTime = (ended - context.attributes.dateCreated);
+            if (killerItem.time > elapsed) {
+                killerItem.time = elapsed;
+                killerItem.uuid = content.uuid;
+            }
+            log('processing', content.uuid + ' ' + content.contentItem.slug
+                + ' prepare:' + elapsed + ' total-context-time: ' + requestTime, 'OK');
             callback();
         },
 
@@ -30,7 +39,7 @@ module.exports = function(grunt) {
         end: function(err, callback) {
             var content = {
                 pub: {
-                    createdby: config.authentication.user,
+                    createdby: app.config.authentication.user,
                     itemcount: count
                 }
             };
@@ -39,8 +48,7 @@ module.exports = function(grunt) {
                 json: true,
                 content_type: 'application/json'
             };
-
-            needle.post(config.crud.endpoint + '/api/pub', content, options, function() {
+            needle.post(app.config.crud.endpoint + '/api/pub', content, options, function() {
                 grunt.log.ok('Create YAML end ' + count.toString()['green'] + ' items');
                 callback();
             });

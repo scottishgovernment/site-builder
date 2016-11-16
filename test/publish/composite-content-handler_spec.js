@@ -2,14 +2,38 @@ var sutPath = '../../out/instrument/publish/composite-content-handler';
 
 describe('composite-content-handler', function() {
 
+
+    var getRuntime = function() {
+        return {
+            referenceData: {},
+            config: {},
+            templates: {
+                render: {}
+            },
+            rubricContentContext: function() {
+                return {
+                    attributes: {},
+                    headers: {},
+                    fetchItem: function(path, callback) {
+                        callback(null, 'content');
+                    },
+                    runtime: this
+                }
+            }
+        }
+    };
+
+
     it('propogates events as expected', function(done) {
+
+        var runtime = getRuntime();
 
         // ARRANGE
         var handler1 = {
             start: function(callback) {
                 callback();
             },
-            handleContentItem: function(item, callback) {
+            handleContentItem: function(context, item, callback) {
                 callback();
             },
             end: function(err, callback) { callback(); }
@@ -18,7 +42,7 @@ describe('composite-content-handler', function() {
             start: function(callback) {
                 callback()
             },
-            handleContentItem: function(item, callback) {
+            handleContentItem: function(context, item, callback) {
                 callback();
             },
             end: function(err, callback) { callback(); }
@@ -43,13 +67,15 @@ describe('composite-content-handler', function() {
         spyOn(startcb, 'callback').andCallThrough();
         spyOn(handlecb, 'callback').andCallThrough();
 
+        var context = runtime.rubricContentContext();
+
         // ACT
         sut.start(startcb.callback);
-        sut.handleContentItem(item, handlecb.callback);
+        sut.handleContentItem(context, item, handlecb.callback);
         sut.end(null, function() {
             // ASSERT
             expect(handler1.start).toHaveBeenCalledWith(jasmine.any(Function));
-            expect(handler1.handleContentItem).toHaveBeenCalledWith(item, jasmine.any(Function));
+            expect(handler1.handleContentItem).toHaveBeenCalledWith(context, item, jasmine.any(Function));
             expect(handler1.end).toHaveBeenCalled();
             expect(startcb.callback).toHaveBeenCalled();
             expect(handlecb.callback).toHaveBeenCalled();

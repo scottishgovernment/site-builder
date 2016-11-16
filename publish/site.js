@@ -42,7 +42,6 @@ Site.prototype.build = function(done) {
         }
         that.indexFiles(files, function(err, index) {
             that.index = index;
-
             that.imageLink = images.collector(
                 function (url) { return url; }
             );

@@ -3,6 +3,8 @@ uuid: "SITE-02"
 layout: layout.hbs
 content: hello [home](SITE-01)
 url: /02/
+links:
+  SITE-01: /01/ 
 contentItem:
   _embedded:
     format:
