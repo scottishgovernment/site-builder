@@ -13,16 +13,24 @@ function init(fs, target, callback) {
 };
 
 function handleContentItem(context, content, fs, target, callback) {
-    var publish = context.attributes[content.uuid].store;
-    if (context.attributes[content.uuid].additionalItems) {
-        context.attributes[content.uuid].additionalItems.each(function(item, cb) {
-            saveItem(fs, target, item, publish, cb);
-        }, function() {
-            saveItem(fs, target, content, publish, callback);
-        });
-    } else {
-        saveItem(fs, target, content, publish, callback);
+    var savePages = context.attributes[content.uuid].store;
+    if (!context.attributes[content.uuid].additionalItems) {
+        saveItem(fs, target, content, savePages, true, callback);
+        return
     }
+
+    // there are additional items, iterate over them saving to pages but not
+    // contentitems
+    var index = 0;
+    context.attributes[content.uuid].additionalItems.each(
+        function(item, cb) {
+            item.uuid = item.uuid + '-' + index;
+            console.log('----> ' + item.uuid);
+            saveItem(fs, target, item, savePages, false, cb);
+            index++;
+        }, function() {
+            saveItem(fs, target, content, savePages, true, callback);
+        });
 };
 
 // Turn a content item into yaml frontmatter
@@ -31,7 +39,7 @@ function toYaml(content) {
 };
 
 // save an individual content item
-function saveItem(fs, target, content, publish, callback) {
+function saveItem(fs, target, content, savePages, saveContentItems, callback) {
     var yamlContent = toYaml(content);
     var jsonContent = JSON.stringify(content, null, 4);
 
@@ -43,17 +51,18 @@ function saveItem(fs, target, content, publish, callback) {
     var pagesPath = path.join(target, 'pages', content.url);
 
     // store YAML and JSON files under /contentitems/{UUID}.yaml and /contentitems/{UUID}.json
-    filesToWrite.push({
-        path: path.join(contentitemsPath, content.uuid + '.yaml'),
-        content: yamlContent
-    });
-    filesToWrite.push({
-        path: path.join(contentitemsPath, content.uuid + '.json'),
-        content: jsonContent
-    });
+    if (saveContentItems) {
+        filesToWrite.push({
+            path: path.join(contentitemsPath, content.uuid + '.yaml'),
+            content: yamlContent
+        });
+        filesToWrite.push({
+            path: path.join(contentitemsPath, content.uuid + '.json'),
+            content: jsonContent
+        });
+    }
 
-
-    if (publish) {
+    if (savePages) {
         // store YAML and JSON under /pages/{url}/ by page url (i.e slug)
         filesToWrite.push({
             path: path.join(pagesPath, 'index.yaml'),
