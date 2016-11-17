@@ -27,7 +27,8 @@ function handleContentItem(context, content, fs, target, callback) {
             item.uuid = item.uuid + '-' + index;
             saveItem(fs, target, item, savePages, false, cb);
             index++;
-        }, function() {
+        },
+        function() {
             saveItem(fs, target, content, savePages, true, callback);
         });
 };
@@ -104,7 +105,7 @@ var finalize = function(fs, err, app, target, callback) {
     async.each(finalContents,
         // for each call the handler
         function(content, eachCallback) {
-            saveItem(fs, target, content, true, true,   eachCallback);
+            saveItem(fs, target, content, true, true, eachCallback);
         },
         // called when all are finished
         function() {
