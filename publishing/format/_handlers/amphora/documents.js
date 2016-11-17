@@ -9,7 +9,6 @@ var assemble = function(context, content, document, cb) {
     context.app.amphora.resource(context, resourcePath, function(err, amphoraResource) {
         if (err) {
             err.id = content.uuid;
-            context.app.context.errors.push(err);
             // legacy application ignores amphora failures
             cb(null, content);
             return;
