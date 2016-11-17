@@ -27,7 +27,6 @@ class PrepareContext {
                 callback(err);
             } else {
                 content.stagingEnvironment = context.visibility === 'stage';
-                context.attributes[content.uuid] = {};
                 context.attributes[content.uuid] = {
                     fetched: new Date().getTime(),
                     path: path,
