@@ -66,11 +66,32 @@ var resource = function(context, namespace, callback) {
 var assemble = function(context, content, callback) {
     content.amphora = { resources: {} };
     var location = context.app.config.amphora.endpoint + 'assemble' + content.url;
-    fetch(context, location, {},  function(err, resource) {
+    utils.cache.checkAssembledResource(content.uuid, function(checksum) {
+        fetch(context, location, { headers: { 'If-None-Match': checksum || '-' } }, function(err, resource) {
+            if (err) {
+                callback(null, content);
+            } else {
+                if (resource.metadata.partialChecksum === checksum) {
+                    utils.cache.getAssembledResource(content.uuid, function(assembledResource) {
+                        handle(context, content, assembledResource, callback);
+                    });
+                } else {
+                    utils.cache.storeAssembledResource(content.uuid, resource, function() {
+                        handle(context, content, resource, callback);
+                    });
+                }
+            }
+        });
+    })
+};
+
+var assembleNoCache = function(context, content, callback) {
+    content.amphora = { resources: {} };
+    var location = context.app.config.amphora.endpoint + 'assemble' + content.url;
+    fetch(context, location, function(err, resource) {
         if (err) {
             callback(null, content);
         } else {
-
             handle(context, content, resource, callback);
         }
     });
