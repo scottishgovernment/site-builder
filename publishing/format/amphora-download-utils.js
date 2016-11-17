@@ -20,11 +20,11 @@ var getContent = function(context, resource, callback) {
 
 var download = function(url, destination, callback) {
     fs.ensureDir(path.dirname(destination), function() {
-       
+
         var downloadRequest = request.get(url);
         downloadRequest.on('response', function(response) {
             if (response.statusCode === 200) {
-                 console.log('Amphora', url);
+                console.log('Amphora', url);
                 var file = fs.createWriteStream(destination);
                 downloadRequest.pipe(file);
                 file.on('finish', callback);
@@ -115,5 +115,6 @@ module.exports = {
     store: store,
     getContent: getContent,
     download: download,
-    downloadQueuedResources: downloadQueuedResources
+    downloadQueuedResources: downloadQueuedResources,
+    cache: cache
 };

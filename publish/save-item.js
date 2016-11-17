@@ -25,7 +25,6 @@ function handleContentItem(context, content, fs, target, callback) {
     context.attributes[content.uuid].additionalItems.each(
         function(item, cb) {
             item.uuid = item.uuid + '-' + index;
-            console.log('----> ' + item.uuid);
             saveItem(fs, target, item, savePages, false, cb);
             index++;
         }, function() {
