@@ -104,7 +104,7 @@ var finalize = function(fs, err, app, target, callback) {
     async.each(finalContents,
         // for each call the handler
         function(content, eachCallback) {
-            saveItem(fs, target, content, true, false,   eachCallback);
+            saveItem(fs, target, content, true, true,   eachCallback);
         },
         // called when all are finished
         function() {
