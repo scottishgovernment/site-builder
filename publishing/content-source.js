@@ -79,15 +79,10 @@ module.exports = function(config, restler) {
             if (fs.existsSync(cacheId)) {
                 return JSON.parse(fs.readFileSync(cacheId));
             } else {
-                var url = buildApi('urlOrId', urlOrId.replace('-latest', ''), 'stage');
+                var url = buildApi('urlOrId', urlOrId, 'stage');
                 console.log('[additional-resources] ' + url);
                 var res = require('sync-request')('GET', url, {});
                 var content = JSON.parse(res.getBody('utf8'));
-                if (urlOrId.endsWith('-latest')) {
-                    content.uuid = content.uuid + '-latest';
-                    content.contentItem.uuid = content.uuid;
-                    content.url = content.url + 'latest/';
-                }
                 content.body = content.contentItem.content;
                 fs.writeFileSync(cacheId, JSON.stringify(content));
                 return content;
