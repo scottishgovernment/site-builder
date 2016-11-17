@@ -2,8 +2,9 @@
 
 var path = require('path');
 var cachePath = path.join('out', '.amphora');
+var assembledCachePath = path.join(cachePath, 'assembled');
 var fs = require('fs-extra');
-fs.ensureDirSync(cachePath);
+fs.ensureDirSync(assembledCachePath);
 
 var getLocalResource = function(resource, callback) {
     var cachedResource = path.join(cachePath, resource.storage.checksum);
@@ -24,7 +25,42 @@ var cacheResource = function(resource, callback) {
     file.on('finish', callback)
 };
 
+var checkAssembledResource = function(uuid, callback) {
+    var checksumFile = path.join(assembledCachePath, uuid + '.checksum');
+    fs.exists(checksumFile, function(exists) {
+        if (exists) {
+            fs.readFile(checksumFile, 'UTF-8', function(err, data) {
+                callback(data);
+            });
+        } else {
+            callback();
+        }
+    });
+};
+
+var getAssembledResource = function(uuid, callback) {
+    var contentFile = path.join(assembledCachePath, uuid + '.assembled');
+    fs.readFile(contentFile, 'UTF-8', function(err, data) {
+        callback(JSON.parse(data));
+    });
+};
+
+var storeAssembledResource = function(uuid, resource, callback) {
+    var checksumFile = path.join(assembledCachePath, uuid + '.checksum');
+    var contentFile = path.join(assembledCachePath, uuid + '.assembled');
+    fs.writeFile(contentFile, JSON.stringify(resource), 'UTF-8', function(err) {
+        if (!err) {
+            fs.writeFile(checksumFile, resource.metadata.partialChecksum, 'UTF-8', callback);
+        } else {
+            callback();
+        }
+    });
+};
+
 module.exports = {
     getLocalResource: getLocalResource,
-    cacheResource: cacheResource
+    cacheResource: cacheResource,
+    checkAssembledResource: checkAssembledResource,
+    getAssembledResource: getAssembledResource,
+    storeAssembledResource: storeAssembledResource
 };

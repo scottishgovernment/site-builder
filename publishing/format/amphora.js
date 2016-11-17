@@ -42,13 +42,15 @@ var handle = function(context, content, amphoraResource, callback) {
     }
 };
 
-var fetch = function(context, url, callback) {
-    restler.get(url)
+var fetch = function(context, url, options, callback) {
+    restler.get(url, options)
         .on('complete', function(resource, response) {
             if (resource instanceof Error || response.statusCode !== 200) {
                 var error = { err: resource } || {};
-                error.error = 'Failed to fetch amphora resource:' + url;
+                error.error = 'Failed to fetch amphora resource';
+                error.url = url;
                 error.status = response ? response.statusCode : '';
+                context.app.context.errors.push(error);
                 callback(error);
             } else {
                 callback(null, resource);
@@ -58,25 +60,29 @@ var fetch = function(context, url, callback) {
 
 var resource = function(context, namespace, callback) {
     var location = context.app.config.amphora.endpoint + 'resource' + namespace;
-    fetch(context, location, callback);
+    fetch(context, location, {}, callback);
 };
 
 var assemble = function(context, content, callback) {
     content.amphora = { resources: {} };
     var location = context.app.config.amphora.endpoint + 'assemble' + content.url;
-    fetch(context, location, function(err, resource) {
-        if (err) {
-            err.id = content.uuid;
-            err.resource = content.url;
-            context.app.context.errors.push(err);
-            // legacy application ignores amphora failures
-            console.log(err);
-            callback(null, content);
-        } else {
-
-            handle(context, content, resource, callback);
-        }
-    });
+    utils.cache.checkAssembledResource(content.uuid, function(checksum) {
+        fetch(context, location, { headers: { 'If-None-Match': checksum || '-' } }, function(err, resource) {
+            if (err) {
+                callback(null, content);
+            } else {
+                if (resource.metadata.partialChecksum === checksum) {
+                    utils.cache.getAssembledResource(content.uuid, function(assembledResource) {
+                        handle(context, content, assembledResource, callback);
+                    });
+                } else {
+                    utils.cache.storeAssembledResource(content.uuid, resource, function() {
+                        handle(context, content, resource, callback);
+                    });
+                }
+            }
+        });
+    })
 };
 
 module.exports = {
