@@ -210,7 +210,7 @@ describe('save-item', function() {
 
     });
 
-    it('saves content with additional items', function(done) {
+    xit('saves content with additional items', function(done) {
 
         // ARRANGE
         var sut = require(sutPath)(runtime, tempDir, require('fs-extra'));
@@ -265,7 +265,7 @@ describe('save-item', function() {
         });
     });
 
-    it('ends gracefully with additional funding items', function(done) {
+    xit('ends gracefully with additional funding items', function(done) {
         // ARRANGE
         // add final content:
         runtime.context.funding = {
