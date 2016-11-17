@@ -20,7 +20,7 @@ function createContext(router, req, res) {
         token = req.query.token || req.cookies.preview_token;
         res.cookie('preview_token', token);
     }
-    var visibility = req.headers['x-visibility'] || 'preview';
+    var visibility = req.headers['x-visibility'] || 'siteBuild';
     return router.app.createPrepareContext(visibility, token);
 }
 
