@@ -16,7 +16,7 @@ function handleContentItem(context, content, fs, target, callback) {
     var savePages = context.attributes[content.uuid].store;
     if (!context.attributes[content.uuid].additionalItems) {
         saveItem(fs, target, content, savePages, true, callback);
-        return
+        return;
     }
 
     // there are additional items, iterate over them saving to pages but not
