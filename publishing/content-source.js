@@ -52,14 +52,18 @@ module.exports = function(config, restler) {
         fetchUrlsById: function(ids, headers, callback) {
 
             // if there are no ids then just return an empty object
-            if (ids.length === 0) {
+            if (ids && ids.length === 0) {
                 callback(null, {});
                 return;
             }
 
             // request
-            var idsParam = ids.join(',');
-            var url = publishing + 'items/urlsById?ids=' + idsParam;
+            var url = publishing + 'items/urlsById';
+            if (ids) {
+                var idsParam = ids.join(',');
+                url = url + '?ids=' + idsParam;
+            } 
+            
             getResource(url, headers, callback);
         },
 
