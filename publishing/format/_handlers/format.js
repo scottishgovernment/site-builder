@@ -5,7 +5,14 @@
  **/
 class Format {
 
-    constructor() {
+    constructor() {}
+
+    validRequest(context, content) {
+        // itemUrlMap contains all the url available on rubric
+        var requestedPath = context.attributes[content.uuid].path;
+        return requestedPath === '/' + content.uuid 
+              || requestedPath === content.uuid
+              || requestedPath === context.app.context.itemUrlMap[content.uuid];
     }
 
     /**
@@ -24,7 +31,11 @@ class Format {
      * Prepare this content item for rendering
      **/
     prepareForRender(context, contentItem, callback) {
-        callback(null, contentItem);
+        if (this.validRequest(context, contentItem)) {
+            callback(null, contentItem);
+        } else {
+            callback({ statusCode: 404, message: context.attributes[contentItem.uuid].path });
+        }
     }
 }
 

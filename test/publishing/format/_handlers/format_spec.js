@@ -38,7 +38,7 @@ describe('format', function() {
 
         function item() {
             return {
-                id: 'this is an item'
+                uuid: 'uuid'
             }
         }
 
@@ -47,9 +47,10 @@ describe('format', function() {
             // ARRANGE
             var input = item();
             var expected = item();
+            var context = {attributes:{'uuid':{}},app:{context:{itemUrlMap:{}}}};
 
             // ACT
-            sut.prepareForRender({}, input, function (err, actual) {
+            sut.prepareForRender(context, input, function (err, actual) {
                 // ASSERT
                 expect(actual).toEqual(expected);
                 done();

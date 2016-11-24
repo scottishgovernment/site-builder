@@ -3,9 +3,13 @@ var sutPath = '../../../out/instrument/publishing/format/prepare-item';
 describe('prepare-item', function() {
 
     var context = {
+        fetchUrlsById: function(a, callback) {
+            callback();
+        },
         attributes: {
         },
         app: {
+            context: {},
             amphora: {
                 documents: function(context, content, cb) {
                     cb();
