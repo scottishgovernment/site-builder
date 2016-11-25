@@ -104,7 +104,7 @@ var finalize = function(fs, err, app, target, callback) {
         finalContents.push(app.context.lists.publications.landing);
     }
 
-    async.each(app.context.items,
+    async.each(finalContents,
         // for each call the handler
         function(content, eachCallback) {
             saveItem(fs, target, content, true, true, eachCallback);
