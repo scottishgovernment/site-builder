@@ -8,11 +8,15 @@ class Format {
     constructor() {}
 
     validRequest(context, content) {
-        // itemUrlMap contains all the url available on rubric
-        var requestedPath = context.attributes[content.uuid].path;
-        return requestedPath === '/' + content.uuid 
-              || requestedPath === content.uuid
-              || requestedPath === context.app.context.itemUrlMap[content.uuid];
+        if (context.app.preview) {
+            // itemUrlMap contains all the url available on rubric
+            var requestedPath = context.attributes[content.uuid].path;
+            return requestedPath === '/' + content.uuid || 
+                   requestedPath === content.uuid || 
+                   requestedPath === context.app.context.itemUrlMap[content.uuid];
+        } else {
+            return true;
+        }
     }
 
     /**
