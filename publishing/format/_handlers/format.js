@@ -9,11 +9,16 @@ class Format {
 
     validRequest(context, content) {
         if (context.app.preview) {
+
+
             // itemUrlMap contains all the url available on rubric
             var requestedPath = context.attributes[content.uuid].path;
-            return requestedPath === '/' + content.uuid || 
-                   requestedPath === content.uuid || 
-                   requestedPath === context.app.context.itemUrlMap[content.uuid];
+            console.log(content.uuid);
+            console.log('requested path : ' + requestedPath);
+            console.log(content.url);
+            return requestedPath === '/' + content.uuid ||
+                requestedPath === content.uuid ||
+                requestedPath === content.url
         } else {
             return true;
         }

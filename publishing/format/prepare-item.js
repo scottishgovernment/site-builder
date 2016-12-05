@@ -15,16 +15,6 @@ function collectLinks(context, content, callback) {
     }
 };
 
-function setUrlMap(context, callback) {
-    if (context.app.context.itemUrlMap) {
-        callback();
-    } else {
-        context.fetchUrlsById(null, function(err, map) {
-            context.app.context.itemUrlMap = map;
-            callback();
-        });
-    }
-};
 
 function preApply(context, content) {
     // set body for rendering
@@ -52,14 +42,12 @@ module.exports = function(site) {
         preApply(context, content);
         var format = site.getFormat(content.contentItem._embedded.format);
         content.layout = format.layout(content);
-        setUrlMap(context, function() {
-            format.prepareForRender(context, content, function(err, content) {
-                if (err) {
-                    callback(err);
-                } else {
-                    postApply(context, content, callback);
-                }
-            });
+        format.prepareForRender(context, content, function(err, content) {
+            if (err) {
+                callback(err);
+            } else {
+                postApply(context, content, callback);
+            }
         });
     };
 };
