@@ -10,9 +10,6 @@ class Format {
     validRequest(context, content) {
         if (context.app.preview) {
             var requestedPath = context.attributes[content.uuid].path;
-            console.log(content.uuid);
-            console.log('requested path : ' + requestedPath);
-            console.log(content.url);
             return requestedPath === '/' + content.uuid ||
                 requestedPath === content.uuid ||
                 requestedPath === content.url
