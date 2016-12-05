@@ -37,17 +37,20 @@ function postApply(context, content, callback) {
 };
 
 module.exports = function(site) {
-
     return function(context, content, callback) {
         preApply(context, content);
         var format = site.getFormat(content.contentItem._embedded.format);
         content.layout = format.layout(content);
-        format.prepareForRender(context, content, function(err, content) {
-            if (err) {
-                callback(err);
-            } else {
-                postApply(context, content, callback);
-            }
-        });
+        if (format.validRequest(context, content)) {
+            format.prepareForRender(context, content, function(err, content) {
+                if (err) {
+                    callback(err);
+                } else {
+                    postApply(context, content, callback);
+                }
+            });
+        } else {
+            callback({ statusCode: 404, message: context.attributes[content.uuid].path });
+        }
     };
 };
