@@ -9,9 +9,6 @@ class Format {
 
     validRequest(context, content) {
         if (context.app.preview) {
-
-
-            // itemUrlMap contains all the url available on rubric
             var requestedPath = context.attributes[content.uuid].path;
             console.log(content.uuid);
             console.log('requested path : ' + requestedPath);
