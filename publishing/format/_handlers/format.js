@@ -34,11 +34,7 @@ class Format {
      * Prepare this content item for rendering
      **/
     prepareForRender(context, contentItem, callback) {
-        if (this.validRequest(context, contentItem)) {
-            callback(null, contentItem);
-        } else {
-            callback({ statusCode: 404, message: context.attributes[contentItem.uuid].path });
-        }
+        callback(null, contentItem);
     }
 }
 

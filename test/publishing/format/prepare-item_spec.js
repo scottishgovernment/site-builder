@@ -41,6 +41,9 @@ describe('prepare-item', function() {
 
                 prepareForRender: function(context, content, callback) {
                     callback(null, content);
+                },
+                validRequest(context, content) {
+                    return true;
                 }
             }
         }
