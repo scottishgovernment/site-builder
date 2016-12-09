@@ -18,8 +18,6 @@ var loadModule = function(name) {
 var getHandlers = function(app, grunt) {
 
     var tempDir = grunt.config('site.temp');
-    var sitemap = grunt.config('site.sitemap');
-    var baseUrl = grunt.config('site.homepage');
     var nginx = grunt.config('site.nginx');
 
     var handlers = [
@@ -30,10 +28,7 @@ var getHandlers = function(app, grunt) {
         loadModule('redirect-writing-content-handler')(app, nginx),
 
         // handler to write yaml files to disk
-        loadModule('save-item')(app, tempDir, fs),
-
-        // handler to write sitemap.xml files
-        loadModule('sitemap-handler')(app, sitemap, baseUrl)
+        loadModule('save-item')(app, tempDir, fs)
     ];
     return handlers;
 };
@@ -44,8 +39,8 @@ module.exports = function(grunt) {
         function() {
 
             var site = require('../common/site')();
-
             var app = require('../publishing/app')(config, site, false);
+            
             //If we have an IDs, then put them in an array for later
             if (args.ids) {
                 app.context.ids = String(args.ids).split(',') || undefined;
