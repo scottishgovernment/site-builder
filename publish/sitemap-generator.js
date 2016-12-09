@@ -44,7 +44,7 @@ function writeSitemapIndex(baseurl, targetdir, categories, callback) {
     content += '<?xml version="1.0" encoding="UTF-8"?>\n';
     content += '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
     categories.forEach(function (category) {
-        var url = baseurl + sitemapFilenameForCategory(category.category);
+        var url = baseurl + '/' + sitemapFilenameForCategory(category.category);
         var line = '<sitemap><loc>' +  url + '</loc></sitemap>\n';
         content += line;
     });
