@@ -69,14 +69,14 @@ function categoriesArray(pagesByCategory) {
 
 function writeSitemapForCategory(targetdir, category, callback) {
     var content = '';
-    content += '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+    content += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
     category.pages.forEach(function (page) {
         content += '<sitemap>\n';
         content += '<loc>' + page.loc + '</loc>\n';
         content += '<lastmod>' + page.lastmod + '</lastmod>\n';
         content += '</sitemap>\n';
     });
-    content += '</sitemapindex>';
+    content += '</urlset>';
 
     var filename = sitemapFilenameForCategory(category.category);
     fs.writeFile(targetdir + '/' +  filename, content, callback);
