@@ -71,10 +71,10 @@ function writeSitemapForCategory(targetdir, category, callback) {
     var content = '';
     content += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
     category.pages.forEach(function (page) {
-        content += '<sitemap>\n';
+        content += '<url>\n';
         content += '<loc>' + page.loc + '</loc>\n';
         content += '<lastmod>' + page.lastmod + '</lastmod>\n';
-        content += '</sitemap>\n';
+        content += '</url>\n';
     });
     content += '</urlset>';
 
