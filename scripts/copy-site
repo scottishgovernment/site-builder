@@ -27,7 +27,7 @@ EOF" && rsync_copy "${target}"
 
 s3_copy() {
   local target="$1"
-  aws s3 sync --delete "${FROM}" "${target}"
+  aws s3 sync --exclude "*.yaml" --delete "${FROM}" "${target}"
 }
 
 copy_target() {
