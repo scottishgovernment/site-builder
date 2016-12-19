@@ -12,7 +12,7 @@ exec 2>&1
 
 rsync_copy() {
   local target="$1"
-  rsync -aqz --delete-after "${FROM}" "${target}"
+  rsync -aqz --copy-links --delete-after "${FROM}" "${target}"
 }
 
 ssh_copy() {
