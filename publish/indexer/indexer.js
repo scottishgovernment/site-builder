@@ -119,10 +119,10 @@ function siteIndexEnd(indexer, searchUrl, callback) {
     indexer.indexConfigurator.swapAliasTargets(callback);
 }
 
-function create() {
+function create(config, site) {
     var filter = require('./filter');
     var formatter = require('./formatter');
-    return new Indexer(filter, formatter);
+    return new Indexer(filter, formatter, config, site);
 }
 
 module.exports = {
