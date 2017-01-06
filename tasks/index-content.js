@@ -30,7 +30,7 @@ module.exports = function(grunt) {
             var srcdir = grunt.config('site.contentitems'),
                 config = require('config-weaver').config(),
                 site = require('../common/site')(),
-                indexer = require('../publish/indexer/indexer-with-partition.js').create(config, site),
+                indexer = require('../publish/indexer/indexer.js').create(config, site),
                 done = this.async();
 
             indexer
