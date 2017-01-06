@@ -11,6 +11,7 @@ var fileOptions = {encoding: 'utf-8'};
 function format(item, srcdir, callback) {
     var formatted = JSON.parse(JSON.stringify(item.contentItem));
 
+
     redactLinks(formatted);
 
     var fieldsToPromote = ['url', 'filterDate', 'label'];
@@ -19,11 +20,22 @@ function format(item, srcdir, callback) {
     });
     formatted._embedded.format.name = item.contentItem._embedded.format.name.toLowerCase();
 
+    formatted._id = formatted.uuid;
+
+    // add fields needed for autocomplete
+    formatted.autocomplete = {
+        output: formatted.title,
+        input: formatted.title,
+        payload: {
+            url: formatted.url,
+            id: formatted.uuid
+        }
+    };
+
     formatTopics(formatted);
 
     if (formatted._embedded.format.name === 'role' ||
         formatted._embedded.format.name === 'featured_role') {
-
         enrichRoleWithPersonData(item, formatted, srcdir, callback);
     } else {
         callback(formatted);
@@ -58,7 +70,6 @@ function enrichRoleWithPersonData(item, formatted, srcdir, callback) {
 
     var incumbentFilename = path.resolve(srcdir, item.relatedItems.hasIncumbent[0].uuid + '.json');
 
-
     fs.readFile(incumbentFilename, fileOptions, function (err, data) {
         if (err) {
          callback(err);
@@ -87,7 +98,6 @@ function enrichRoleWithPersonData(item, formatted, srcdir, callback) {
         callback(formatted);
     });
 }
-
 
 module.exports = {
     format : format
