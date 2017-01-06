@@ -1,8 +1,5 @@
 'use strict';
 
-var config = require('config-weaver').config();
-var myArgs = require('optimist').argv;
-
 // Grunt task that indexes content in out/contentitems
 module.exports = function(grunt) {
 
@@ -31,18 +28,17 @@ module.exports = function(grunt) {
         function() {
 
             var srcdir = grunt.config('site.contentitems'),
-                searchUrl = config.search.endpoint;
-
-            var done = this.async();
-
-            var indexer = require('../publish/indexer/indexer.js').create();
+                config = require('config-weaver').config(),
+                site = require('../common/site')(),
+                indexer = require('../publish/indexer/indexer-with-partition.js').create(config, site),
+                done = this.async();
 
             indexer
                 .on('start',  onStart)
                 .on('indexed', onIndexed)
                 .on('skipped', onSkipped)
                 .on('done',  function () { onDone(done); })
-                .index(srcdir, searchUrl);
+                .index(srcdir, config.search.endpoint);
 
         }
     );

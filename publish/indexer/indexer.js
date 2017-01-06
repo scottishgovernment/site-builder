@@ -7,10 +7,11 @@ var async = require('async');
 var fs = require('fs');
 var path = require('path');
 var glob = require('glob');
+var es = require('elasticsearch');
 
 var fileOptions = {encoding: 'utf-8'};
 
-function Indexer(filter, formatter) {
+function Indexer(filter, formatter, config, site) {
 
     // filter is used to decide what content items shoulc be indexed
     this.filter = filter;
@@ -19,6 +20,11 @@ function Indexer(filter, formatter) {
     this.formatter = formatter;
 
     this.restler = require('restler');
+
+    this.esClient = new es.Client(config.elasticsearch);
+
+    var configuratorClass = require('./index-configurator');
+    this.indexConfigurator =  new configuratorClass(config, site, this.esClient);
 
     // default do nothing callbacks. Override by using 'on'
     this.callbacks = {
@@ -106,15 +112,11 @@ function indexFile(file, srcdir, searchUrl, indexer, callback) {
 };
 
 function siteIndexBegin(indexer, searchUrl, callback) {
-    indexer.restler
-      .postJson(searchUrl + 'siteIndexBegin', {})
-      .on('complete', function () { callback(); });
+    indexer.indexConfigurator.ensureIndicesAndAliasesExist(callback);
 }
 
 function siteIndexEnd(indexer, searchUrl, callback) {
-    indexer.restler
-        .postJson(searchUrl + 'siteIndexEnd', {})
-        .on('complete', function () { callback(); });
+    indexer.indexConfigurator.swapAliasTargets(callback);
 }
 
 function create() {
