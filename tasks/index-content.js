@@ -15,6 +15,11 @@ module.exports = function(grunt) {
         indexed++;
     }
 
+    function onInfo(msg) {
+        grunt.log.writeln('Index content: ', msg['cyan']);
+        indexed++;
+    }
+
     function onSkipped() {
         skipped++;
     }
@@ -36,7 +41,9 @@ module.exports = function(grunt) {
             indexer
                 .on('start',  onStart)
                 .on('indexed', onIndexed)
+                .on('info', onInfo)
                 .on('skipped', onSkipped)
+
                 .on('done',  function () { onDone(done); })
                 .index(srcdir, config.search.endpoint);
 
