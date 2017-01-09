@@ -10,7 +10,7 @@ var async = require('async');
 
 class IndexConfigurator {
 
-    constructor(config, site, esClient) {
+    constructor(config, site, indexer, esClient) {
         this.searchUrl = config.search.endpoint;
 
         // MGS-1821: if the site can provide a mapping then use it to configure the
@@ -18,6 +18,7 @@ class IndexConfigurator {
         // this ternary expression and replace with indexer.site.getElasticSearchMapping();
         this.mapping = site.getElasticSearchMapping
             ? site.getElasticSearchMapping() : null;
+        this.indexer = indexer;
         this.esClient = esClient;
     }
 
@@ -25,17 +26,21 @@ class IndexConfigurator {
         // fallback to old behaviour if no mapping is available.
         // This can be removed on conclusion of MGS-1821
         if  (!this.mapping) {
+            this.indexer.fire('info', 'No ES mapping available, calling siteIndexBegin');
             restler.postJson(searchUrl + 'siteIndexBegin', {}).on('complete', callback);
             return;
         }
 
         // we have a mapping, ensure that all required indices exist
+        this.indexer.fire('info', 'ES mapping available, configuring indices and aliases');
+
         var esClient = this.esClient;
         var mapping = this.mapping;
+        var indexer = this.indexer;
 
         async.series([
-            function (cb) { ensureIndicesExist(esClient, mapping, cb); },
-            function (cb) { ensureAliasesExist(esClient, cb); }
+            function (cb) { ensureIndicesExist(indexer, esClient, mapping, cb); },
+            function (cb) { ensureAliasesExist(indexer, esClient, cb); }
         ], callback);
     }
 
@@ -99,16 +104,19 @@ function aliasAction(action, index, alias) {
     return actionObj;
 }
 
-function ensureIndicesExist(esClient, mapping, callback) {
+function ensureIndicesExist(indexer, esClient, mapping, callback) {
     var indices = ['bluecontent', 'greencontent'];
     async.eachSeries(indices,
         function (index, cb) {
-            ensureIndexExists(esClient, mapping, index, cb);
+            ensureIndexExists(indexer, esClient, mapping, index, cb);
         },
-        callback);
+        function () {
+            callback();
+        });
+        //callback);
 }
 
-function ensureIndexExists(esClient, mapping, index, callback) {
+function ensureIndexExists(indexer, esClient, mapping, index, callback) {
     esClient.indices.exists({ index : index })
         .then(
             function (body) {
@@ -118,16 +126,20 @@ function ensureIndexExists(esClient, mapping, index, callback) {
                 }
 
                 // the index does not exist: create it with the mapping
+                indexer.fire('info', 'Creating index ' + index);
                 esClient.indices.create({ index: index, body: mapping})
                     .then(
                         function () { callback(null); },
-                        function (error) { callback(error); }
+                        function (error) {
+                            indexer.fire('info', 'Error creating index ' + JSON.stringify(error, null, '\t'));
+                            callback(error);
+                        }
                     );
             },
             callback);
 }
 
-function ensureAliasesExist(esClient, callback) {
+function ensureAliasesExist(indexer, esClient, callback) {
     var aliasNames = ['livecontent', 'offlinecontent'];
     var defaultIndexes = {
         livecontent : 'bluecontent',
@@ -135,12 +147,12 @@ function ensureAliasesExist(esClient, callback) {
     };
     async.eachSeries(aliasNames,
         function (aliasName, cb) {
-            ensureAliasExists(esClient, aliasName, defaultIndexes[aliasName], cb);
+            ensureAliasExists(indexer, esClient, aliasName, defaultIndexes[aliasName], cb);
         },
         callback);
 }
 
-function ensureAliasExists(esClient, alias, defaultIndex, callback) {
+function ensureAliasExists(indexer, esClient, alias, defaultIndex, callback) {
     esClient.indices.existsAlias({name: alias})
         .then(
             function (body) {
@@ -150,10 +162,14 @@ function ensureAliasExists(esClient, alias, defaultIndex, callback) {
                 }
 
                 // create the alias
+                indexer.fire('info', 'Creating alias ' + alias + ' (' + defaultIndex + ')');
                 esClient.indices.putAlias({index: defaultIndex, name: alias})
                     .then(
                         function () { callback(null); },
-                        function (error) { callback(error); }
+                        function (error) {
+                            indexer.fire('info', 'Error creating alias ' + error);
+                            callback(error);
+                        }
                     );
             },
             callback);

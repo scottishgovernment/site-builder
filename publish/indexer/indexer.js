@@ -24,12 +24,15 @@ function Indexer(filter, formatter, config, site) {
     this.esClient = new es.Client(config.elasticsearch);
 
     var configuratorClass = require('./index-configurator');
-    this.indexConfigurator =  new configuratorClass(config, site, this.esClient);
+    this.indexConfigurator =  new configuratorClass(config, site, this, this.esClient);
 
     // default do nothing callbacks. Override by using 'on'
     this.callbacks = {
         // Called when the index is about to start: srcdir, searchurl
         start : [],
+
+        // called to provide information
+        info: [],
 
         // called when an asset has been indexed: uuid
         indexed : [],
