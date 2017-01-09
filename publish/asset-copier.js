@@ -21,7 +21,7 @@ function AssetCopier(router) {
         // Called when the copy is about to start: index, targetDir
         start: [],
 
-        // called when an asset has been copied: src, downstream, to
+        // called when an asset has been copied: src, upstream, to
         copied: [],
 
         // calleed if an asset has been skipped due to no routing information: assetUrl, reason
@@ -47,7 +47,7 @@ AssetCopier.prototype.copy = function(index, targetDir) {
                     that.copyAsset(assetUrl, routed.href, targetUrl, callback);
                 } else {
                     // the router did not give us a url, skip it.
-                    that.fire('skipped', assetUrl, 'router did not return a downstream url');
+                    that.fire('skipped', assetUrl, 'router did not return a upstream url');
                     callback();
                 }
             });
@@ -58,7 +58,7 @@ AssetCopier.prototype.copy = function(index, targetDir) {
     );
 };
 
-AssetCopier.prototype.copyAsset = function(assetUrl, downstreamUrl, targetUrl, callback) {
+AssetCopier.prototype.copyAsset = function(assetUrl, upstreamUrl, targetUrl, callback) {
     var that = this;
     var dir = path.dirname(targetUrl);
 
@@ -66,22 +66,22 @@ AssetCopier.prototype.copyAsset = function(assetUrl, downstreamUrl, targetUrl, c
         [
             //async.apply(fs.ensureDir(dir)),
             function(cb) { fs.ensureDir(dir, cb); },
-            function(cb) { that.fetch(downstreamUrl, assetUrl, targetUrl, cb); }
+            function(cb) { that.fetch(upstreamUrl, assetUrl, targetUrl, cb); }
         ],
 
         function(err) { callback(err); }
     );
 };
 
-// fetch the downstream url and save it to target
-AssetCopier.prototype.fetch = function(downstreamUrl, assetUrl, targetUrl, callback) {
+// fetch the upstream url and save it to target
+AssetCopier.prototype.fetch = function(upstreamUrl, assetUrl, targetUrl, callback) {
     var that = this;
 
     // fetch the assetUrl and pipe to the file
-    http.get(downstreamUrl,
+    http.get(upstreamUrl,
         function(response) {
             if (response.statusCode >= 300) {
-                var reason = 'Downstream url ' + downstreamUrl + ' returned ' + response.statusCode;
+                var reason = 'Upstream url ' + upstreamUrl + ' returned ' + response.statusCode;
                 that.fire('skipped', assetUrl, reason);
                 response.resume();
                 callback();
@@ -94,7 +94,7 @@ AssetCopier.prototype.fetch = function(downstreamUrl, assetUrl, targetUrl, callb
 
             file.on('finish', function() {
                 file.close(callback);
-                that.fire('copied', assetUrl, downstreamUrl, targetUrl);
+                that.fire('copied', assetUrl, upstreamUrl, targetUrl);
             });
         }).on('error', function(httpErr) {
         // got an error from http
