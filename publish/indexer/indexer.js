@@ -40,26 +40,27 @@ function Indexer(filter, formatter, config, site) {
         // calleed if a content was skipped: uuid
         skipped: [],
 
-        // called when the copy is finished: err
+        // called when the copy is finished: errs, srcdir, searchUrl
         done: []
     };
 }
 
-Indexer.prototype.index = function(srcdir, searchUrl) {
+Indexer.prototype.index = function(srcdir) {
     var that = this;
 
-    that.fire('start', srcdir, searchUrl);
+    that.fire('start', srcdir);
 
     var globSpec = path.join(srcdir, '**/*.json');
     glob(globSpec, {}, function (err, files) {
         async.series(
             [
-                function (cb) { siteIndexBegin(that, searchUrl, cb); },
-                function (cb) { indexFiles(that, files, srcdir, searchUrl, cb); },
-                function (cb) { siteIndexEnd(that, searchUrl, cb); }
+                function (cb) { siteIndexBegin(that, cb); },
+                function (cb) { indexFiles(that, files, srcdir, cb); },
+                function (cb) { siteIndexEnd(that, cb); }
             ],
-            function() {
-                that.fire('done', srcdir, searchUrl);
+            function(errs) {
+                that.esClient.close();
+                that.fire('done', errs, srcdir);
             }
         );
     });
@@ -81,44 +82,119 @@ Indexer.prototype.fire = function (event) {
     });
 };
 
-function indexFiles(indexer, files, srcdir, searchUrl, callback) {
-    async.eachLimit(files, 50,
-        function (file, cb) {
-            indexFile(file, srcdir, searchUrl, indexer, cb);
+// laod and index and array fo filenames.
+function indexFiles(indexer, files, srcdir, callback) {
+    var partitions = partitionArray(files, 1000);
+    async.each(partitions,
+        function (partition, cb) {
+            indexPartition(partition, indexer, srcdir, cb);
         },
         callback);
 }
 
-function indexFile(file, srcdir, searchUrl, indexer, callback) {
-    // parse the file
-    fs.readFile(file, fileOptions, function (err, data) {
+// partition an array into chunks
+function partitionArray(filesArray, size) {
+    var partitions = [];
+    var currentPartition = [];
 
-        // load the item
-        var item = JSON.parse(data);
+    for (var i = 0; i < filesArray.length; i++) {
+        currentPartition.push(filesArray[i]);
 
-        // decide wether to index it or not
-        if (!indexer.filter.accept(item)) {
-            indexer.fire('skipped', item.uuid);
-            callback();
+        if (currentPartition.length === size || i === filesArray.length - 1) {
+            partitions.push(currentPartition);
+            currentPartition = [];
+        }
+    }
+    return partitions;
+}
+
+// filter, format and then index a partition of content items
+function indexPartition(partition, indexer, srcdir, callback) {
+
+    async.map(partition, loadFile, function (loadErr, data) {
+
+        if (loadErr) {
+            callback(loadErr);
             return;
         }
 
-        // format it before indexing
-        indexer.formatter.format(item, srcdir, function (formattedItem) {
-            indexer.restler.putJson(searchUrl, formattedItem)
-                .on('complete', function() {
-                     indexer.fire('indexed', formattedItem.url);
-                     callback();
-                });
+        // filter out content items that should not be indexed
+        data = data.filter(function (item) {
+            return indexer.filter.accept(item);
         });
-    });
-};
 
-function siteIndexBegin(indexer, searchUrl, callback) {
+        // format each item that hasnt been fitlered out
+        async.map(data,
+            function (item, cb) {
+                indexer.formatter.format(item, srcdir, function (formattedItem) {
+                    cb(null, formattedItem);
+                });
+            },
+
+            function (formattingErr, mappedData) {
+                indexItems(mappedData, indexer, callback);
+            }
+        );
+    });
+}
+
+// index an array of formatted content items usoing a buld request
+function indexItems(items, indexer, callback) {
+    var body = [];
+    items.forEach(
+        function (item) {
+            var type = item._embedded.format.name.toLowerCase();
+            var id = item._id;
+            body.push({
+                index: {
+                    _index: 'offlinecontent',
+                    _type: type,
+                    _id: id
+                }
+            });
+            body.push(item);
+        });
+
+    indexer.esClient.bulk({ body: body },
+        function (err, resp) {
+
+            if (err) {
+                calback(err);
+                return;
+            }
+
+            // determine if we failed to index any items
+            var errorItems = resp.items.filter(function (item) {
+                return item.index.status >= 400;
+            });
+
+            if (errorItems.length > 0) {
+                callback({ msg: 'Failed to index some items', errors: errorItems});
+                return;
+            }
+
+            resp.items.forEach(function (item) {
+                indexer.fire('indexed', item.index._id);
+            });
+            callback(err);
+        });
+}
+
+function loadFile(file, callback) {
+    fs.readFile(file, fileOptions, function (err, data) {
+        if (err) {
+            callback(err, null);
+        } else {
+            callback(null, JSON.parse(data));
+        }
+    });
+}
+
+function siteIndexBegin(indexer, callback) {
     indexer.indexConfigurator.ensureIndicesAndAliasesExist(callback);
 }
 
-function siteIndexEnd(indexer, searchUrl, callback) {
+function siteIndexEnd(indexer, callback) {
     indexer.indexConfigurator.swapAliasTargets(callback);
 }
 
