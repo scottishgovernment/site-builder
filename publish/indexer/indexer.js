@@ -159,7 +159,7 @@ function indexItems(items, indexer, callback) {
         function (err, resp) {
 
             if (err) {
-                calback(err);
+                callback(err);
                 return;
             }
 
