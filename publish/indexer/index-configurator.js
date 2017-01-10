@@ -10,22 +10,22 @@ var async = require('async');
 
 class IndexConfigurator {
 
-    constructor(config, site, indexer, esClient) {
+    constructor(config, site, listener, esClient) {
         this.mapping = site.getElasticSearchMapping();
-        this.indexer = indexer;
+        this.listener = listener;
         this.esClient = esClient;
     }
 
     ensureIndicesAndAliasesExist(callback) {
-        this.indexer.fire('info', 'ES mapping available, configuring indices and aliases');
+        this.listener.info('ES mapping available, configuring indices and aliases');
 
         var esClient = this.esClient;
         var mapping = this.mapping;
-        var indexer = this.indexer;
+        var listener = this.listener;
 
         async.series([
-            function (cb) { ensureIndicesExist(indexer, esClient, mapping, cb); },
-            function (cb) { ensureAliasesExist(indexer, esClient, cb); }
+            function (cb) { ensureIndicesExist(listener, esClient, mapping, cb); },
+            function (cb) { ensureAliasesExist(listener, esClient, cb); }
         ], callback);
     }
 
@@ -79,15 +79,15 @@ function aliasAction(action, index, alias) {
     return actionObj;
 }
 
-function ensureIndicesExist(indexer, esClient, mapping, callback) {
+function ensureIndicesExist(listener, esClient, mapping, callback) {
     var indices = ['bluecontent', 'greencontent'];
     async.eachSeries(indices,
         function (index, cb) {
-            ensureIndexExists(indexer, esClient, mapping, index, cb);
+            ensureIndexExists(listener, esClient, mapping, index, cb);
         }, callback);
 }
 
-function ensureIndexExists(indexer, esClient, mapping, index, callback) {
+function ensureIndexExists(listener, esClient, mapping, index, callback) {
     esClient.indices.exists({ index : index })
         .then(
             function (body) {
@@ -97,12 +97,12 @@ function ensureIndexExists(indexer, esClient, mapping, index, callback) {
                 }
 
                 // the index does not exist: create it with the mapping
-                indexer.fire('info', 'Creating index ' + index);
+                listener.info('Creating index ' + index);
                 esClient.indices.create({ index: index, body: mapping})
                     .then(
                         function () { callback(null); },
                         function (error) {
-                            indexer.fire('info', 'Error creating index ' + JSON.stringify(error, null, '\t'));
+                            listener.info('Error creating index ' + JSON.stringify(error, null, '\t'));
                             callback(error);
                         }
                     );
@@ -110,7 +110,7 @@ function ensureIndexExists(indexer, esClient, mapping, index, callback) {
             callback);
 }
 
-function ensureAliasesExist(indexer, esClient, callback) {
+function ensureAliasesExist(listener, esClient, callback) {
     var aliasNames = ['livecontent', 'offlinecontent'];
     var defaultIndexes = {
         livecontent : 'bluecontent',
@@ -118,11 +118,11 @@ function ensureAliasesExist(indexer, esClient, callback) {
     };
     async.eachSeries(aliasNames,
         function (aliasName, cb) {
-            ensureAliasExists(indexer, esClient, aliasName, defaultIndexes[aliasName], cb);
+            ensureAliasExists(listener, esClient, aliasName, defaultIndexes[aliasName], cb);
         }, callback);
 }
 
-function ensureAliasExists(indexer, esClient, alias, defaultIndex, callback) {
+function ensureAliasExists(listener, esClient, alias, defaultIndex, callback) {
     esClient.indices.existsAlias({name: alias})
         .then(
             function (body) {
@@ -132,12 +132,12 @@ function ensureAliasExists(indexer, esClient, alias, defaultIndex, callback) {
                 }
 
                 // create the alias
-                indexer.fire('info', 'Creating alias ' + alias + ' (' + defaultIndex + ')');
+                listener.info('Creating alias ' + alias + ' (' + defaultIndex + ')');
                 esClient.indices.putAlias({index: defaultIndex, name: alias})
                     .then(
                         function () { callback(null); },
                         function (error) {
-                            indexer.fire('info', 'Error creating alias ' + error);
+                            listener.info('Error creating alias ' + error);
                             callback(error);
                         }
                     );

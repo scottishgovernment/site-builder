@@ -24,7 +24,11 @@ function Indexer(filter, formatter, config, site) {
     this.esClient = new es.Client(config.elasticsearch);
 
     var configuratorClass = require('./index-configurator');
-    this.indexConfigurator =  new configuratorClass(config, site, this, this.esClient);
+    var that = this;
+    var configuratorListener = {
+        info : function (msg) { that.fire('info', msg); }
+    };
+    this.indexConfigurator =  new configuratorClass(config, site, configuratorListener, this.esClient);
 
     // default do nothing callbacks. Override by using 'on'
     this.callbacks = {
@@ -195,7 +199,8 @@ function siteIndexBegin(indexer, callback) {
 }
 
 function siteIndexEnd(indexer, callback) {
-    indexer.indexConfigurator.swapAliasTargets(callback);
+    callback();
+    //indexer.indexConfigurator.swapAliasTargets(callback);
 }
 
 function create(config, site) {
