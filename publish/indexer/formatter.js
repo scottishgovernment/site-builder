@@ -11,7 +11,6 @@ var fileOptions = {encoding: 'utf-8'};
 function format(item, srcdir, callback) {
     var formatted = JSON.parse(JSON.stringify(item.contentItem));
 
-
     redactLinks(formatted);
 
     var fieldsToPromote = ['url', 'filterDate', 'label'];
@@ -19,6 +18,18 @@ function format(item, srcdir, callback) {
         formatted[field] = item[field];
     });
     formatted._embedded.format.name = item.contentItem._embedded.format.name.toLowerCase();
+
+    formatted._id = formatted.uuid;
+
+    // add fields needed for autocomplete
+    formatted.autocomplete = {
+        output: formatted.title,
+        input: formatted.title,
+        payload: {
+            url: formatted.url,
+            id: formatted.uuid
+        }
+    };
 
     formatTopics(formatted);
 

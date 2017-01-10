@@ -11,27 +11,12 @@ var async = require('async');
 class IndexConfigurator {
 
     constructor(config, site, indexer, esClient) {
-        this.searchUrl = config.search.endpoint;
-
-        // MGS-1821: if the site can provide a mapping then use it to configure the
-        // indexes / aliases.  Once both sites control their own mappings we can remove
-        // this ternary expression and replace with indexer.site.getElasticSearchMapping();
-        this.mapping = site.getElasticSearchMapping
-            ? site.getElasticSearchMapping() : null;
+        this.mapping = site.getElasticSearchMapping();
         this.indexer = indexer;
         this.esClient = esClient;
     }
 
     ensureIndicesAndAliasesExist(callback) {
-        // fallback to old behaviour if no mapping is available.
-        // This can be removed on conclusion of MGS-1821
-        if  (!this.mapping) {
-            this.indexer.fire('info', 'No ES mapping available, calling siteIndexBegin');
-            restler.postJson(searchUrl + 'siteIndexBegin', {}).on('complete', callback);
-            return;
-        }
-
-        // we have a mapping, ensure that all required indices exist
         this.indexer.fire('info', 'ES mapping available, configuring indices and aliases');
 
         var esClient = this.esClient;
@@ -45,14 +30,6 @@ class IndexConfigurator {
     }
 
     swapAliasTargets(callback) {
-        if  (!this.mapping) {
-            // Once mappings file is available in both sites we can remove this
-            restler
-                .postJson(searchUrl + 'siteIndexEnd', {})
-                .on('complete', callback);
-            return;
-        }
-
         // how many doc in the offline index...
         var esClient = this.esClient;
 
@@ -62,12 +39,10 @@ class IndexConfigurator {
                     callback(error);
                     return;
                 }
-
                 if (response < 10) {
                     callback('Offline index is too small ' + response);
                     return;
                 }
-
                 swapAliases(esClient, callback);
             }
         );
@@ -109,11 +84,7 @@ function ensureIndicesExist(indexer, esClient, mapping, callback) {
     async.eachSeries(indices,
         function (index, cb) {
             ensureIndexExists(indexer, esClient, mapping, index, cb);
-        },
-        function () {
-            callback();
-        });
-        //callback);
+        }, callback);
 }
 
 function ensureIndexExists(indexer, esClient, mapping, index, callback) {
@@ -148,8 +119,7 @@ function ensureAliasesExist(indexer, esClient, callback) {
     async.eachSeries(aliasNames,
         function (aliasName, cb) {
             ensureAliasExists(indexer, esClient, aliasName, defaultIndexes[aliasName], cb);
-        },
-        callback);
+        }, callback);
 }
 
 function ensureAliasExists(indexer, esClient, alias, defaultIndex, callback) {

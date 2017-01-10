@@ -50,6 +50,18 @@ describe('formatter', function() {
         return ret;
     }
 
+    function addAutoComplete(item) {
+        item.autocomplete = {
+            output: item.title,
+            input: item.title,
+            payload: {
+                url: item.url,
+                id: item.uuid
+            }
+        }
+        return item;
+    }
+
     it('non role', function(done) {
 
         // ARRANGE
@@ -59,6 +71,7 @@ describe('formatter', function() {
         expected.filterDate = 'filterDate';
         expected.topicNames = ['topic1', 'topic2']
         expected._embedded.format.name = 'article';
+        addAutoComplete(expected);
 
         //ACT
         sut.format(input, '/tmp', function (actual) {
@@ -80,6 +93,7 @@ describe('formatter', function() {
         expected.filterDate = 'filterDate';
         expected.topicNames = []
         expected._embedded.format.name = 'article';
+        addAutoComplete(expected);
 
         //ACT
         sut.format(input, '/tmp', function (actual) {
@@ -99,10 +113,10 @@ describe('formatter', function() {
         expected.filterDate = 'filterDate';
         expected.topicNames = []
         expected._embedded.format.name = 'role';
+        addAutoComplete(expected);
 
         //ACT
         sut.format(input, '/tmp', function (actual) {
-
             // ASSERT
             expect(actual).toEqual(expected);
             done();
@@ -120,6 +134,7 @@ describe('formatter', function() {
         expected.filterDate = 'filterDate';
         expected.topicNames = []
         expected._embedded.format.name = 'featured_role';
+        addAutoComplete(expected);
 
         //ACT
         sut.format(input, '/tmp', function (actual) {
@@ -178,6 +193,7 @@ describe('formatter', function() {
         expected.tags = ['tag1', 'tag2', 'incumbent-tag1', 'incumbent-tag2']
         expected.content = expected.content + '\n' + incumbent.contentItem.content;
         expected.additionalContent = expected.additionalContent + '\n' + incumbent.contentItem.additionalContent;
+        addAutoComplete(expected);
 
         //ACT
         sut.format(input, tempDir, function (actual) {
