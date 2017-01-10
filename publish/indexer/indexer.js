@@ -84,7 +84,7 @@ Indexer.prototype.fire = function (event) {
 
 // laod and index and array fo filenames.
 function indexFiles(indexer, files, srcdir, callback) {
-    var partitions = partitionArray(files, 1000);
+    var partitions = partitionArray(files, 500);
     async.each(partitions,
         function (partition, cb) {
             indexPartition(partition, indexer, srcdir, cb);
