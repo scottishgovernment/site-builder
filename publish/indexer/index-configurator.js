@@ -2,8 +2,6 @@
 
 /**
  * Contains logic configuring blue / green indexes and associated aliases.
- *
- * See MGS-1821.
  **/
 var restler = require('restler');
 var async = require('async');
@@ -30,8 +28,8 @@ class IndexConfigurator {
     }
 
     swapAliasTargets(callback) {
-        // how many doc in the offline index...
         var esClient = this.esClient;
+        var listener = this.listener;
 
         esClient.count({ index : 'offlinecontent'},
             function (error, response) {
@@ -43,19 +41,19 @@ class IndexConfigurator {
                     callback('Offline index is too small ' + response);
                     return;
                 }
-                swapAliases(esClient, callback);
+                swapAliases(esClient, listener, callback);
             }
         );
     }
 }
 
-function swapAliases(esClient, callback) {
-
+function swapAliases(esClient, listener, callback) {
     esClient.cat.aliases({ format: 'json'}, function (err, aliases) {
         if (err) {
             callback(err);
             return;
         }
+
         var actions = [];
 
         // remove both existing aliases
@@ -68,6 +66,14 @@ function swapAliases(esClient, callback) {
             var newIndex = alias.index === 'greencontent' ? 'bluecontent' : 'greencontent';
             actions.push(aliasAction('add', newIndex, alias.alias));
         });
+
+        // log the new state of the aliases...
+        var summary = actions
+            .filter(function (action) { return action.add; })
+            .map(function (action) {
+                return action.add.alias + ' --> ' + action.add.index;
+            }).join(', ');
+        listener.info('Aliases: ' + summary['cyan']);
 
         esClient.indices.updateAliases({ body: { actions: actions}}, callback);
     });
@@ -131,7 +137,6 @@ function ensureAliasExists(listener, esClient, alias, defaultIndex, callback) {
                     return;
                 }
 
-                // create the alias
                 listener.info('Creating alias ' + alias + ' (' + defaultIndex + ')');
                 esClient.indices.putAlias({index: defaultIndex, name: alias})
                     .then(

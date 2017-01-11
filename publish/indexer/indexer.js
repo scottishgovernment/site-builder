@@ -58,9 +58,13 @@ Indexer.prototype.index = function(srcdir) {
     glob(globSpec, {}, function (err, files) {
         async.series(
             [
-                function (cb) { siteIndexBegin(that, cb); },
-                function (cb) { indexFiles(that, files, srcdir, cb); },
-                function (cb) { siteIndexEnd(that, cb); }
+                function (cb) {
+                    that.indexConfigurator.ensureIndicesAndAliasesExist(cb);
+                },
+
+                function (cb) {
+                    indexFiles(that, files, srcdir, cb);
+                }
             ],
             function(errs) {
                 that.esClient.close();
@@ -86,14 +90,13 @@ Indexer.prototype.fire = function (event) {
     });
 };
 
-// laod and index and array fo filenames.
+// load and index an array of filenames.
 function indexFiles(indexer, files, srcdir, callback) {
     var partitions = partitionArray(files, 500);
     async.each(partitions,
         function (partition, cb) {
             indexPartition(partition, indexer, srcdir, cb);
-        },
-        callback);
+        }, callback);
 }
 
 // partition an array into chunks
@@ -142,7 +145,7 @@ function indexPartition(partition, indexer, srcdir, callback) {
     });
 }
 
-// index an array of formatted content items usoing a buld request
+// index an array of formatted content items using a bulk request
 function indexItems(items, indexer, callback) {
     var body = [];
     items.forEach(
@@ -192,15 +195,6 @@ function loadFile(file, callback) {
             callback(null, JSON.parse(data));
         }
     });
-}
-
-function siteIndexBegin(indexer, callback) {
-    indexer.indexConfigurator.ensureIndicesAndAliasesExist(callback);
-}
-
-function siteIndexEnd(indexer, callback) {
-    callback();
-    //indexer.indexConfigurator.swapAliasTargets(callback);
 }
 
 function create(config, site) {
