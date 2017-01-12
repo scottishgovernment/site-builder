@@ -19,16 +19,9 @@ function format(item, srcdir, callback) {
     });
     formatted._embedded.format.name = item.contentItem._embedded.format.name.toLowerCase();
 
-    formatted._id = formatted.uuid;
-
     // add fields needed for autocomplete
     formatted.autocomplete = {
-        output: formatted.title,
-        input: formatted.title,
-        payload: {
-            url: formatted.url,
-            id: formatted.uuid
-        }
+        input: formatted.title
     };
 
     formatTopics(formatted);

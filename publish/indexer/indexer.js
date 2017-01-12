@@ -114,6 +114,7 @@ function partitionArray(filesArray, size) {
 
 // filter, format and then index a partition of content items
 function indexPartition(partition, indexer, srcdir, callback) {
+
     async.map(partition, loadFile, function (loadErr, data) {
 
         if (loadErr) {
@@ -151,7 +152,7 @@ function indexItems(items, indexer, callback) {
     items.forEach(
         function (item) {
             var type = item._embedded.format.name.toLowerCase();
-            var id = item._id;
+            var id = item.uuid;
             body.push({
                 index: {
                     _index: 'offlinecontent',

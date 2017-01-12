@@ -2,6 +2,9 @@
 
 /**
  * Grunt task for indexing content with eleasticsearch.  There are two targets:
+ *   register-templates:
+ *      this target registers search templates from a directory that the site
+ *      object providers.
  *
  *   index-content:
  *      this target indexes the content contained in out/contentitems to the
@@ -18,7 +21,11 @@ module.exports = function(grunt) {
         var done = this.async();
 
         switch (this.target) {
-            case 'index-content' :
+            case 'register-templates' :
+                registerTemplates(grunt, config, site, done);
+            break;
+
+            case 'index-content':
                 indexContent(grunt, config, site, done);
             break;
 
@@ -32,6 +39,28 @@ module.exports = function(grunt) {
         }
     });
 };
+
+function registerTemplates(grunt, config, site, done) {
+    var es = require('elasticsearch');
+    var esClient = new es.Client(config.elasticsearch);
+    var configuratorClass = require('../publish/indexer/template-configurator');
+    var listener = {
+            info : function (msg) {
+                grunt.log.writeln(msg);
+            }
+        };
+    var templateConfigurator = new configuratorClass(config, site, listener, esClient);
+
+    templateConfigurator.registerTemplates(err => {
+        esClient.close();
+        if (err) {
+            grunt.log.error(grunt.log.writeln('Register templates ', JSON.stringify(err, null, '\t')['red']));
+            done(false);
+        } else {
+            done(true);
+        }
+    });
+}
 
 function indexContent(grunt, config, site, done) {
     var indexed = 0;
@@ -87,7 +116,7 @@ function flipAliases(grunt, config, site, done) {
         };
     var indexConfigurator = new configuratorClass(config, site, listener, esClient);
 
-    indexConfigurator.swapAliasTargets(function (err) {
+    indexConfigurator.swapAliasTargets(err => {
         esClient.close();
         if (err) {
             grunt.log.error(grunt.log.writeln('Flip aliases ', err['red']));

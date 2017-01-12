@@ -52,13 +52,8 @@ describe('formatter', function() {
 
     function addAutoComplete(item) {
         item.autocomplete = {
-            output: item.title,
-            input: item.title,
-            payload: {
-                url: item.url,
-                id: item.uuid
-            }
-        }
+            input: item.title
+        };
         return item;
     }
 
@@ -69,7 +64,7 @@ describe('formatter', function() {
         var expected = JSON.parse(JSON.stringify(input)).contentItem;
         expected.url = 'url';
         expected.filterDate = 'filterDate';
-        expected.topicNames = ['topic1', 'topic2']
+        expected.topicNames = ['topic1', 'topic2'];
         expected._embedded.format.name = 'article';
         addAutoComplete(expected);
 
@@ -91,7 +86,7 @@ describe('formatter', function() {
         var expected = JSON.parse(JSON.stringify(input)).contentItem;
         expected.url = 'url';
         expected.filterDate = 'filterDate';
-        expected.topicNames = []
+        expected.topicNames = [];
         expected._embedded.format.name = 'article';
         addAutoComplete(expected);
 
@@ -111,7 +106,7 @@ describe('formatter', function() {
         var expected = JSON.parse(JSON.stringify(input)).contentItem;
         expected.url = 'url';
         expected.filterDate = 'filterDate';
-        expected.topicNames = []
+        expected.topicNames = [];
         expected._embedded.format.name = 'role';
         addAutoComplete(expected);
 
@@ -132,7 +127,7 @@ describe('formatter', function() {
         var expected = JSON.parse(JSON.stringify(input)).contentItem;
         expected.url = 'url';
         expected.filterDate = 'filterDate';
-        expected.topicNames = []
+        expected.topicNames = [];
         expected._embedded.format.name = 'featured_role';
         addAutoComplete(expected);
 
@@ -178,7 +173,7 @@ describe('formatter', function() {
                 additionalContent : 'incumbent additionalContent',
                 tags: ['incumbent-tag1', 'incumbent-tag2']
             }
-        }
+        };
 
         // create a tmp directory and write out incumbent
         createTempFile(incumbent);
@@ -188,9 +183,9 @@ describe('formatter', function() {
         expected.incumbentTitle = 'item title';
         expected.image = 'incumbent-image';
         expected.filterDate = 'filterDate';
-        expected.topicNames = []
+        expected.topicNames = [];
         expected._embedded.format.name = 'role';
-        expected.tags = ['tag1', 'tag2', 'incumbent-tag1', 'incumbent-tag2']
+        expected.tags = ['tag1', 'tag2', 'incumbent-tag1', 'incumbent-tag2'];
         expected.content = expected.content + '\n' + incumbent.contentItem.content;
         expected.additionalContent = expected.additionalContent + '\n' + incumbent.contentItem.additionalContent;
         addAutoComplete(expected);

@@ -2,6 +2,7 @@
 *.deb
 .sonar
 debian/changelog
+debian/debhelper-build-stamp
 debian/files
 debian/site-builder
 debian/site-builder.debhelper.log
