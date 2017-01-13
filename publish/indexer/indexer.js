@@ -93,7 +93,7 @@ Indexer.prototype.fire = function (event) {
 // load and index an array of filenames.
 function indexFiles(indexer, files, srcdir, callback) {
     var partitions = partitionArray(files, 100);
-    async.each(partitions,
+    async.eachSeries(partitions,
         function (partition, cb) {
             indexPartition(partition, indexer, srcdir, cb);
         }, callback);
@@ -118,6 +118,8 @@ function partitionArray(filesArray, size) {
 // filter, format and then index a partition of content items
 function indexPartition(partition, indexer, srcdir, callback) {
 
+console.log('indexPartition ', partition.length);
+
     async.map(partition, loadFile, function (loadErr, data) {
 
         if (loadErr) {
@@ -130,8 +132,10 @@ function indexPartition(partition, indexer, srcdir, callback) {
             return indexer.filter.accept(item);
         });
 
+console.log('data length ', data.length);
+
         // format each item that hasnt been fitlered out
-        async.map(data,
+        async.mapSeries(data,
             function (item, cb) {
                 indexer.formatter.format(item, srcdir, function (formattedItem) {
                     cb(null, formattedItem);
@@ -139,7 +143,13 @@ function indexPartition(partition, indexer, srcdir, callback) {
             },
 
             function (formattingErr, mappedData) {
-                indexItems(mappedData, indexer, callback);
+
+                if (mappedData.length > 0) {
+                    indexItems(mappedData, indexer, callback);
+                } else {
+                    callback();
+                }
+
             }
         );
     });
@@ -148,6 +158,8 @@ function indexPartition(partition, indexer, srcdir, callback) {
 // index an array of formatted content items using a bulk request
 function indexItems(items, indexer, callback) {
     var body = [];
+
+console.log('indexItems ', items.length);
     items.forEach(
         function (item) {
             var type = item._embedded.format.name.toLowerCase();
@@ -161,6 +173,8 @@ function indexItems(items, indexer, callback) {
             });
             body.push(item);
         });
+
+indexer.fire('info', 'indexer.esClient.bulk ' + body.length);
 
     indexer.esClient.bulk({ body: body },
         function (err, resp) {
