@@ -31,6 +31,7 @@ class IndexConfigurator {
         var esClient = this.esClient;
         var listener = this.listener;
 
+
         esClient.count({ index : 'offlinecontent'},
             function (error, response) {
                 if (error) {
@@ -94,9 +95,11 @@ function ensureIndicesExist(listener, esClient, mapping, callback) {
 }
 
 function ensureIndexExists(listener, esClient, mapping, index, callback) {
+    listener.info('ensureIndexExists esClient.indices.exists: ' + index);
     esClient.indices.exists({ index : index })
         .then(
             function (body) {
+                listener.info('esClient.indices.exists '+JSON.stringify(body, null, '\t'));
                 if (body === true) {
                     callback(null);
                     return;
@@ -129,6 +132,7 @@ function ensureAliasesExist(listener, esClient, callback) {
 }
 
 function ensureAliasExists(listener, esClient, alias, defaultIndex, callback) {
+    listener.info('ensureAliasExists esClient.indices.existsAlias: ' + alias);
     esClient.indices.existsAlias({name: alias})
         .then(
             function (body) {
