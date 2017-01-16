@@ -21,7 +21,11 @@ function Indexer(filter, formatter, config, site) {
 
     this.restler = require('restler');
 
-    this.esClient = new es.Client(config.elasticsearch);
+    var esConfig = {
+        host: config.elasticsearch.host,
+        log: 'info'
+    };
+    this.esClient = new es.Client(esConfig);
 
     var configuratorClass = require('./index-configurator');
     var that = this;
