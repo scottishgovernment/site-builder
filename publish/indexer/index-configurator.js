@@ -22,8 +22,8 @@ class IndexConfigurator {
         var listener = this.listener;
 
         async.series([
-            function (cb) { ensureIndicesExist(listener, esClient, mapping, cb); },
-            function (cb) { ensureAliasesExist(listener, esClient, cb); }
+            cb => ensureIndicesExist(listener, esClient, mapping, cb),
+            cb => ensureAliasesExist(listener, esClient, cb)
         ], callback);
     }
 
@@ -31,9 +31,8 @@ class IndexConfigurator {
         var esClient = this.esClient;
         var listener = this.listener;
 
-
         esClient.count({ index : 'offlinecontent'},
-            function (error, response) {
+            (error, response) => {
                 if (error) {
                     callback(error);
                     return;
@@ -49,34 +48,32 @@ class IndexConfigurator {
 }
 
 function swapAliases(esClient, listener, callback) {
-    esClient.cat.aliases({ format: 'json'}, function (err, aliases) {
+    esClient.cat.aliases({ format: 'json'}, (err, aliases) => {
         if (err) {
             callback(err);
             return;
         }
-
         var actions = [];
 
         // remove both existing aliases
-        aliases.forEach(function (alias) {
-            actions.push(aliasAction('remove', alias.index, alias.alias));
-        });
+        aliases.forEach(alias => actions.push(aliasAction('remove', alias.index, alias.alias)));
 
         // add the new swapped indexes
-        aliases.forEach(function (alias) {
+        aliases.forEach(alias => {
             var newIndex = alias.index === 'greencontent' ? 'bluecontent' : 'greencontent';
             actions.push(aliasAction('add', newIndex, alias.alias));
         });
 
         // log the new state of the aliases...
-        var summary = actions
-            .filter(function (action) { return action.add; })
-            .map(function (action) {
-                return action.add.alias + ' --> ' + action.add.index;
-            }).join(', ');
-        listener.info('Aliases: ' + summary['cyan']);
-
-        esClient.indices.updateAliases({ body: { actions: actions}}, callback);
+        var aliasToIndex = {};
+        actions
+            .filter(action => action.add)
+            .forEach(action => aliasToIndex[action.add.alias] = action.add.index);
+        listener.info('Aliases: ' + JSON.stringify(actions)['cyan']);
+        esClient.indices.updateAliases({ body: { actions: actions}},
+            // delete the contents of the offline index
+            () => esClient.indices.delete({ index: 'offlinecontent' }, callback)
+        );
     });
 }
 
@@ -89,9 +86,8 @@ function aliasAction(action, index, alias) {
 function ensureIndicesExist(listener, esClient, mapping, callback) {
     var indices = ['bluecontent', 'greencontent'];
     async.eachSeries(indices,
-        function (index, cb) {
-            ensureIndexExists(listener, esClient, mapping, index, cb);
-        }, callback);
+        (index, cb) => ensureIndexExists(listener, esClient, mapping, index, cb),
+        callback);
 }
 
 function ensureIndexExists(listener, esClient, mapping, index, callback) {
@@ -109,8 +105,8 @@ function ensureIndexExists(listener, esClient, mapping, index, callback) {
                 listener.info('Creating index ' + index);
                 esClient.indices.create({ index: index, body: mapping})
                     .then(
-                        function () { callback(null); },
-                        function (error) {
+                        () => callback(null),
+                        (error) => {
                             listener.info('Error creating index ' + JSON.stringify(error, null, '\t'));
                             callback(error);
                         }
@@ -126,16 +122,15 @@ function ensureAliasesExist(listener, esClient, callback) {
         offlinecontent: 'greencontent'
     };
     async.eachSeries(aliasNames,
-        function (aliasName, cb) {
-            ensureAliasExists(listener, esClient, aliasName, defaultIndexes[aliasName], cb);
-        }, callback);
+        (aliasName, cb) => ensureAliasExists(listener, esClient, aliasName, defaultIndexes[aliasName], cb),
+        callback);
 }
 
 function ensureAliasExists(listener, esClient, alias, defaultIndex, callback) {
     listener.info('ensureAliasExists esClient.indices.existsAlias: ' + alias);
     esClient.indices.existsAlias({name: alias})
         .then(
-            function (body) {
+            body => {
                 if (body === true) {
                     callback(null);
                     return;
@@ -144,8 +139,8 @@ function ensureAliasExists(listener, esClient, alias, defaultIndex, callback) {
                 listener.info('Creating alias ' + alias + ' (' + defaultIndex + ')');
                 esClient.indices.putAlias({index: defaultIndex, name: alias})
                     .then(
-                        function () { callback(null); },
-                        function (error) {
+                        () => callback(null),
+                        error => {
                             listener.info('Error creating alias ' + error);
                             callback(error);
                         }
