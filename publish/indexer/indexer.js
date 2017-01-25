@@ -62,15 +62,11 @@ Indexer.prototype.index = function(srcdir) {
     glob(globSpec, {}, function (err, files) {
         async.series(
             [
-                function (cb) {
-                    that.indexConfigurator.ensureIndicesAndAliasesExist(cb);
-                },
-
-                function (cb) {
-                    indexFiles(that, files, srcdir, cb);
-                }
+                cb => that.indexConfigurator.ensureIndicesAndAliasesExist(cb),
+                cb => indexFiles(that, files, srcdir, cb)
             ],
-            function(errs) {
+
+            errs => {
                 that.esClient.close();
                 that.fire('done', errs, srcdir);
             }
@@ -89,18 +85,15 @@ Indexer.prototype.fire = function (event) {
     var args = Array.prototype.slice.call(arguments);
     // get rid of the 'event' argument, the callback dont need it
     args.shift();
-    this.callbacks[event].forEach(function (cb) {
-        cb.apply(cb, args);
-    });
+    this.callbacks[event].forEach(cb => cb.apply(cb, args));
 };
 
 // load and index an array of filenames.
 function indexFiles(indexer, files, srcdir, callback) {
     var partitions = partitionArray(files, 100);
     async.eachSeries(partitions,
-        function (partition, cb) {
-            indexPartition(partition, indexer, srcdir, cb);
-        }, callback);
+        (partition, cb) => indexPartition(partition, indexer, srcdir, cb),
+        callback);
 }
 
 // partition an array into chunks
@@ -121,9 +114,6 @@ function partitionArray(filesArray, size) {
 
 // filter, format and then index a partition of content items
 function indexPartition(partition, indexer, srcdir, callback) {
-
-console.log('indexPartition ', partition.length);
-
     async.map(partition, loadFile, function (loadErr, data) {
 
         if (loadErr) {
@@ -132,11 +122,7 @@ console.log('indexPartition ', partition.length);
         }
 
         // filter out content items that should not be indexed
-        data = data.filter(function (item) {
-            return indexer.filter.accept(item);
-        });
-
-console.log('data length ', data.length);
+        data = data.filter(item => indexer.filter.accept(item));
 
         // format each item that hasnt been fitlered out
         async.mapSeries(data,
@@ -162,8 +148,6 @@ console.log('data length ', data.length);
 // index an array of formatted content items using a bulk request
 function indexItems(items, indexer, callback) {
     var body = [];
-
-console.log('indexItems ', items.length);
     items.forEach(
         function (item) {
             var type = item._embedded.format.name.toLowerCase();
@@ -178,8 +162,6 @@ console.log('indexItems ', items.length);
             body.push(item);
         });
 
-indexer.fire('info', 'indexer.esClient.bulk ' + body.length);
-
     indexer.esClient.bulk({ body: body },
         function (err, resp) {
 
@@ -189,18 +171,14 @@ indexer.fire('info', 'indexer.esClient.bulk ' + body.length);
             }
 
             // determine if we failed to index any items
-            var errorItems = resp.items.filter(function (item) {
-                return item.index.status >= 400;
-            });
+            var errorItems = resp.items.filter(item => item.index.status >= 400);
 
             if (errorItems.length > 0) {
                 callback({ msg: 'Failed to index some items', errors: errorItems});
                 return;
             }
 
-            resp.items.forEach(function (item) {
-                indexer.fire('indexed', item.index._id);
-            });
+            indexer.fire('indexed', items);
             callback(err);
         });
 }
