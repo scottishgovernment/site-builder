@@ -16,22 +16,14 @@ class IndexConfigurator {
 
     ensureIndicesAndAliasesExist(callback) {
         this.listener.info('ES mapping available, configuring indices and aliases');
-
-        var esClient = this.esClient;
-        var mapping = this.mapping;
-        var listener = this.listener;
-
         async.series([
-            cb => ensureIndicesExist(listener, esClient, mapping, cb),
-            cb => ensureAliasesExist(listener, esClient, cb)
+            cb => ensureIndicesExist(this.listener, this.esClient, this.mapping, cb),
+            cb => ensureAliasesExist(this.listener, this.esClient, cb)
         ], callback);
     }
 
     swapAliasTargets(callback) {
-        var esClient = this.esClient;
-        var listener = this.listener;
-
-        esClient.count({ index : 'offlinecontent'},
+        this.esClient.count({ index : 'offlinecontent'},
             (error, response) => {
                 if (error) {
                     callback(error);
@@ -41,13 +33,13 @@ class IndexConfigurator {
                     callback('Offline index is too small ' + response);
                     return;
                 }
-                swapAliases(esClient, listener, callback);
+                swapAliases(this.esClient, this.mapping, this.listener, callback);
             }
         );
     }
 }
 
-function swapAliases(esClient, listener, callback) {
+function swapAliases(esClient, mapping, listener, callback) {
     esClient.cat.aliases({ format: 'json'}, (err, aliases) => {
         if (err) {
             callback(err);
@@ -69,10 +61,18 @@ function swapAliases(esClient, listener, callback) {
         actions
             .filter(action => action.add)
             .forEach(action => aliasToIndex[action.add.alias] = action.add.index);
-        listener.info('Aliases: ' + JSON.stringify(actions)['cyan']);
+        listener.info('Aliases: ' + JSON.stringify(actions, null, '\t')['cyan']);
+
+        var newofflineindex = aliases.filter(alias => alias.alias === 'livecontent')[0].index;
         esClient.indices.updateAliases({ body: { actions: actions}},
-            // delete the contents of the offline index
-            () => esClient.indices.delete({ index: 'offlinecontent' }, callback)
+            //delete the offline index, then recreate it with the new mapping ready for next index.
+            () =>
+                async.series([
+                    // delete the offline index then recreate it and its alias
+                    cb => esClient.indices.delete({ index: newofflineindex }, cb),
+                    cb => esClient.indices.create({ index: newofflineindex, body: mapping}, cb),
+                    cb => esClient.indices.putAlias({index: newofflineindex, name: 'offlinecontent'}, cb)
+                ], callback)
         );
     });
 }
@@ -95,7 +95,6 @@ function ensureIndexExists(listener, esClient, mapping, index, callback) {
     esClient.indices.exists({ index : index })
         .then(
             function (body) {
-                listener.info('esClient.indices.exists '+JSON.stringify(body, null, '\t'));
                 if (body === true) {
                     callback(null);
                     return;

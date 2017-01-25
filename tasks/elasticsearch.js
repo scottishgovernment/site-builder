@@ -41,14 +41,12 @@ function indexContent(grunt, config, site, done) {
         grunt.log.writeln('Indexing ', srcdir['cyan']);
     }
 
-    function onIndexed(url) {
-        grunt.log.writeln('Indexed ', url['cyan'], ' OK'['green']);
-        indexed++;
+    function onIndexed(items) {
+        indexed += items.length;
     }
 
     function onInfo(msg) {
         grunt.log.writeln('Index content: ', msg['cyan']);
-        indexed++;
     }
 
     function onSkipped() {
