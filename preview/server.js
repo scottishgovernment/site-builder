@@ -35,16 +35,14 @@ if (config.preview && config.preview.watch) {
 // cookieParser provides access to the authentication token via req.cookies
 app.use(cookieParser());
 
+app.use('/robots.txt',
+    express.static(__dirname + '/robots.txt'));
+
 app.use('/',
     express.static('out/css'),
     express.static('out/pdfs'),
     express.static('app/')
 );
-
-app.use('/robots.txt',
-    express.static(__dirname + '/robots.txt'));
-
-
 
 if (site.router) {
     var router = require('./router');
