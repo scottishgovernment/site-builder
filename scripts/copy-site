@@ -1,5 +1,7 @@
 #!/bin/bash -el
 # copy-site  - copies the published site
+set -e
+
 BASEDIR="${PWD}"
 FROM=${BASEDIR}/dist/
 SSH_OPTS="-o StrictHostKeyChecking=no -o PasswordAuthentication=no"
@@ -60,14 +62,23 @@ copy_targets() {
   done
 }
 
-if [ ! -f "${FROM}/index.html" ]; then
-  echo "No index.html found - not copying site."
-  exit 1
-fi
+check_targets() {
+  if [ -z "${targets}" ]; then
+    echo "No targets specified for copy."
+    return 1
+  fi
+}
 
-if [ -z "${targets}" ]; then
-  echo "No targets specified for copy."
-  exit 1
-fi
+check_files() {
+  local files="index.html robots.txt sitemap.xml"
+  for file in $files; do
+    if [ ! -f "${FROM}/${file}" ]; then
+      echo "No ${file} - not copying site."
+      return 1
+    fi
+  done
+}
 
+check_targets
+check_files
 copy_targets "${targets}"
