@@ -18,7 +18,7 @@ module.exports = function(grunt) {
     function lcov(callback) {
         process.execFile(executable, [
                 '-o', 'test/coverage/lcov.info',
-                '-a', 'test/coverage/reports/lcov.info',
+                '-a', 'test/coverage/backend/lcov.info',
                 '-a', 'test/coverage/phantomjs/lcov.info'],
             {},
             function (cb) {
