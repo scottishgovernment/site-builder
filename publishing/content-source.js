@@ -12,9 +12,10 @@ module.exports = function(config, restler) {
     var buildapi = config.buildapi.endpoint;
 
     var paths = require('path');
+    var fs = require('fs-extra');
 
     var call = function(url, headers, callback) {
-        var options = headers? {headers: headers} : {};
+        var options = headers ? { headers: headers } : {};
         restler
             .get(url, options)
             .on('complete', callback);
@@ -42,6 +43,25 @@ module.exports = function(config, restler) {
         return buildapi + paths.join(pathInfo, path);
     };
 
+    // this function will be removed once resolve content item is removed
+    var getResourceSync = function(urlOrId) {
+        var url = buildApi('urlOrId', urlOrId, 'stage');
+        var headers = {};
+        if (process._anyToken) {
+            url = buildApi('urlOrId', urlOrId, 'preview');
+            headers = {
+                headers: {
+                    Authorization: 'Bearer ' + process._anyToken
+                }
+            };
+        }
+        console.log('[additional-resources] ' + url);
+        var res = require('sync-request')('GET', url, headers);
+        var content = JSON.parse(res.getBody('utf8'));
+        content.body = content.contentItem.content;
+        return content;
+    };
+
     return {
 
         resource: getResource,
@@ -62,8 +82,8 @@ module.exports = function(config, restler) {
             if (ids) {
                 var idsParam = ids.join(',');
                 url = url + '?ids=' + idsParam;
-            } 
-            
+            }
+
             getResource(url, headers, callback);
         },
 
@@ -71,6 +91,7 @@ module.exports = function(config, restler) {
             var url = buildApi('urlOrId', urlOrId, visibility);
             getResource(url, headers, callback);
         },
+
         /**
          * Temporary method until dependency loader is put back in
          * This function is temporary function and going to be removed completely.
@@ -78,16 +99,11 @@ module.exports = function(config, restler) {
          */
         fetchItemSync: function(urlOrId) {
             var cacheId = 'out/.preview/' + Buffer.from(urlOrId).toString('hex');
-            var fs = require('fs-extra');
             fs.ensureDirSync('out/.preview');
             if (fs.existsSync(cacheId)) {
                 return JSON.parse(fs.readFileSync(cacheId));
             } else {
-                var url = buildApi('urlOrId', urlOrId, 'stage');
-                console.log('[additional-resources] ' + url);
-                var res = require('sync-request')('GET', url, {});
-                var content = JSON.parse(res.getBody('utf8'));
-                content.body = content.contentItem.content;
+                var content = getResourceSync(urlOrId);
                 fs.writeFileSync(cacheId, JSON.stringify(content));
                 return content;
             }
@@ -99,3 +115,4 @@ module.exports = function(config, restler) {
         }
     };
 };
+
