@@ -44,19 +44,10 @@ module.exports = function(config, restler) {
     };
 
     // this function will be removed once resolve content item is removed
-    var getResourceSync = function(urlOrId) {
-        var url = buildApi('urlOrId', urlOrId, 'stage');
-        var headers = {};
-        if (process._anyToken) {
-            url = buildApi('urlOrId', urlOrId, 'preview');
-            headers = {
-                headers: {
-                    Authorization: 'Bearer ' + process._anyToken
-                }
-            };
-        }
+    var getResourceSync = function(urlOrId, headers, visibility) {
+        var url = buildApi('urlOrId', urlOrId, visibility);
         console.log('[additional-resources] ' + url);
-        var res = require('sync-request')('GET', url, headers);
+        var res = require('sync-request')('GET', url, {headers:headers});
         var content = JSON.parse(res.getBody('utf8'));
         content.body = content.contentItem.content;
         return content;
@@ -97,13 +88,13 @@ module.exports = function(config, restler) {
          * This function is temporary function and going to be removed completely.
          * it has policy specific details
          */
-        fetchItemSync: function(urlOrId) {
+        fetchItemSync: function(urlOrId, headers, visibility) {
             var cacheId = 'out/.preview/' + Buffer.from(urlOrId).toString('hex');
             fs.ensureDirSync('out/.preview');
             if (fs.existsSync(cacheId)) {
                 return JSON.parse(fs.readFileSync(cacheId));
             } else {
-                var content = getResourceSync(urlOrId);
+                var content = getResourceSync(urlOrId, headers, visibility);
                 fs.writeFileSync(cacheId, JSON.stringify(content));
                 return content;
             }

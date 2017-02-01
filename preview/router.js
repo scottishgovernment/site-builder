@@ -20,10 +20,6 @@ function createContext(router, req, res) {
     if (res) {
         token = req.query.token || req.cookies.preview_token;
         res.cookie('preview_token', token);
-        // temporarily added to support resolve content item during render phase
-        // this will be no longer required after render time inter content-item dependency
-        // removed
-        process._anyToken = token;
     }
     return router.app.createPrepareContext(visibility, token);
 }
