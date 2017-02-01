@@ -27,6 +27,9 @@ class PrepareContext {
                 callback(err);
             } else {
                 content.stagingEnvironment = context.visibility === 'stage';
+                if (context.authToken) {
+                    content.forToken = context.authToken;
+                }
                 context.attributes[content.uuid] = {
                     fetched: new Date().getTime(),
                     path: path,
@@ -38,7 +41,15 @@ class PrepareContext {
     }
 
     fetchItemSync(path) {
-        return this.app.contentSource.fetchItemSync(path);
+        var headers = {};
+        if (this.authToken && this.authToken !== 'undefined') {
+            headers.Authorization = 'Bearer ' + this.authToken;
+            var content = this.app.contentSource.fetchItemSync(path, headers, 'preview');
+            content.forToken = this.authToken;
+            return content;
+        } else {
+            return this.app.contentSource.fetchItemSync(path, headers, 'stage');
+        }
     }
 
     fetchUrlsById(ids, callback) {
