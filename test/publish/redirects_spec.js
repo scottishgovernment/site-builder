@@ -3,13 +3,6 @@ describe('redirects', function() {
 
     var fs = require('fs-extra');
 
-    function item(url, alias) {
-        return {
-            url: url,
-            alias: alias
-        }
-    }
-
     var getRuntime = function() {
         return {
             referenceData: {},
@@ -29,10 +22,6 @@ describe('redirects', function() {
             }
         }
     };
-
-    beforeEach(function() {
-        fs.removeSync('redirects.txt');
-    });
 
     it('green path', function(done) {
 
