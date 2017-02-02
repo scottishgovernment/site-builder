@@ -2,11 +2,19 @@ var sutPath = '../../out/instrument/publish/redirects';
 describe('redirects', function() {
 
     var fs = require('fs-extra');
+    var getRuntime = function() {
+        return {
+            referenceData: {},
+            config: {},
+            templates: {
+                render: {}
+            }
+        }
+    };
 
     it('green path', function(done) {
 
         var runtime = getRuntime();
-        var context = runtime.rubricContentContext();
 
         // ARRANGE
         var redirects = [{
