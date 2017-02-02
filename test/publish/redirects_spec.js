@@ -3,26 +3,6 @@ describe('redirects', function() {
 
     var fs = require('fs-extra');
 
-    var getRuntime = function() {
-        return {
-            referenceData: {},
-            config: {},
-            templates: {
-                render: {}
-            },
-            rubricContentContext: function() {
-                return {
-                    attributes: {},
-                    headers: {},
-                    fetchItem: function(path, callback) {
-                        callback(null, 'content');
-                    },
-                    runtime: this
-                }
-            }
-        }
-    };
-
     it('green path', function(done) {
 
         var runtime = getRuntime();
