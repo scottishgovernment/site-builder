@@ -1,8 +1,7 @@
 'use strict';
 
 /**
- * Content source used by the side build and preview.
- *
+ * Content source used by the side build and preview. *
  * Acts as a client to the build api.
  **/
 module.exports = function(config, restler) {
@@ -83,6 +82,11 @@ module.exports = function(config, restler) {
             getResource(url, headers, callback);
         },
 
+        fetchRedirects: function(headers, visibility, callback) {
+            var url = buildApi('redirects', '', visibility);
+            getResource(url, headers, callback);
+        },
+
         /**
          * Temporary method until dependency loader is put back in
          * This function is temporary function and going to be removed completely.
@@ -106,4 +110,5 @@ module.exports = function(config, restler) {
         }
     };
 };
+
 
