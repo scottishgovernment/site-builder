@@ -3,8 +3,6 @@
 var path = require('path');
 var fs = require('fs-extra');
 var glob = require('glob');
-var yaml = require('js-yaml');
-var yfm = require('yfm');
 var async = require('async');
 var links = require('../render/links');
 var images = require('../render/images');
@@ -16,30 +14,34 @@ if (!String.prototype.startsWith) {
   };
 }
 
-var frontMatterDelimiter = ['~~~', '~~~'];
 var fileOptions = {encoding: 'utf-8'};
 var layoutsDir;
 
 /**
- * Generates a site by walking a directory tree of YAML files, rendering them as HTML.
+ * Generates a site by walking a directory tree of json files, rendering them as HTML.
  */
-function Site(yamlDir, htmlDir, renderer) {
-    this.yamlDir = yamlDir;
-    this.htmlDir = htmlDir;
+function Site(tempDir, renderer) {
+    this.tempDir = tempDir;
+    this.dataDir = path.join(tempDir, 'contentitems');
+    this.htmlDir = path.join(tempDir, 'pages');
     this.renderer = renderer;
 }
 
 /**
- * Walks a directory tree of YAML files, rendering them to HTML.
+ * Walks a directory tree of json files, rendering them to HTML.
  */
 Site.prototype.build = function(done) {
     var that = this;
-    var yamlGlob = path.join(this.yamlDir, '**/*.yaml');
-    glob(yamlGlob, {}, function (err, files) {
+    var dataGlob = path.join(this.dataDir, '*.json');
+    glob(dataGlob, {}, function (err, files) {
         if (err) {
             done(err);
             return;
         }
+
+        // TODO: we could get this index from the build api: either from a
+        //  seperate endpoint or add the url to the itemsCachable endpoint.
+        //  on gov.scot this indexing take about 30 seconds.
         that.indexFiles(files, function(err, index) {
             that.index = index;
             that.imageLink = images.collector(
@@ -47,7 +49,8 @@ Site.prototype.build = function(done) {
             );
             async.eachLimit(files, 4, that.processFile.bind(that), function() {
                 var json = JSON.stringify(that.imageLink.urls, null, '\t');
-                fs.writeFileSync('out/assets.json', json);
+                var assetsFile = path.join(that.tempDir, 'assets.json');
+                fs.writeFileSync(assetsFile, json);
                 done();
             });
         });
@@ -55,7 +58,7 @@ Site.prototype.build = function(done) {
 };
 
 /**
- * Read YAML files and create a map of content item ID to URL.
+ * Read json files and create a map of content item ID to URL.
  */
 Site.prototype.indexFiles = function (files, callback) {
     var urlById = {};
@@ -64,11 +67,8 @@ Site.prototype.indexFiles = function (files, callback) {
             if (err) {
                 callback('Could not read file: ' + file);
             } else {
-                //TODO: site specific code...
-                if (!item.contentItem.guidepageslug) {
-                  urlById[item.uuid] = item.url;
-                }
-                callback();
+              urlById[item.uuid] = item.url;
+              callback();
             }
         });
     };
@@ -85,7 +85,7 @@ Site.prototype.processFile = function(src, cb) {
     var that = this;
     fs.readFile(src, fileOptions, function (err, data) {
         if (!err) {
-            that.renderYamlToFile(data, cb);
+            that.renderDataToFile(data, cb);
         } else {
             cb(err);
         }
@@ -99,9 +99,7 @@ function readFile(file, callback) {
         }
         var item;
         try {
-            var parsed = yfm(data, frontMatterDelimiter);
-            item = parsed.context;
-            item.body = parsed.content;
+            item = JSON.parse(data);
         } catch (e) {
             callback('Could not parse file: ' + file + '\n' + e.message);
         }
@@ -110,10 +108,8 @@ function readFile(file, callback) {
 
 }
 
-Site.prototype.renderYamlToFile = function(data, cb) {
-    var parsed = yfm(data, frontMatterDelimiter);
-    var item = parsed.context;
-    item.body = parsed.content;
+Site.prototype.renderDataToFile = function(data, cb) {
+    var item = JSON.parse(data);
     try {
         if (shouldRender(item)) {
             this.renderItemToFile(item, cb);

@@ -7,7 +7,6 @@ describe('save-item', function() {
     var tempDir;
     var fs = require('fs');
     var path = require('path');
-    var yaml = require('js-yaml');
     var async = require('async');
 
     var runtime = {
@@ -22,9 +21,6 @@ describe('save-item', function() {
                 }
             }
         }
-
-
-
     }
 
     beforeEach(function(done) {
@@ -50,9 +46,7 @@ describe('save-item', function() {
 
     function expectedPathsForItem(item) {
         var paths = [];
-        paths.push('/contentitems/' + item.uuid + '.yaml');
         paths.push('/contentitems/' + item.uuid + '.json');
-        paths.push('/pages/' + item.url + 'index.yaml');
         paths.push('/pages/' + item.url + 'index.json');
         return paths;
     }
@@ -68,10 +62,6 @@ describe('save-item', function() {
             }
 
             switch (extension) {
-                case 'yaml':
-                    parsedContent = yaml.load(contents.toString().split('~~~\n')[1]);
-                    break;
-
                 case 'json':
                     parsedContent = JSON.parse(contents);
                     break;
@@ -102,11 +92,9 @@ describe('save-item', function() {
     it('starts', function(done) {
         var called = {};
         var myFs = {
-            removeSync: function(f) {
-                called[f + 'remove'] = true;
-            },
-            mkdirsSync: function(f) {
+            mkdirs: function (f, cb) {
                 called[f + 'create'] = true;
+                cb();
             }
         };
 
@@ -116,8 +104,6 @@ describe('save-item', function() {
         // ACT
         sut.start(function(err) {
             // ASSERT
-            expect(called[tempDir + '/contentitemsremove']).toBe(true);
-            expect(called[tempDir + '/pagesremove']).toBe(true);
             expect(called[tempDir + '/contentitemscreate']).toBe(true);
             expect(called[tempDir + '/pagescreate']).toBe(true);
             done();
@@ -265,7 +251,7 @@ describe('save-item', function() {
         });
     });
 
-    xit('ends gracefully with additional funding items', function(done) {
+    it('ends gracefully with additional funding items', function(done) {
         // ARRANGE
         // add final content:
         runtime.context.funding = {
@@ -292,16 +278,12 @@ describe('save-item', function() {
         var sut = require(sutPath)(runtime, tempDir, myFs);
         sut.end(null, function() {
             // funding list generated
-            expect(called['/pages/fl-url/index.yaml']).toBe(true);
             expect(called['/pages/fl-url/index.json']).toBe(true);
             expect(called['/contentitems/fl.json']).toBe(true);
-            expect(called['/contentitems/fl.yaml']).toBe(true);
 
             // prease release generated
-            expect(called['/pages/prl-url/index.yaml']).toBe(true);
             expect(called['/pages/prl-url/index.json']).toBe(true);
             expect(called['/contentitems/prl.json']).toBe(true);
-            expect(called['/contentitems/prl.yaml']).toBe(true);
 
             done();
         });
