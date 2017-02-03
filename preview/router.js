@@ -15,7 +15,7 @@ function Router(siteRouter, app) {
 }
 
 function createContext(router, req, res) {
-    var visibility = req.headers['x-visibility'] || 'preview';
+    var visibility = req.headers['x-visibility'] || 'siteBuild';
     var token = null;
     if (res) {
         token = req.query.token || req.cookies.preview_token;
