@@ -38,7 +38,7 @@ override_dh_fixperms:
 
 override_dh_builddeb:
 	dpkg-deb -b debian/site-builder $(OUTDIR)
-build %:
+%:
 	dh $@
 
 # Skip these debhelper targets
