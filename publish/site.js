@@ -32,7 +32,7 @@ function Site(tempDir, renderer) {
  */
 Site.prototype.build = function(done) {
     var that = this;
-    var dataGlob = path.join(this.dataDir, '*.json');
+    var dataGlob = path.join(this.htmlDir, '**/*.json');
     glob(dataGlob, {}, function (err, files) {
         if (err) {
             done(err);
