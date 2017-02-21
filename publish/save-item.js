@@ -37,7 +37,7 @@ function handleContentItem(context, content, fs, target, callback) {
 
 // Turn a content item into yaml frontmatter
 function toYaml(content) {
-    return '~~~\n' + yaml.dump(content) + '~~~\n' + content.contentItem.content;
+    return '~~~\n' + yaml.dump(content) + '~~~\n' + (content.contentItem.content || '');
 };
 
 // save an individual content item
