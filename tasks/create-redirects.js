@@ -3,7 +3,7 @@
 // Grunt task that fetches decommisioned sites and writes out the necessary nginx config files
 module.exports = function(grunt) {
     var config = require('config-weaver').config();
-    var name = 'redirect-writer';
+    var name = 'create-redirects';
     var description = 'generate urlAliases.txt file for the content items';
     grunt.registerTask(name, description, function() {
         var release = this.async();
