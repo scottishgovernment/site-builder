@@ -10,10 +10,11 @@ var config = require('config-weaver').config();
 
 var fileOptions = {encoding: 'utf-8'};
 
-function Renderer(layouts, partials, helpers) {
+function Renderer(layouts, partials, helpers, tempDir) {
     this.layoutsDir = layouts;
     this.partials = partials;
     this.helpers = helpers;
+    this.tempDir = tempDir;
     this.reload();
 
     this.callbacks = {
@@ -29,7 +30,7 @@ Renderer.prototype.reload = function() {
     this.handlebars = handlebars;
     this.templates = {};
     registerPartials(this.handlebars, this.partials);
-    registerHelpers(this.handlebars, this.helpers);
+    registerHelpers(this.handlebars, this.helpers, this.tempDir);
 
     // Helper to convert body from markdown to HTML, and render shortcodes.
     handlebars.registerHelper('markdown', function (options) {
@@ -99,12 +100,12 @@ function registerPartials(handlebars, dir) {
     }
 }
 
-function registerHelpers(handlebars, dir) {
+function registerHelpers(handlebars, dir, tempDir) {
     var files = glob.sync(path.join(dir, '*.js'));
     for (var i = 0; i < files.length; i++) {
         var helpers = require(files[i]);
         if (helpers.register) {
-            helpers.register(handlebars);
+            helpers.register(handlebars, tempDir);
         }
     }
 }

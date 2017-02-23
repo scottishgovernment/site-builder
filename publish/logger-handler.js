@@ -1,6 +1,7 @@
 module.exports = function(app, grunt) {
 
     var needle = require('needle');
+    var deleteCount = 0;
     var count = 0;
     var killerItem = {
         time: 0,
@@ -8,16 +9,24 @@ module.exports = function(app, grunt) {
     };
 
     function log(method, data, status) {
-        grunt.log.writeln('Create YAML ' + data['cyan'] + ' ' + status['green']);
+        grunt.log.writeln(method + ' ' + data['cyan'] + ' ' + status['green']);
     }
 
     return {
 
         // called when the content source is starting
         start: function(callback) {
-            log('Start', '', '');
-            callback();
+            log('Create YAML Start', '', '');
             count = 0;
+            deleteCount = 0;
+            callback();
+        },
+
+        // called for each content item that has been removed
+        removeContentItem: function (context, id, callback) {
+            log('Remove YAML', id, 'OK');
+            deleteCount++;
+            callback();
         },
 
         // called for each content item provided by the content source
@@ -30,7 +39,7 @@ module.exports = function(app, grunt) {
                 killerItem.time = elapsed;
                 killerItem.uuid = content.uuid;
             }
-            log('processing', content.uuid + ' ' + content.contentItem.slug
+            log('Create or Update YAML', content.uuid + ' ' + content.contentItem.slug
                 + ' prepare:' + elapsed + ' total-context-time: ' + requestTime, 'OK');
             callback();
         },
@@ -49,7 +58,9 @@ module.exports = function(app, grunt) {
                 content_type: 'application/json'
             };
             needle.post(app.config.crud.endpoint + '/api/pub', content, options, function() {
-                grunt.log.ok('Create YAML end ' + count.toString()['green'] + ' items');
+                grunt.log.ok('Create YAML end. Deleted '
+                + deleteCount.toString()['green'] + ' items, '
+                + 'wrote ' + count.toString()['green'] + ' items');
                 callback();
             });
         }
