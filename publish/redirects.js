@@ -54,9 +54,11 @@ module.exports = function(app, dir) {
         create: function(fromJson, callback) {
             redirects = [];
             fromCsv(function() {
-                fromJson.forEach(function(urlMap) {
-                    addRedirect({ url: urlMap.url, alias: urlMap.alias });
-                });
+                if (fromJson) {
+                    fromJson.forEach(function(urlMap) {
+                        addRedirect({ url: urlMap.url, alias: urlMap.alias });
+                    });
+                }
 
                 var formattedRedirects = template(redirects);
                 fs.mkdirsSync(dir);

@@ -99,6 +99,7 @@ module.exports = function(config, restler) {
                 return JSON.parse(fs.readFileSync(cacheId));
             } else {
                 var content = getResourceSync(urlOrId, headers, visibility);
+                content.body = content.contentItem.content;
                 fs.writeFileSync(cacheId, JSON.stringify(content));
                 return content;
             }
@@ -107,8 +108,13 @@ module.exports = function(config, restler) {
         fetchItems: function(headers, visibility, callback) {
             var url = buildApi('items', '', visibility);
             getResource(url, headers, callback);
-        }
+        },
+
+        fetchCachableItems: function(headers, visibility, callback) {
+            var url = buildApi('itemsCachable', '', visibility);
+            getResource(url, headers, callback);
+        },
+
+
     };
 };
-
-
