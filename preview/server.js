@@ -44,6 +44,11 @@ app.use('/',
     express.static('app/')
 );
 
+app.use(
+    '/assets/images',
+    express.static('src/images')
+);
+
 if (site.router) {
     var router = require('./router');
     var routing = router.create(site.router(), appContext);
