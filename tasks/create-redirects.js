@@ -1,6 +1,6 @@
 'use strict';
-
-// Grunt task that fetches decommisioned sites and writes out the necessary nginx config files
+// Grunt task that fetches content item urls from the redirects endpoint 
+// and using the data calls publish/redirects that generates urlAliasses.txt
 module.exports = function(grunt) {
     var config = require('config-weaver').config();
     var name = 'create-redirects';
