@@ -108,7 +108,7 @@ Site.prototype.processFile = function(src, cb) {
                     if (!err) {
                         that.renderDataToFile(data, cb);
                     } else {
-                        cb(err);
+                        cb();
                     }
                 });
             } else {
