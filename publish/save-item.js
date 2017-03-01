@@ -4,7 +4,7 @@ var async = require('async');
 var path = require('path');
 
 function handleContentItem(context, content, fs, target, callback) {
-     var savePages = context.attributes[content.uuid].store;
+    var savePages = context.attributes[content.uuid].store;
     if (!context.attributes[content.uuid].additionalItems) {
         saveItem(fs, target, content, savePages, true, callback);
     } else {
@@ -20,36 +20,6 @@ function handleContentItem(context, content, fs, target, callback) {
                 index++;
             },
             () => saveItem(fs, target, content, savePages, true, callback));
-    }
-};
-
-function handleContentItemCleanedup(context, content, fs, target, callback) {
-    cleanUp(fs, target, content, function() {
-        var savePages = context.attributes[content.uuid].store;
-        if (!context.attributes[content.uuid].additionalItems) {
-            saveItem(fs, target, content, savePages, true, callback);
-        } else {
-            content.additionalItemUrls = [];
-            var index = 0;
-            context.attributes[content.uuid].additionalItems.each(
-                (item, cb) => {
-                    if (item.uuid === content.uuid) {
-                        item.uuid = item.uuid + '-' + index;
-                    }
-                    content.additionalItemUrls.push(item.url);
-                    saveItem(fs, target, item, savePages, false, cb);
-                    index++;
-                },
-                () => saveItem(fs, target, content, savePages, true, callback));
-        }
-    });
-};
-
-function cleanUp(fs, target, content, callback) {
-    if (content.url === '/') {
-        callback();
-    } else {
-        fs.remove(path.join(target, 'pages', content.url), callback);
     }
 };
 
@@ -138,14 +108,16 @@ module.exports = function(app, target, fs) {
         removeContentItem: function(context, id, callback) {
             var jsonPath = path.join(contentitemsPath, id + '.json');
             fs.readFile(jsonPath, (err, data) => {
-                var content = JSON.parse(data);
-                if (content.url === '/') {
-                    var pagesPath = path.join(target, 'pages', content.url, 'index.html');
-                    fs.remove(pagesPath, callback);
-                } else {
-                    var pagesPath = path.join(target, 'pages', content.url);
-                    fs.remove(pagesPath, callback);
+                if (err) {
+                    callback();
+                    return;
                 }
+                var content = JSON.parse(data);
+                var pagesPath = path.join(target, 'pages', content.url);
+                if (content.url === '/') {
+                    pagesPath = path.join(target, 'pages', content.url, 'index.html');
+                } 
+                fs.remove(pagesPath, callback);
             });
         },
 
