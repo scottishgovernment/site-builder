@@ -60,7 +60,7 @@ Site.prototype.build = function(done) {
 Site.prototype.createUrlIndex = function(files, callback) {
     var that = this;
     readFile(path.join(this.tempDir, 'siteIndex.json'), function(err, siteIndex) {
-        if (err) {
+        if (!siteIndex || err) {
             // file does not exists, use legacy function to create index
             console.log('siteIndex.json not found, using file system to create url index');
             that.indexFiles(files, callback);
