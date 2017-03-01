@@ -32,17 +32,14 @@ function Site(tempDir, renderer) {
  */
 Site.prototype.build = function(done) {
     var that = this;
-    var dataGlob = path.join(this.htmlDir, '**/*.json');
+    var dataGlob = path.join(this.htmlDir, '**/index.json');
     glob(dataGlob, {}, function (err, files) {
         if (err) {
             done(err);
             return;
         }
 
-        // TODO: we could get this index from the build api: either from a
-        //  seperate endpoint or add the url to the itemsCachable endpoint.
-        //  on gov.scot this indexing take about 30 seconds.
-        that.indexFiles(files, function(err, index) {
+        that.createUrlIndex(files, function(err, index) {
             that.index = index;
             that.imageLink = images.collector(
                 function (url) { return url; }
@@ -54,6 +51,25 @@ Site.prototype.build = function(done) {
                 done();
             });
         });
+    });
+};
+
+
+Site.prototype.createUrlIndex = function(files, callback) {
+    var that = this;
+    readFile(path.join(this.tempDir, 'siteIndex.json'), function(err, siteIndex) {
+        if (err) {
+            // file does not exists, use legacy function to create index
+            console.log('siteIndex.json not found, using file system to create url index');
+            that.indexFiles(files, callback);
+        } else {
+            var urlById = {};
+            siteIndex.forEach(function(siteIndexItem) {
+                urlById[siteIndexItem.id] = siteIndexItem.url;
+            });
+            console.log(urlById);
+            callback(null, urlById);
+        }
     });
 };
 
