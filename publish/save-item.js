@@ -3,26 +3,33 @@
 var async = require('async');
 var path = require('path');
 
-// Turn a content item into yaml frontmatter
-function toYaml(content) {
-    return '~~~\n' + yaml.dump(content) + '~~~\n' + content.contentItem.content;
-};
-
 function handleContentItem(context, content, fs, target, callback) {
-
-    content.additionalItemUrls = [];
-    var savePages = context.attributes[content.uuid].store;
+     var savePages = context.attributes[content.uuid].store;
     if (!context.attributes[content.uuid].additionalItems) {
         saveItem(fs, target, content, savePages, true, callback);
-        return;
+    } else {
+        content.additionalItemUrls = [];
+        var index = 0;
+        context.attributes[content.uuid].additionalItems.each(
+            (item, cb) => {
+                if (item.uuid === content.uuid) {
+                    item.uuid = item.uuid + '-' + index;
+                }
+                content.additionalItemUrls.push(item.url);
+                saveItem(fs, target, item, savePages, false, cb);
+                index++;
+            },
+            () => saveItem(fs, target, content, savePages, true, callback));
     }
+};
 
-    // there are additional items, delete this sub directory and then save them
-    deleteAdditionalItemsIfExists(content, fs, target,
-        (err) => {
-            if (err) {
-                callback(err);
-            }
+function handleContentItemCleanedup(context, content, fs, target, callback) {
+    cleanUp(fs, target, content, function() {
+        var savePages = context.attributes[content.uuid].store;
+        if (!context.attributes[content.uuid].additionalItems) {
+            saveItem(fs, target, content, savePages, true, callback);
+        } else {
+            content.additionalItemUrls = [];
             var index = 0;
             context.attributes[content.uuid].additionalItems.each(
                 (item, cb) => {
@@ -34,31 +41,17 @@ function handleContentItem(context, content, fs, target, callback) {
                     index++;
                 },
                 () => saveItem(fs, target, content, savePages, true, callback));
-        });
+        }
+    });
 };
 
-function deleteAdditionalItemsIfExists(content, fs, target, callback) {
-    var itemPath = path.join(target, 'contentitems', content.uuid + '.json');
-    fs.exists(itemPath, exists => {
-        if (!exists) {
-            callback();
-            return;
-        }
-
-        fs.readFile(itemPath, (err, data) => {
-            if (err) {
-                callback(err);
-                return;
-            }
-
-            var item = JSON.parse(data);
-            async.each(item.additionalItemUrls, (additionalItemUrl, cb) => {
-                var additionalItemPath = path.join(target, 'pages', additionalItemUrl);
-                fs.remove(additionalItemPath, cb);
-            }, callback);
-        });
-    });
-}
+function cleanUp(fs, target, content, callback) {
+    if (content.url === '/') {
+        callback();
+    } else {
+        fs.remove(path.join(target, 'pages', content.url), callback);
+    }
+};
 
 // save an individual content item
 function saveItem(fs, target, content, savePages, saveContentItems, callback) {
@@ -118,7 +111,7 @@ function end(err, app, fs, target, callback) {
         // for each call the handler
         (content, eachCallback) => saveItem(fs, target, content, true, true, eachCallback),
         // called when all are finished
-        function () { callback(err); });
+        function() { callback(err); });
 }
 
 /**
@@ -142,12 +135,17 @@ module.exports = function(app, target, fs) {
         },
 
         // called for each content item that has been removed
-        removeContentItem: function (context, id, callback) {
+        removeContentItem: function(context, id, callback) {
             var jsonPath = path.join(contentitemsPath, id + '.json');
-            fs.readFile(jsonPath,  (err, data) => {
+            fs.readFile(jsonPath, (err, data) => {
                 var content = JSON.parse(data);
-                var pagesPath = path.join(target, 'pages', content.url);
-                fs.remove(pagesPath, callback);
+                if (content.url === '/') {
+                    var pagesPath = path.join(target, 'pages', content.url, 'index.html');
+                    fs.remove(pagesPath, callback);
+                } else {
+                    var pagesPath = path.join(target, 'pages', content.url);
+                    fs.remove(pagesPath, callback);
+                }
             });
         },
 
@@ -158,7 +156,7 @@ module.exports = function(app, target, fs) {
 
         // called when the content source will provide no more items
         end: function(err, callback) {
-            end(err, app, fs, target, function(){
+            end(err, app, fs, target, function() {
                 app.amphora.utils.downloadQueuedResources(
                     app,
                     function(downloadError) {
@@ -168,5 +166,3 @@ module.exports = function(app, target, fs) {
         }
     };
 };
-
-

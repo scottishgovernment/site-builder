@@ -6,15 +6,16 @@ var glob = require('glob');
 var async = require('async');
 var links = require('../render/links');
 var images = require('../render/images');
+var pageFile = 'index.html';
 
 if (!String.prototype.startsWith) {
-    String.prototype.startsWith = function(searchString, position){
-      position = position || 0;
-      return this.substr(position, searchString.length) === searchString;
-  };
+    String.prototype.startsWith = function(searchString, position) {
+        position = position || 0;
+        return this.substr(position, searchString.length) === searchString;
+    };
 }
 
-var fileOptions = {encoding: 'utf-8'};
+var fileOptions = { encoding: 'utf-8' };
 var layoutsDir;
 
 /**
@@ -33,16 +34,17 @@ function Site(tempDir, renderer) {
 Site.prototype.build = function(done) {
     var that = this;
     var dataGlob = path.join(this.htmlDir, '**/index.json');
-    glob(dataGlob, {}, function (err, files) {
+    glob(dataGlob, {}, function(err, files) {
         if (err) {
             done(err);
             return;
         }
-
         that.createUrlIndex(files, function(err, index) {
             that.index = index;
             that.imageLink = images.collector(
-                function (url) { return url; }
+                function(url) {
+                    return url;
+                }
             );
             async.eachLimit(files, 4, that.processFile.bind(that), function() {
                 var json = JSON.stringify(that.imageLink.urls, null, '\t');
@@ -67,7 +69,6 @@ Site.prototype.createUrlIndex = function(files, callback) {
             siteIndex.forEach(function(siteIndexItem) {
                 urlById[siteIndexItem.id] = siteIndexItem.url;
             });
-            console.log(urlById);
             callback(null, urlById);
         }
     });
@@ -76,15 +77,15 @@ Site.prototype.createUrlIndex = function(files, callback) {
 /**
  * Read json files and create a map of content item ID to URL.
  */
-Site.prototype.indexFiles = function (files, callback) {
+Site.prototype.indexFiles = function(files, callback) {
     var urlById = {};
     var summary = function(file, callback) {
         readFile(file, function(err, item) {
             if (err) {
                 callback('Could not read file: ' + file);
             } else {
-              urlById[item.uuid] = item.url;
-              callback();
+                urlById[item.uuid] = item.url;
+                callback();
             }
         });
     };
@@ -99,17 +100,28 @@ Site.prototype.indexFiles = function (files, callback) {
 
 Site.prototype.processFile = function(src, cb) {
     var that = this;
-    fs.readFile(src, fileOptions, function (err, data) {
-        if (!err) {
-            that.renderDataToFile(data, cb);
+    var pageContext = path.join(path.dirname(src), pageFile);
+    fs.access(pageContext, (err) => {
+        if (err) {
+            if (err.code === "ENOENT") {
+                fs.readFile(src, fileOptions, function(err, data) {
+                    if (!err) {
+                        that.renderDataToFile(data, cb);
+                    } else {
+                        cb(err);
+                    }
+                });
+            } else {
+                cb(err);
+            }
         } else {
-            cb(err);
+            cb();
         }
     });
 };
 
 function readFile(file, callback) {
-    fs.readFile(file, fileOptions, function (err, data) {
+    fs.readFile(file, fileOptions, function(err, data) {
         if (err) {
             callback('Could not read file: ' + file);
         }
@@ -155,7 +167,7 @@ Site.prototype.renderItemToFile = function(item, cb) {
     }
     var dir = path.join(this.htmlDir, item.url);
     fs.mkdirs(dir, function() {
-        fs.writeFile(path.join(dir, 'index.html'), html, fileOptions, cb);
+        fs.writeFile(path.join(dir, pageFile), html, fileOptions, cb);
     });
 };
 

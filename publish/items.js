@@ -20,7 +20,7 @@ module.exports = function(target, app, contentHandler) {
     }
 
     function removeContentItems(diff, context, callback) {
-        async.each(diff.deleted,
+        async.each(diff.deleted.concat(diff.changedOrNew),
             (id, cb) => contentHandler.removeContentItem(context, id, cb),
             (err) => callback(err, diff));
     }
