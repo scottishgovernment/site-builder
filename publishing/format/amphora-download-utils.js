@@ -3,6 +3,7 @@
 var path = require('path');
 var async = require('async');
 var cache = require('./amphora-cache');
+var config = require('config-weaver').config();
 var request = require('request');
 var fs = require('fs-extra');
 
@@ -79,7 +80,8 @@ var downloadQueuedResources = function(app, callback) {
 var store = function(context, resource, callback) {
     var filename = resource.metadata.filename || resource.slug
     var target = context.app.preview ? 'pdfs' : 'pages';
-    var base = path.join('out', target, resource.metadata.namespace);
+
+    var base = path.join(config.tempdir, target, resource.metadata.namespace);
     var destination = path.join(base, filename);
     var resourceItem = {
         storage: {

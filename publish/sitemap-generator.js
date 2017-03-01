@@ -89,7 +89,10 @@ function writeSitemapForCategories(targetdir, categories, callback) {
         }, callback);
 }
 
-module.exports = function (srcdir, targetdir, baseurl, callback) {
+module.exports = function (tempdir, baseurl, callback) {
+
+    var srcdir = path.join(tempdir, 'pages');
+    var targetdir = path.join(tempdir, 'sitemap');
 
     // ensure that the target directory exists
     fs.mkdirsSync(targetdir);

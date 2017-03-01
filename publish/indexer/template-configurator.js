@@ -12,7 +12,7 @@ var path = require('path');
  **/
 class TemplateConfigurator {
 
-    constructor(config, site, listener, esClient) {
+    constructor(site, listener, esClient) {
         // this tenranry can be removed after the delivery of MGS-1824 for both sites.
         // until then this ensures that an older version of the site will work
         // with a new version of site-builder.

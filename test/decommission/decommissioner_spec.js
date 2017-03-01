@@ -17,9 +17,10 @@ describe('decommissioner', function() {
             }
         );
     });
-    
+
     it('early return when disbaled', function (done) {
         var config = {
+            tempdir: 'out',
             authentication : {
                 enabled: false
             },
@@ -31,16 +32,16 @@ describe('decommissioner', function() {
         sut.createRedirects(function (err) {
             done();
         });
-            
+
     });
 
     function test(config, port, sites, pages, done) {
-        
+
         testRest.startGreenpathServer(port, sites, pages);
 
         var sut = require(sutPath)(config);
         sut.createRedirects(function (err) {
-            var redirectFile = require('fs').readFileSync(tempDir + '/decommissioned/alpha.mygov.scot.conf');
+            var redirectFile = require('fs').readFileSync(tempDir + '/nginx/decommissioned/alpha.mygov.scot.conf');
             done();
         });
     }
@@ -77,7 +78,7 @@ describe('decommissioner', function() {
                 "id": "alpha",
                 "response": {
                     "_embedded" : {
-                        "pages" : [ 
+                        "pages" : [
                             {
                                 "srcUrl": "/srcUrl/",
                                 "targetUrl": "/target/url/",
@@ -88,10 +89,10 @@ describe('decommissioner', function() {
                 }
             }];
         var config = {
+            tempdir: tempDir,
             authentication : {
                 enabled: false
             },
-            nginx: tempDir,
             decommissionTool : {
                 enabled: true,
                 url: "http://localhost:"+testPort+"/",
@@ -133,7 +134,7 @@ describe('decommissioner', function() {
                 "id": "alpha",
                 "response": {
                     "_embedded" : {
-                        "pages" : [ 
+                        "pages" : [
                             {
                                 "srcUrl": "/srcUrl/",
                                 "targetUrl": "/target/url/",
@@ -144,13 +145,13 @@ describe('decommissioner', function() {
                 }
             }];
         var config = {
+            tempdir: tempDir,
             authentication : {
                 enabled: true,
                 endpoint: 'http://localhost:'+authPort+'/',
                 user: "user@mygov.scot",
                 password: "password"
             },
-            nginx: tempDir,
             decommissionTool : {
                 enabled: true,
                 url: "http://localhost:"+testPort+"/",

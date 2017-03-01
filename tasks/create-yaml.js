@@ -29,7 +29,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask('create-yaml', 'generate content in the resources dir',
         function() {
-            var tempDir = grunt.config('site.temp');
+            var tempDir = config.tempdir;
             var site = require('../common/site')();
             var app = require('../publishing/app')(config, site, false);
 

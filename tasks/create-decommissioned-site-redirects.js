@@ -10,8 +10,8 @@ module.exports = function(grunt) {
 
     grunt.registerTask(name, description, function() {
         var release = this.async();
-        var dir = grunt.config('site.nginx');
-        config.nginx = dir;
+        // var dir = grunt.config('site.nginx');
+        // config.nginx = dir;
         var decommissioner = require('../decommission/decommissioner')(config);
         decommissioner.createRedirects(release, function (err) {
             if (err !== undefined) {

@@ -1,7 +1,8 @@
 'use strict';
 
 var path = require('path');
-var cachePath = path.join('out', '.amphora');
+var config = require('config-weaver').config();
+var cachePath = path.join(config.tempdir, '.amphora');
 var assembledCachePath = path.join(cachePath, 'assembled');
 var fs = require('fs-extra');
 fs.ensureDirSync(assembledCachePath);

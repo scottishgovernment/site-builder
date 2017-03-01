@@ -49,7 +49,7 @@ function registerTemplates(grunt, config, site, done) {
                 grunt.log.writeln(msg);
             }
         };
-    var templateConfigurator = new configuratorClass(config, site, listener, esClient);
+    var templateConfigurator = new configuratorClass(site, listener, esClient);
 
     templateConfigurator.registerTemplates(err => {
         esClient.close();
@@ -94,13 +94,15 @@ function indexContent(grunt, config, site, done) {
     }
 
     var indexer = require('../publish/indexer/indexer.js').create(config, site);
+    var path = require('path');
+    var indexDir = path.join(config.tempdir, 'contentitems');
     indexer
         .on('start',  onStart)
         .on('indexed', onIndexed)
         .on('info', onInfo)
         .on('skipped', onSkipped)
         .on('done',  onDone)
-        .index(grunt.config('site.contentitems'));
+        .index(indexDir);
 }
 
 function flipAliases(grunt, config, site, done) {

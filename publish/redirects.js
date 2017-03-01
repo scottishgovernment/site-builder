@@ -1,4 +1,4 @@
-module.exports = function(app, dir) {
+module.exports = function(tempdir) {
 
     var redirects = [];
 
@@ -61,8 +61,12 @@ module.exports = function(app, dir) {
                 }
 
                 var formattedRedirects = template(redirects);
-                fs.mkdirsSync(dir);
-                fs.writeFileSync(dir + '/urlAliases.txt', formattedRedirects, 'UTF-8');
+
+                var path = require('path');
+                var redirectsDir = path.join(tempdir, 'nginx');
+                var redirectsFile = path.join(redirectsDir, 'urlAliases.txt');
+                fs.mkdirsSync(redirectsDir);
+                fs.writeFileSync(redirectsFile, formattedRedirects, 'UTF-8');
                 callback();
             });
         }

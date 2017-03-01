@@ -138,6 +138,7 @@ function end(err, app, fs, target, callback) {
  **/
 module.exports = function(app, target, fs) {
 
+console.log('save-item ', target);
     var contentitemsPath = path.join(target, 'contentitems');
 
     return {
