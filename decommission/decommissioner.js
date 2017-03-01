@@ -1,6 +1,7 @@
-module.exports = function (config) {
+module.exports = function (config, tempdir) {
 
     var restler = require('restler'),
+        path = require('path'),
         handlebars = require('handlebars'),
         async = require('async'),
         fs = require('fs-extra'),
@@ -159,15 +160,13 @@ module.exports = function (config) {
                 };
 
                 var content = pagesTemplate(srcDoc);
-                var decommissionDir = config.nginx + '/decommissioned';
+
+                var decommissionDir = path.join(config.tempdir, 'nginx', 'decommissioned');
                 fs.mkdirsSync(decommissionDir);
 
                 var firstHost = site.host.split(' ')[0];
-                var filename = decommissionDir + '/' + firstHost + '.conf';
-                fs.writeFile(filename, content, 'UTF-8',
-                    function () {
-                        callback();
-                    });
+                var filename = path.join(decommissionDir, firstHost + '.conf');
+                fs.writeFile(filename, content, 'UTF-8', callback);
             }
         );
     }

@@ -8,7 +8,7 @@ var async = require('async');
 
 class IndexConfigurator {
 
-    constructor(config, site, listener, esClient) {
+    constructor(site, listener, esClient) {
         this.mapping = site.getElasticSearchMapping();
         this.listener = listener;
         this.esClient = esClient;

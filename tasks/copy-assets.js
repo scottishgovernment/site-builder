@@ -1,9 +1,10 @@
 'use strict';
 
 var fs = require('fs');
+var path = require('path');
 
 /**
- * Grunt tasked used to copy dynamic assets as a part of the site build.
+ * Grunt task used to copy dynamic assets as a part of the site build.
  **/
 function assetCopier() {
     var site = require('../common/site')();
@@ -11,9 +12,8 @@ function assetCopier() {
     return require('../publish/asset-copier.js').create(router);
 }
 
-function loadIndex() {
-
-    var index = JSON.parse(fs.readFileSync('out/assets.json'));
+function loadIndex(assetsFile) {
+    var index = JSON.parse(fs.readFileSync(assetsFile));
     var assetUrls = [];
     for (var assetUrl in index) {
        if (index.hasOwnProperty(assetUrl)) {
@@ -56,14 +56,16 @@ module.exports = function(grunt) {
      */
     grunt.registerTask('copy-assets', '', function() {
         var done = this.async();
-        var copier = assetCopier();
+        var config = require('config-weaver').config();
+        var assetsDir = path.join(config.tempdir, 'assets');
+        var assetsFile = path.join(config.tempdir, 'assets.json');
 
-        copier
+        assetCopier()
             .on('start',  onStart)
             .on('copied', onCopied)
             .on('skipped', onSkipped)
             .on('done',  function (err) { onDone(done, err); })
-            .copy(loadIndex(), 'out/assets');
+            .copy(loadIndex(assetsFile), assetsDir);
     });
 
 };

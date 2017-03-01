@@ -93,8 +93,10 @@ module.exports = function(config, restler) {
          * it has policy specific details
          */
         fetchItemSync: function(urlOrId, headers, visibility) {
-            var cacheId = 'out/.preview/' + Buffer.from(urlOrId).toString('hex');
-            fs.ensureDirSync('out/.preview');
+            var cacheDir = paths.join(config.tempdir, '.preview');
+            var cacheId = paths.join(cacheDir, Buffer.from(urlOrId).toString('hex'));
+            fs.ensureDirSync(cachDir);
+
             if (fs.existsSync(cacheId)) {
                 return JSON.parse(fs.readFileSync(cacheId));
             } else {

@@ -10,6 +10,9 @@ module.exports = function() {
 
         lastBuildIndex : function (indexPath) {
             var index = [];
+            console.log('------');
+            console.log('indexPath:', indexPath);
+            console.log('------');
             if (fs.existsSync(indexPath)) {
                 index = JSON.parse(fs.readFileSync(indexPath));
             }

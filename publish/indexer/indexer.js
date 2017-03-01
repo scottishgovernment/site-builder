@@ -32,7 +32,7 @@ function Indexer(filter, formatter, config, site) {
     var configuratorListener = {
         info : function (msg) { that.fire('info', msg); }
     };
-    this.indexConfigurator =  new configuratorClass(config, site, configuratorListener, this.esClient);
+    this.indexConfigurator =  new configuratorClass(site, configuratorListener, this.esClient);
 
     // default do nothing callbacks. Override by using 'on'
     this.callbacks = {

@@ -2,19 +2,8 @@ var sutPath = '../../out/instrument/publish/redirects';
 describe('redirects', function() {
 
     var fs = require('fs-extra');
-    var getRuntime = function() {
-        return {
-            referenceData: {},
-            config: {},
-            templates: {
-                render: {}
-            }
-        }
-    };
 
     it('green path', function(done) {
-
-        var runtime = getRuntime();
 
         // ARRANGE
         var redirects = [{
@@ -28,7 +17,7 @@ describe('redirects', function() {
             alias: '/url2'
         }];
 
-        var sut = require(sutPath)(runtime, '/tmp/');
+        var sut = require(sutPath)('/tmp/');
 
         var expectedContent = 'rewrite ^/url1/alias1(/?|/.*)$ /url1$1 permanent ;\n' +
             'rewrite ^/url1/alias2(/?|/.*)$ /url1$1 permanent ;\n' +
@@ -36,8 +25,8 @@ describe('redirects', function() {
 
         sut.create(redirects, function() {
             // ASSERT - the temp directory should contain the expected files
-            expect(fs.existsSync('/tmp/urlAliases.txt')).toEqual(true);
-            var actualContent = fs.readFileSync('/tmp/urlAliases.txt', 'UTF-8');
+            expect(fs.existsSync('/tmp/nginx/urlAliases.txt')).toEqual(true);
+            var actualContent = fs.readFileSync('/tmp/nginx/urlAliases.txt', 'UTF-8');
             expect(actualContent).toEqual(expectedContent);
             done();
         });

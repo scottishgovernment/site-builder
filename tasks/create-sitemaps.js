@@ -5,12 +5,10 @@ module.exports = function(grunt) {
 
     grunt.registerTask('create-sitemaps', 'generate sitemaps from the out/pages directory',
         function() {
-            var srcdir = grunt.config('site.pages');
-            var targetdir = grunt.config('site.sitemap');
-            var baseUrl = grunt.config('site.homepage');
+            var config = require('config-weaver').config();
             var done = this.async();
             var generator = require('../publish/sitemap-generator');
-            generator(srcdir, targetdir, baseUrl, done);
+            generator(config.tempdir, config.homepage, done); 
         }
     );
 };
