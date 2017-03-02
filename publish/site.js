@@ -100,22 +100,15 @@ Site.prototype.indexFiles = function(files, callback) {
 
 Site.prototype.processFile = function(src, cb) {
     var that = this;
+    // create index.html for the json if it does not exist
     var pageContext = path.join(path.dirname(src), pageFile);
     fs.access(pageContext, (err) => {
-        if (err) {
-            if (err.code === "ENOENT") {
-                fs.readFile(src, fileOptions, function(err, data) {
-                    if (!err) {
-                        that.renderDataToFile(data, cb);
-                    } else {
-                        cb();
-                    }
-                });
-            } else {
-                cb(err);
-            }
+        if (err && err.code === 'ENOENT') {
+            fs.readFile(src, fileOptions, (error, data) => {
+                error ? cb(error) : that.renderDataToFile(data, cb);
+            });
         } else {
-            cb();
+            cb(err);
         }
     });
 };
