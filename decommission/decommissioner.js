@@ -1,4 +1,4 @@
-module.exports = function (config, tempdir) {
+module.exports = function (config) {
 
     var restler = require('restler'),
         path = require('path'),
