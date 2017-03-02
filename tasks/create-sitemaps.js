@@ -8,7 +8,7 @@ module.exports = function(grunt) {
             var config = require('config-weaver').config();
             var done = this.async();
             var generator = require('../publish/sitemap-generator');
-            generator(config.tempdir, config.homepage, done); 
+            generator(config.tempdir, config.homepage, done);
         }
     );
 };
