@@ -137,8 +137,6 @@ function end(err, app, fs, target, callback) {
  * Contains the logic needed to save the files required for a content item.
  **/
 module.exports = function(app, target, fs) {
-
-console.log('save-item ', target);
     var contentitemsPath = path.join(target, 'contentitems');
 
     return {
