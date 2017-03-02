@@ -22,7 +22,7 @@ describe('Router', function() {
         var req = url.parse('http://localhost:8080/path');
         req.headers = {};
         req.query = {token:'token'};
-        sut(req, null, next);
+        sut(req, {cookie: function(){}}, next);
         expect(siteRouter.calls.length).toBe(1);
         expect(siteRouter.calls[0].args.length).toBe(2);
         expect(siteRouter.calls[0].args[0]).toBe(req);
