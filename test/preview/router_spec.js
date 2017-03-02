@@ -12,16 +12,23 @@ describe('Router', function() {
 
     it('should not proxy requests site router returns no upstream URL', function() {
         var siteRouter = jasmine.createSpy('siteRouter');
-        var sut = router.create(siteRouter);
+        var app = {
+            createPrepareContext: function() {
+                return {};
+            }
+        };
+        var sut = router.create(siteRouter, app);
         siteRouter.andReturn(null);
         var req = url.parse('http://localhost:8080/path');
+        req.headers = {};
+        req.query = {token:'token'};
         sut(req, null, next);
         expect(siteRouter.calls.length).toBe(1);
         expect(siteRouter.calls[0].args.length).toBe(2);
         expect(siteRouter.calls[0].args[0]).toBe(req);
     });
 
-  it('should proxy requests if the site router returns an upstream URL', function() {
+    it('should proxy requests if the site router returns an upstream URL', function() {
         var siteRouter = jasmine.createSpy('siteRouter');
         var sut = new router.Router(siteRouter);
         var proxy = jasmine.createSpy('proxy');
