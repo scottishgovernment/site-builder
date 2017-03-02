@@ -4,24 +4,62 @@ var async = require('async');
 var path = require('path');
 
 function handleContentItem(context, content, fs, target, callback) {
+    cleanup(content, fs, target, function() {
+        createJson(context, content, fs, target, callback);
+    });
+};
+
+function createJson(context, content, fs, target, callback) {
+
+    content.additionalItemUrls = [];
     var savePages = context.attributes[content.uuid].store;
     if (!context.attributes[content.uuid].additionalItems) {
         saveItem(fs, target, content, savePages, true, callback);
-    } else {
-        content.additionalItemUrls = [];
-        var index = 0;
-        context.attributes[content.uuid].additionalItems.each(
-            (item, cb) => {
-                if (item.uuid === content.uuid) {
-                    item.uuid = item.uuid + '-' + index;
-                }
-                content.additionalItemUrls.push(item.url);
-                saveItem(fs, target, item, savePages, false, cb);
-                index++;
-            },
-            () => saveItem(fs, target, content, savePages, true, callback));
+        return;
     }
+
+    // there are additional items, delete this sub directory and then save them
+    deleteAdditionalItemsIfExists(content, fs, target,
+        (err) => {
+            if (err) {
+                callback(err);
+            }
+            var index = 0;
+            context.attributes[content.uuid].additionalItems.each(
+                (item, cb) => {
+                    if (item.uuid === content.uuid) {
+                        item.uuid = item.uuid + '-' + index;
+                    }
+                    content.additionalItemUrls.push(item.url);
+                    saveItem(fs, target, item, savePages, false, cb);
+                    index++;
+                },
+                () => saveItem(fs, target, content, savePages, true, callback));
+        });
 };
+
+function deleteAdditionalItemsIfExists(content, fs, target, callback) {
+    var itemPath = path.join(target, 'contentitems', content.uuid + '.json');
+    fs.exists(itemPath, exists => {
+        if (!exists) {
+            callback();
+            return;
+        }
+
+        fs.readFile(itemPath, (err, data) => {
+            if (err) {
+                callback(err);
+                return;
+            }
+
+            var item = JSON.parse(data);
+            async.each(item.additionalItemUrls, (additionalItemUrl, cb) => {
+                var additionalItemPath = path.join(target, 'pages', additionalItemUrl);
+                fs.remove(additionalItemPath, cb);
+            }, callback);
+        });
+    });
+}
 
 // save an individual content item
 function saveItem(fs, target, content, savePages, saveContentItems, callback) {
@@ -56,6 +94,17 @@ function saveItem(fs, target, content, savePages, saveContentItems, callback) {
         (fileToWrite, cb) => fs.outputFile(fileToWrite.path, fileToWrite.content, cb),
         callback);
 }
+
+function cleanup(content, fs, target, cb) {
+    var pageFile = path.join(target, 'pages', content.url, 'index.html');
+    fs.exists(pageFile, exists => {
+        if (exists) {
+            fs.unlink(pageFile, cb);
+        } else {
+            cb();
+        }
+    });
+};
 
 function end(err, app, fs, target, callback) {
     // this cases can be easily moved into site
@@ -114,9 +163,6 @@ module.exports = function(app, target, fs) {
                 }
                 var content = JSON.parse(data);
                 var pagesPath = path.join(target, 'pages', content.url);
-                if (content.url === '/') {
-                    pagesPath = path.join(target, 'pages', content.url, 'index.html');
-                } 
                 fs.remove(pagesPath, callback);
             });
         },
