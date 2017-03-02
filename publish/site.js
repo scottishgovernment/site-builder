@@ -56,7 +56,7 @@ Site.prototype.createUrlIndex = function(files, callback) {
     readFile(path.join(this.tempDir, 'siteIndex.json'), function(err, siteIndex) {
         if (!siteIndex || err) {
             // file does not exists, use legacy function to create index
-            callback('siteIndex.json not found, using file system to create url index');
+            callback('siteIndex.json not found');
         } else {
             var urlById = {};
             siteIndex.forEach(function(siteIndexItem) {
