@@ -56,8 +56,7 @@ Site.prototype.createUrlIndex = function(files, callback) {
     readFile(path.join(this.tempDir, 'siteIndex.json'), function(err, siteIndex) {
         if (!siteIndex || err) {
             // file does not exists, use legacy function to create index
-            console.log('siteIndex.json not found, using file system to create url index');
-            that.indexFiles(files, callback);
+            callback('siteIndex.json not found, using file system to create url index');
         } else {
             var urlById = {};
             siteIndex.forEach(function(siteIndexItem) {
@@ -68,29 +67,6 @@ Site.prototype.createUrlIndex = function(files, callback) {
     });
 };
 
-/**
- * Read json files and create a map of content item ID to URL.
- */
-Site.prototype.indexFiles = function(files, callback) {
-    var urlById = {};
-    var summary = function(file, callback) {
-        readFile(file, function(err, item) {
-            if (err) {
-                callback('Could not read file: ' + file);
-            } else {
-                urlById[item.uuid] = item.url;
-                callback();
-            }
-        });
-    };
-    async.each(files, summary, function(err) {
-        if (!err) {
-            callback(null, urlById);
-        } else {
-            callback(err);
-        }
-    });
-};
 
 Site.prototype.processFile = function(src, cb) {
     var that = this;
