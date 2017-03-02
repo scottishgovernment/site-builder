@@ -36,6 +36,26 @@ describe('items', function() {
             }
         }
     }
+    function appContextFailingToFetch(items) {
+        var byId = {};
+        items.forEach(item => byId[item.id] = item);
+        return {
+            createPrepareContext: function (visibility) {
+                return {
+                    fetchItem : function (path, callback) {
+                        console.log('fetchItem:' + path);
+                        callback('Failed to fetch item', byId[path]);
+                    }
+                }
+            },
+
+            contentSource : {
+                fetchCachableItems : function (headers, visibility, callback) {
+                    callback(null, items);
+                }
+            }
+        }
+    }
 
     function mockContentHandler() {
         return  {
@@ -163,6 +183,25 @@ describe('items', function() {
             // ASSERT
             var siteIndex = JSON.parse(fs.readFileSync(tempDir + '/siteIndex.json'));
             items.forEach(item => expect(contentHandler.items[item.id]).toEqual(true));
+            done();
+        });
+
+    });
+
+    it('handle error', function(done) {
+        // ARRANGE
+        var contentHandler = mockContentHandler();
+        // write an index file - this should be overwritten
+        var items = sampleCachableItems();
+        fs.writeFileSync(tempDir + '/siteIndex.json', JSON.stringify(items));
+        items.push({id:'new', uuid:'new', hash:'newhash'});
+        context = appContext(items)
+        var sut = require(sutPath)(tempDir, appContextFailingToFetch(items), contentHandler);
+        // ACT
+        sut.generate(function() {
+            // ASSERT
+            var siteIndex = JSON.parse(fs.readFileSync(tempDir + '/siteIndex.json'));
+            expect(contentHandler.items['new']).toEqual(undefined);
             done();
         });
 
