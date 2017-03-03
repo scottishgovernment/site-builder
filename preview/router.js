@@ -19,7 +19,9 @@ function createContext(router, req, res) {
     var token = null;
     if (res) {
         token = req.query.token || req.cookies.preview_token;
-        res.cookie('preview_token', token);
+        if (token) {
+          res.cookie('preview_token', token);
+        }
     }
     return router.app.createPrepareContext(visibility, token);
 }
