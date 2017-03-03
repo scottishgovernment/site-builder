@@ -2,11 +2,9 @@
 # copy-site  - copies the published site
 set -e
 
-BASEDIR="${PWD}"
-FROM=${BASEDIR}/dist/
-SSH_OPTS="-o StrictHostKeyChecking=no -o PasswordAuthentication=no"
+from="$1"
+shift
 targets="$@"
-export RSYNC_RSH="ssh ${SSH_OPTS}"
 
 # Duplicate stdout/stderr to log (redirection requires bash)
 exec > >(tee /var/log/site/copy_site.log)
@@ -14,22 +12,12 @@ exec 2>&1
 
 rsync_copy() {
   local target="$1"
-  rsync -aqz --copy-links --delete-after "${FROM}" "${target}"
-}
-
-ssh_copy() {
-  local target="$1"
-  local dir=${target#*:}
-  local host=${target%%:*}
-  ssh ${SSH_OPTS} $host "sudo -s <<EOF
-    mkdir -p "${dir}" && \
-    chown devops.devops "${dir}"
-EOF" && rsync_copy "${target}"
+  rsync -aqz --copy-links --delete-after "${from}" "${target}"
 }
 
 s3_copy() {
   local target="$1"
-  aws s3 sync --exclude "*.yaml" --delete "${FROM}" "${target}"
+  aws s3 sync --delete "${from}" "${target}"
 }
 
 copy_target() {
@@ -37,8 +25,6 @@ copy_target() {
   case "${target}" in
     s3:*)
       s3_copy "${target}";;
-    *:*)
-      ssh_copy "${target}";;
     *)
       rsync_copy "${target}";;
   esac
@@ -72,7 +58,7 @@ check_targets() {
 check_files() {
   local files="index.html robots.txt sitemap.xml"
   for file in $files; do
-    if [ ! -f "${FROM}/${file}" ]; then
+    if [ ! -f "${from}/${file}" ]; then
       echo "No ${file} - not copying site."
       return 1
     fi
