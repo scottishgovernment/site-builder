@@ -41,4 +41,47 @@ describe('Router', function() {
         expect(next).not.toHaveBeenCalled();
     });
 
+    it('Does not write undefined preview token', function() {
+      var siteRouter = jasmine.createSpy('siteRouter');
+      var app = {
+        createPrepareContext: function (visibility, token) { return {}; }
+      };
+      var sut = router.create(siteRouter, app);
+      siteRouter.andReturn(null);
+      var res = {
+        cookies : {},
+        cookie : function (name, value) {
+          this.cookies[name] = value;
+        }
+      };
+      var req = url.parse('http://localhost:8080/path');
+      req.query = { };
+      req.headers = {};
+      req.cookies = {};
+      sut(req, res, next);
+      expect(res.cookies.preview_token).toBe(undefined);
+    });
+
+    it('Writes preview token from param', function() {
+        var siteRouter = jasmine.createSpy('siteRouter');
+        var app = {
+          createPrepareContext: function (visibility, token) { return {}; }
+        };
+        var sut = router.create(siteRouter, app);
+        siteRouter.andReturn(null);
+        var res = {
+          cookies : {},
+          cookie : function (name, value) {
+            this.cookies[name] = value;
+          }
+        };
+        var req = url.parse('http://localhost:8080/path');
+        req.query = {
+          token: 'mytoken'
+        };
+        req.headers = {};
+        req.cookies = {};
+        sut(req, res, next);
+        expect(res.cookies.preview_token).toBe('mytoken');
+    });
 });
