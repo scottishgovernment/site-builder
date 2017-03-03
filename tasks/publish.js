@@ -19,33 +19,35 @@ module.exports = function(grunt) {
         return config.publish ? config.publish.redirects : undefined;
     }
 
-    function publish(script, target, callback) {
+    function publish(script, source, target, callback) {
         var bin = path.join(__dirname, '../scripts', script);
-        var proc = cp.spawn(bin, [target], {stdio: 'inherit'});
+        var proc = cp.spawn(bin, [source, target], {stdio: 'inherit'});
         proc.on('close', function (code) {
             callback(code);
         });
     }
 
-    function runPublishScript(script, target, callback) {
+    function runPublishScript(script, source, target, callback) {
         if (!target) {
             console.log('No copy target configured.');
             callback(true);
         } else {
-            publish(script, target, callback);
+            publish(script, source, target, callback);
         }
     }
 
     grunt.registerTask('copy-site', 'Publish site', function() {
         var release = this.async();
         var target = siteTarget();
-        runPublishScript('copy-site', target, release);
+        var source = path.join(config.tempdir, 'dist');
+        runPublishScript('copy-site', source, target, release);
     });
 
     grunt.registerTask('copy-redirects', 'Publish redirects', function() {
         var release = this.async();
         var target = redirectsTarget();
-        runPublishScript('copy-redirects', target, release);
+        var source = path.join(config.tempdir, 'nginx');
+        runPublishScript('copy-redirects', source, target, release);
     });
 
 };

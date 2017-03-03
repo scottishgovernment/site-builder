@@ -116,7 +116,7 @@ function flipAliases(grunt, config, site, done) {
                 grunt.log.writeln(msg);
             }
         };
-    var indexConfigurator = new configuratorClass(config, site, listener, esClient);
+    var indexConfigurator = new configuratorClass(site, listener, esClient);
 
     indexConfigurator.swapAliasTargets(err => {
         esClient.close();
