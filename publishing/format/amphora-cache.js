@@ -5,7 +5,6 @@ var config = require('config-weaver').config();
 var cachePath = path.join(config.tempdir, '.amphora');
 var assembledCachePath = path.join(cachePath, 'assembled');
 var fs = require('fs-extra');
-fs.ensureDirSync(assembledCachePath);
 
 var getLocalPath = function(resource, callback) {
     var cachedResource = path.join(cachePath, resource.storage.checksum);
@@ -63,6 +62,8 @@ var getAssembledResource = function(uuid, callback) {
 };
 
 var storeAssembledResource = function(uuid, resource, callback) {
+    fs.ensureDirSync(assembledCachePath);
+
     var checksumFile = path.join(assembledCachePath, uuid + '.checksum');
     var contentFile = path.join(assembledCachePath, uuid + '.assembled');
     fs.writeFile(contentFile, JSON.stringify(resource), 'UTF-8', function(err) {
