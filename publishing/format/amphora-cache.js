@@ -31,6 +31,8 @@ var getLocalResource = function(resource, callback) {
 };
 
 var cacheResource = function(stream, resource, callback) {
+    fs.ensureDirSync(cachePath);
+    
     var cachedResource = path.join(cachePath, resource.storage.checksum);
     var file = fs.createWriteStream(cachedResource);
     stream.pipe(file);
