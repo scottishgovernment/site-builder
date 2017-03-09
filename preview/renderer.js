@@ -26,6 +26,7 @@ function renderError(req, res) {
         }
     };
     try {
+        console.log(errorResult);
         res.status(status).send(req.context.app.renderer.render(errorResult));
     } catch (e) {
         res.status(status).send(null);
