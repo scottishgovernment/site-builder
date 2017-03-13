@@ -251,44 +251,6 @@ describe('save-item', function() {
         });
     });
 
-    it('ends gracefully with additional funding items', function(done) {
-        // ARRANGE
-        // add final content:
-        runtime.context.funding = {
-            list: { url: '/fl-url', uuid: 'fl', contentItem: { content: 'fl-content' } }
-        };
-
-        runtime.context.lists = {
-            pressRelease: {
-                landing: { url: '/prl-url', uuid: 'prl', contentItem: { content: 'prl-content' } }
-            },
-            publications: {
-                landing: { url: '/pl-url', uuid: 'pl', contentItem: { content: 'pl-content' } }
-            }
-        };
-
-        var called = {};
-        var myFs = {
-            outputFile: function(p, c, cb) {
-                called[p.replace(tempDir, '')] = true;
-                cb();
-            }
-        }
-
-        var sut = require(sutPath)(runtime, tempDir, myFs);
-        sut.end(null, function() {
-            // funding list generated
-            expect(called['/pages/fl-url/index.json']).toBe(true);
-            expect(called['/contentitems/fl.json']).toBe(true);
-
-            // prease release generated
-            expect(called['/pages/prl-url/index.json']).toBe(true);
-            expect(called['/contentitems/prl.json']).toBe(true);
-
-            done();
-        });
-    });
-
     it('ends gracefully without additional items', function(done) {
         // ARRANGE
         // add final content:
