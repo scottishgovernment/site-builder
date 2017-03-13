@@ -106,28 +106,6 @@ function cleanup(content, fs, target, cb) {
     });
 };
 
-function end(err, app, fs, target, callback) {
-    // this cases can be easily moved into site
-    // special cases:
-    // 1.pressRelease, 2.pub landing page
-    var finalContents = [];
-
-    if (app.context.lists.pressRelease.landing) {
-        var min = app.context.lists.pressRelease.minDateTime;
-        app.context.lists.pressRelease.landing.contentItem.minDateTime = min;
-        finalContents.push(app.context.lists.pressRelease.landing);
-    }
-    if (app.context.lists.publications.landing) {
-        finalContents.push(app.context.lists.publications.landing);
-    }
-
-    async.each(finalContents,
-        // for each call the handler
-        (content, eachCallback) => saveItem(fs, target, content, true, true, eachCallback),
-        // called when all are finished
-        function() { callback(err); });
-}
-
 /**
  * Contains the logic needed to save the files required for a content item.
  **/
@@ -168,13 +146,11 @@ module.exports = function(app, target, fs) {
 
         // called when the content source will provide no more items
         end: function(err, callback) {
-            end(err, app, fs, target, function() {
-                app.amphora.utils.downloadQueuedResources(
-                    app,
-                    function(downloadError) {
-                        callback(err || downloadError);
-                    });
-            });
+            app.amphora.utils.downloadQueuedResources(
+                app,
+                function(downloadError) {
+                    callback(err || downloadError);
+                });
         }
     };
 };

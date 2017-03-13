@@ -82,11 +82,13 @@ module.exports = function(config, restler) {
             getResource(url, headers, callback);
         },
 
-        filter: function(params, headers, visibility, callback) {
-            var url = buildApi('axillary', 'filter', visibility);
-            params.forEach(function(param) {
-                url += '&' + param.name + '=' + param.value;
-            });
+        axillary: function(type, params, headers, visibility, callback) {
+            var url = buildApi('axillary', type, visibility);
+            if (params) {
+                params.forEach(function(param) {
+                    url += '&' + param.name + '=' + param.value;
+                });
+            }
             getResource(url, headers, callback);
         },
 
