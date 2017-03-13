@@ -108,14 +108,9 @@ function cleanup(content, fs, target, cb) {
 
 function end(err, app, fs, target, callback) {
     // this cases can be easily moved into site
-    // i.e fundinglist can be mouved into mygov
     // special cases:
-    // 1. Funding list, 2.pressRelease, 3.pub landing page
+    // 1.pressRelease, 2.pub landing page
     var finalContents = [];
-
-    if (app.context.funding) {
-        finalContents.push(app.context.funding.list);
-    }
 
     if (app.context.lists.pressRelease.landing) {
         var min = app.context.lists.pressRelease.minDateTime;

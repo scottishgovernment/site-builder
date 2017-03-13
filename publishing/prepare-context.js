@@ -52,6 +52,21 @@ class PrepareContext {
         }
     }
 
+    filter(params, callback) {
+        var context = this;
+        var headers = {};
+        if (context.authToken) {
+            headers.Authorization = 'Bearer ' + context.authToken;
+        }
+        context.app.contentSource.filter(params, headers, context.visibility, function(err, list) {
+            if (err) {
+                callback(err);
+            } else {
+                callback(null, list);
+            }
+        });
+    }
+
     fetchUrlsById(ids, callback) {
         var headers = {};
         if (this.authToken) {

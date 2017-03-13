@@ -46,7 +46,7 @@ module.exports = function(config, restler) {
     var getResourceSync = function(urlOrId, headers, visibility) {
         var url = buildApi('urlOrId', urlOrId, visibility);
         console.log('[additional-resources] ' + url);
-        var res = require('sync-request')('GET', url, {headers:headers});
+        var res = require('sync-request')('GET', url, { headers: headers });
         var content = JSON.parse(res.getBody('utf8'));
         content.body = content.contentItem.content;
         return content;
@@ -79,6 +79,14 @@ module.exports = function(config, restler) {
 
         fetchItem: function(urlOrId, headers, visibility, callback) {
             var url = buildApi('urlOrId', urlOrId, visibility);
+            getResource(url, headers, callback);
+        },
+
+        filter: function(params, headers, visibility, callback) {
+            var url = buildApi('axillary', 'filter', visibility);
+            params.forEach(function(param) {
+                url += '&' + param.name + '=' + param.value;
+            });
             getResource(url, headers, callback);
         },
 
