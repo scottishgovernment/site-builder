@@ -39,8 +39,8 @@ app.use('/robots.txt',
     express.static(__dirname + '/robots.txt'));
 
 app.use('/',
-    express.static('out/css'),
-    express.static('out/pdfs'),
+    express.static(path.join(config.tempdir, 'css')),
+    express.static(path.join(config.tempdir, 'pdfs')),
     express.static('app/')
 );
 
