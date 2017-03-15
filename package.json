@@ -18,6 +18,7 @@
     "cheerio": "^0.20.0",
     "config-weaver": "0.0.15",
     "cookie-parser": "^1.4.3",
+    "dirStat": "0.0.2",
     "elasticsearch": "^12.1.3",
     "express": "^4.14.0",
     "express-http-proxy": "^0.7.4",

@@ -322,6 +322,14 @@
     "delayed-stream": {
       "version": "1.0.0"
     },
+    "dirStat": {
+      "version": "0.0.2",
+      "dependencies": {
+        "async": {
+          "version": "0.1.22"
+        }
+      }
+    },
     "ecc-jsbn": {
       "version": "0.1.1",
       "optional": true
