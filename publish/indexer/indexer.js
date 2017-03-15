@@ -58,19 +58,25 @@ Indexer.prototype.index = function(srcdir) {
 
     that.fire('start', srcdir);
 
-    var globSpec = path.join(srcdir, '**/*.json');
-    glob(globSpec, {}, function (err, files) {
-        async.series(
-            [
-                cb => that.indexConfigurator.ensureIndicesAndAliasesExist(cb),
-                cb => indexFiles(that, files, srcdir, cb)
-            ],
+    var dirStat = require('dirStat').dirStat;
+    dirStat(srcdir, function (err, filestats) {
+      async.series(
+          [
+              cb => that.indexConfigurator.ensureIndicesAndAliasesExist(cb),
+              cb => {
+                const maxPartitionSize = 1048576 * 5; // mbs
+                var partitions = partitionFilesBySize(filestats, maxPartitionSize);
+                async.eachLimit(partitions, 3,
+                    (partition, partCb) => indexPartition(partition, that, srcdir, partCb),
+                    cb);
+              }
+          ],
 
-            errs => {
-                that.esClient.close();
-                that.fire('done', errs, srcdir);
-            }
-        );
+          errs => {
+              that.esClient.close();
+              that.fire('done', errs, srcdir);
+          }
+      );
     });
 };
 
@@ -88,33 +94,36 @@ Indexer.prototype.fire = function (event) {
     this.callbacks[event].forEach(cb => cb.apply(cb, args));
 };
 
+
 // load and index an array of filenames.
 function indexFiles(indexer, files, srcdir, callback) {
     var partitions = partitionArray(files, 100);
     async.eachSeries(partitions,
-        (partition, cb) => indexPartition(partition, indexer, srcdir, cb),
+        (partition, cb) => tion(partition, indexer, srcdir, cb),
         callback);
 }
 
-// partition an array into chunks
-function partitionArray(filesArray, size) {
-    var partitions = [];
-    var currentPartition = [];
+function partitionFilesBySize(filestats, maxPartitionSize) {
+  var partitions = [];
+  var currentPartition = [];
+  var currentPartitionSize = 0;
 
-    for (var i = 0; i < filesArray.length; i++) {
-        currentPartition.push(filesArray[i]);
+  for (var i = 0; i < filestats.length; i++) {
+      currentPartition.push(filestats[i].filePath);
+      currentPartitionSize += filestats[i].size;
 
-        if (currentPartition.length === size || i === filesArray.length - 1) {
-            partitions.push(currentPartition);
-            currentPartition = [];
-        }
-    }
-    return partitions;
+      if (currentPartitionSize >= maxPartitionSize || i === filestats.length - 1) {
+          partitions.push(currentPartition);
+          currentPartition = [];
+          currentPartitionSize = 0;
+      }
+  }
+
+  return partitions;
 }
 
 // filter, format and then index a partition of content items
 function indexPartition(partition, indexer, srcdir, callback) {
-
     async.map(partition, loadFile, function (loadErr, data) {
 
         if (loadErr) {
@@ -163,7 +172,10 @@ function indexItems(items, indexer, callback) {
             body.push(item);
         });
 
-    indexer.esClient.bulk({ body: body },
+    indexer.esClient.bulk({
+                      
+                      body: body
+                    },
         function (err, resp) {
 
             if (err) {
