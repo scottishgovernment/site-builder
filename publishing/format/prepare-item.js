@@ -19,6 +19,7 @@ function collectLinks(context, content, callback) {
 function preApply(context, content) {
     // set body for rendering
     content.body = content.contentItem.content;
+    content.contentItem.buildTime = new Date();
 
     // assign a page title (meta page title if set, title otherwise)
     var title = content.contentItem.metapagetitle || content.contentItem.title || '';
