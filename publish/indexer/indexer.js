@@ -172,10 +172,7 @@ function indexItems(items, indexer, callback) {
             body.push(item);
         });
 
-    indexer.esClient.bulk({
-                      
-                      body: body
-                    },
+    indexer.esClient.bulk({ body: body },
         function (err, resp) {
 
             if (err) {
