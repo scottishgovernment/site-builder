@@ -93,25 +93,22 @@ function enrichRoleWithPersonData(item, formatted, srcdir, callback) {
     });
 }
 
-// const cheerio = require('cheerio');
 function removeExtraneousData(contentItem) {
 
-  delete contentItem.htmlContent;
     // everything that is null
     for (var property in contentItem) {
-        if (contentItem.hasOwnProperty(property)) {
-          if (contentItem[property] === null) {
+        if (contentItem.hasOwnProperty(property)
+            && contentItem[property] === null) {
             delete contentItem[property];
-          }
         }
     }
 
     // everythign in embedded except a defined list
-    for (var property in contentItem._embedded) {
-        if (contentItem._embedded.hasOwnProperty(property)) {
-            if (property !== 'format' && property !== 'topic') {
-                delete contentItem._embedded[property];
-            }
+    for (var embed_property in contentItem._embedded) {
+        if (contentItem._embedded.hasOwnProperty(embed_property)
+            && embed_property !== 'format'
+            && embed_property !== 'topics') {
+                delete contentItem._embedded[embed_property];
         }
     }
 
