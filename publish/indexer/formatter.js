@@ -24,7 +24,7 @@ function format(item, srcdir, callback) {
         input: formatted.title
     };
 
-    formatTopics(formatted);
+    formatted.topicNames = formatTopics(item);
     var isRole = formatted._embedded.format.name === 'role' ||
                 formatted._embedded.format.name === 'featured_role';
     removeExtraneousData(formatted);
@@ -47,12 +47,17 @@ function redactLinks (o) {
 
 function formatTopics(item) {
     // create an array of topic names
-    item.topicNames = [];
-    if (item._embedded.topics) {
-        item._embedded.topics.forEach(function (t) {
-            item.topicNames.push(t.name);
+    var topicNames = [];
+    if (item.contentItem._embedded.topics) {
+        item.contentItem._embedded.topics.forEach(function (t) {
+            topicNames.push(t.name);
         });
     }
+
+    // if there are any partOfIssue relationships then treat them as topics.
+    item.inverseRelatedItems.partOfIssue.forEach(rel => topicNames.add(rel.title));
+
+    return topicNames;
 }
 
 function enrichRoleWithPersonData(item, formatted, srcdir, callback) {

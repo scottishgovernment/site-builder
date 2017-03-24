@@ -33,6 +33,9 @@ describe('formatter', function() {
             },
             relatedItems: {
                 hasIncumbent: []
+            },
+            inverseRelatedItems: {
+                partOfIssue: []
             }
         };
 
