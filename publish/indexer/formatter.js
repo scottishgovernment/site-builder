@@ -107,7 +107,8 @@ function removeExtraneousData(contentItem) {
     for (var embed_property in contentItem._embedded) {
         if (contentItem._embedded.hasOwnProperty(embed_property)
             && embed_property !== 'format'
-            && embed_property !== 'topics') {
+            && embed_property !== 'topics'
+            && embed_property !== 'incumbent') {
                 delete contentItem._embedded[embed_property];
         }
     }
