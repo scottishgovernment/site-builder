@@ -8,14 +8,14 @@ class Format {
     constructor() {}
 
     validRequest(context, content) {
-        if (context.app.preview) {
-            var requestedPath = context.attributes[content.uuid].path;
-            return requestedPath === '/' + content.uuid ||
-                requestedPath === content.uuid ||
-                requestedPath === content.url
-        } else {
-            return true;
+        if (!context.app.preview) {
+          return true;
         }
+        var requestedPath = context.attributes[content.uuid].path;
+        return requestedPath === '/' + content.uuid ||
+            requestedPath === content.uuid ||
+            requestedPath === content.url ||
+            content.contentItem._embedded.urlaliases.filter(alias => alias.url === requestedPath).length > 0;
     }
 
     /**
