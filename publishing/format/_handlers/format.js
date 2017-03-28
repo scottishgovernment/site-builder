@@ -15,11 +15,12 @@ class Format {
         return requestedPath === '/' + content.uuid ||
             requestedPath === content.uuid ||
             requestedPath === content.url ||
-            content.contentItem._embedded.urlaliases.filter(alias => alias.url === requestedPath).length > 0;
+            content.contentItem._embedded.urlaliases
+              .filter(alias => alias.url === requestedPath || alias.url === requestedPath + '/').length > 0;
     }
 
     /**
-     * Determine the layotu to use for this format
+     * Determine the layout to use for this format
      **/
     layout(content) {
         // most content item types map directly onto a hbs file:
