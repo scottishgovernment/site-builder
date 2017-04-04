@@ -55,7 +55,7 @@ function formatTopics(item) {
     }
 
     // if there are any partOfIssue relationships then treat them as topics.
-    item.inverseRelatedItems.partOfIssue.forEach(rel => topicNames.add(rel.title));
+    item.inverseRelatedItems.partOfIssue.forEach(rel => topicNames.push(rel.title));
 
     return topicNames;
 }
