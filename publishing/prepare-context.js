@@ -40,15 +40,15 @@ class PrepareContext {
         });
     }
 
-    fetchItemSync(path) {
+    fetchItemSync(path, cachable) {
         var headers = {};
         if (this.authToken && this.authToken !== 'undefined') {
             headers.Authorization = 'Bearer ' + this.authToken;
-            var content = this.app.contentSource.fetchItemSync(path, headers, 'preview');
+            var content = this.app.contentSource.fetchItemSync(path, headers, cachable, 'preview');
             content.forToken = this.authToken;
             return content;
         } else {
-            return this.app.contentSource.fetchItemSync(path, headers, 'stage');
+            return this.app.contentSource.fetchItemSync(path, headers, cachable, 'stage');
         }
     }
 
@@ -78,4 +78,3 @@ class PrepareContext {
 }
 
 module.exports = PrepareContext;
-
