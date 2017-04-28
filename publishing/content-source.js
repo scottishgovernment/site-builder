@@ -102,12 +102,12 @@ module.exports = function(config, restler) {
          * This function is temporary function and going to be removed completely.
          * it has policy specific details
          */
-        fetchItemSync: function(urlOrId, headers, visibility) {
+        fetchItemSync: function(urlOrId, headers, cachable, visibility) {
             var cacheDir = paths.join(config.tempdir, '.preview');
             var cacheId = paths.join(cacheDir, Buffer.from(urlOrId).toString('hex'));
             fs.ensureDirSync(cacheDir);
 
-            if (fs.existsSync(cacheId)) {
+            if (cachable && fs.existsSync(cacheId)) {
                 return JSON.parse(fs.readFileSync(cacheId));
             } else {
                 var content = getResourceSync(urlOrId, headers, visibility);
