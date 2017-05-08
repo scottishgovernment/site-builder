@@ -135,7 +135,12 @@ module.exports = function(app, target, fs) {
                 }
                 var content = JSON.parse(data);
                 var pagesPath = path.join(target, 'pages', content.url);
-                fs.remove(pagesPath, callback);
+
+                // delete the json file and corresponding page directory
+                async.series([
+                    cb => fs.remove(pagesPath, cb),
+                    cb => fs.remove(jsonPath, cb)
+                  ], callback);
             });
         },
 
