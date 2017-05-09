@@ -1,3 +1,7 @@
+/**
+ * Content handler that ensures the methods of multiple handlers are called
+ * in order.
+ **/
 module.exports = function(handlers) {
     var async = require('async');
 
