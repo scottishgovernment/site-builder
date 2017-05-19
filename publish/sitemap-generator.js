@@ -103,7 +103,7 @@ module.exports = function (tempdir, baseurl, callback) {
     glob(globSpec, {}, function (err, files) {
         var pagesByCategory = {};
 
-        async.each(files,
+        async.eachLimit(files, 4,
             // for each file record an entry
             function (file, fileCallback) {
                 fs.readFile(file, fileOptions, function (readerr, data) {
