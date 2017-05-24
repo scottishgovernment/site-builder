@@ -22,6 +22,9 @@ function preApply(context, content) {
 
     content.contentItem.buildTime = new Date().toJSON().toString();
 
+    // assign the content items canonical url
+    content.canonicalurl = content.url;
+
     // assign a page title (meta page title if set, title otherwise)
     var title = content.contentItem.metapagetitle || content.contentItem.title || '';
     content.pagetitle = title.trim();
