@@ -32,10 +32,11 @@ describe('formatter', function() {
                 }
             },
             relatedItems: {
-                hasIncumbent: []
+                hasIncumbent: [],
+                partOf: []
             },
             inverseRelatedItems: {
-                partOfIssue: []
+                partOf: []
             }
         };
 
@@ -43,7 +44,8 @@ describe('formatter', function() {
             ret.contentItem._embedded.topics = [];
 
             topicNames.forEach(function (topic) {
-                ret.contentItem._embedded.topics.push({ name: topic});
+                //ret.contentItem._embedded.topics.push({ name: topic});
+                ret.relatedItems.partOf.push({title: topic});
             });
         }
 

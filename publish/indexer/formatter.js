@@ -46,18 +46,11 @@ function redactLinks (o) {
 }
 
 function formatTopics(item) {
-    // create an array of topic names
-    var topicNames = [];
-    if (item.contentItem._embedded.topics) {
-        item.contentItem._embedded.topics.forEach(function (t) {
-            topicNames.push(t.name);
-        });
+    if (item.relatedItems.partOf) {
+      return item.relatedItems.partOf.map(rel => rel.title);
+    } else {
+      return [];
     }
-
-    // if there are any partOfIssue relationships then treat them as topics.
-    item.inverseRelatedItems.partOfIssue.forEach(rel => topicNames.push(rel.title));
-
-    return topicNames;
 }
 
 function enrichRoleWithPersonData(item, formatted, srcdir, callback) {
