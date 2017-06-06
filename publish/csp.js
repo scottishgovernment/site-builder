@@ -47,7 +47,7 @@ Csp.prototype.writeHeader = function(done) {
     }
     var header = '';
     if (clauses.length) {
-        header = 'add_header Content-Security-Policy-Report-Only "' +
+        header = 'add_header Content-Security-Policy "' +
             clauses.join('; ') +
             '";';
     }
