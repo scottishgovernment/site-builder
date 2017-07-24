@@ -95,7 +95,7 @@ function indexContent(grunt, config, site, done) {
 
     var indexer = require('../publish/indexer/indexer.js').create(config, site);
     var path = require('path');
-    var indexDir = path.join(config.tempdir, 'contentitems');
+    var indexDir = path.join(config.tempdir, 'indexable');
     indexer
         .on('start',  onStart)
         .on('indexed', onIndexed)

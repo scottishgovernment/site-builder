@@ -39,7 +39,18 @@ describe('save-item', function() {
             url: url,
             contentItem: {
                 uuid: uuid,
-                content: 'some markdown content'
+                content: 'some markdown content',
+                _embedded : {
+                    format: {
+                        name: 'article',
+                        _embedded: {
+                            siteSearchable: true
+                        }
+                    }
+                }
+            },
+            relatedItems: {
+                partOf: []
             }
         }
     }
