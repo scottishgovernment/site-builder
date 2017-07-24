@@ -3,11 +3,22 @@
 var async = require('async');
 var path = require('path');
 
+var indexerFilter = require('./indexer/filter');
+var indexerFormatter = require('./indexer/formatter');
+
 function handleContentItem(context, content, fs, target, callback) {
     cleanup(content, fs, target, function() {
         createJson(context, content, fs, target, callback);
     });
 };
+
+function indexableFilename(target, item) {
+    var filename = item.uuid
+        + '.'
+        + item.contentItem._embedded.format.name.toLowerCase()
+        + '.json';
+    return path.join(target, 'indexable', filename);
+}
 
 function createJson(context, content, fs, target, callback) {
 
@@ -70,13 +81,14 @@ function saveItem(fs, target, content, savePages, saveContentItems, callback) {
     var filesToWrite = [];
 
     // target directories
-    var contentitemsPath = path.join(target, 'contentitems');
-    var pagesPath = path.join(target, 'pages', content.url);
+    var contentitemPath = path.join(target, 'contentitems', content.uuid + '.json');
+    var pagePath = path.join(target, 'pages', content.url, 'index.json');
+    var indexablePath = indexableFilename(target, content);
 
     // store JSON files under /contentitems/{UUID}.json
     if (saveContentItems) {
         filesToWrite.push({
-            path: path.join(contentitemsPath, content.uuid + '.json'),
+            path: contentitemPath,
             content: jsonContent
         });
     }
@@ -84,12 +96,28 @@ function saveItem(fs, target, content, savePages, saveContentItems, callback) {
     if (savePages) {
         // store JSON under /pages/{url}/ by page url (i.e slug)
         filesToWrite.push({
-            path: path.join(pagesPath, 'index.json'),
+            path: pagePath,
             content: jsonContent
         });
     }
 
-    // where we create physical content
+    // save a cut down file for search indexing
+    if (saveContentItems && indexerFilter.accept(content)) {
+        var dir = path.join(target, 'contentitems');
+        indexerFormatter.format(content, dir,
+            formattedItem => {
+                filesToWrite.push({
+                    path: indexablePath,
+                    content: JSON.stringify(formattedItem)
+                });
+            writeFiles(fs, filesToWrite, callback);
+        });
+    } else {
+        writeFiles(fs, filesToWrite, callback);
+    }
+}
+
+function writeFiles(fs, filesToWrite, callback) {
     async.each(filesToWrite,
         (fileToWrite, cb) => fs.outputFile(fileToWrite.path, fileToWrite.content, cb),
         callback);
@@ -110,36 +138,40 @@ function cleanup(content, fs, target, cb) {
  * Contains the logic needed to save the files required for a content item.
  **/
 module.exports = function(app, target, fs) {
-    var contentitemsPath = path.join(target, 'contentitems');
+
+    var pagesDir = path.join(target, 'pages');
+    var contentItemsDir = path.join(target, 'contentitems');
+    var indexableDir = path.join(target, 'indexable');
 
     return {
 
         // called when the content source is starting
         start: function(callback) {
             // ensure that the pages and content items directories exist
-            var pagesDir = path.join(target, 'pages');
-            var contentItemsDir = path.join(target, 'contentitems');
             async.series([
                 cb => fs.mkdirs(pagesDir, cb),
-                cb => fs.mkdirs(contentItemsDir, cb)
+                cb => fs.mkdirs(contentItemsDir, cb),
+                cb => fs.mkdirs(indexableDir, cb)
             ], callback);
         },
 
         // called for each content item that has been removed
         removeContentItem: function(context, id, callback) {
-            var jsonPath = path.join(contentitemsPath, id + '.json');
+            var jsonPath = path.join(contentItemsDir, id + '.json');
             fs.readFile(jsonPath, (err, data) => {
                 if (err) {
                     callback();
                     return;
                 }
                 var content = JSON.parse(data);
-                var pagesPath = path.join(target, 'pages', content.url);
+                var pagesPath = path.join(pagesDir, content.url);
+                var indexablePath = indexableFilename(target, content);
 
                 // delete the json file and corresponding page directory
                 async.series([
                     cb => fs.remove(pagesPath, cb),
-                    cb => fs.remove(jsonPath, cb)
+                    cb => fs.remove(jsonPath, cb),
+                    cb => fs.remove(indexablePath, cb)
                   ], callback);
             });
         },
