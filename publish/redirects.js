@@ -42,10 +42,6 @@ module.exports = function(tempdir) {
             redirect.alias = redirect.alias.substring(0, redirect.alias.length - 1);
         }
 
-        // remove any trailing slash on the url
-        if (redirect.url.charAt(redirect.url.length - 1) === '/') {
-            redirect.url = redirect.url.substring(0, redirect.url.length - 1);
-        }
         redirects.push(redirect);
     }
 
