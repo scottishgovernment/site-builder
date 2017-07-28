@@ -12,7 +12,8 @@ describe('save-item', function() {
     var runtime = {
         context: {
             resourceQueue: [],
-            lists: { pressRelease: {}, publications: {} }
+            lists: { pressRelease: {}, publications: {} },
+            sitemapData: {}
         },
         amphora: {
             utils: {
@@ -132,7 +133,8 @@ describe('save-item', function() {
                 'test-id': {
                     store: true
                 }
-            }
+            },
+            sitemapData: {}
         };
 
         // the files that should have been created in the temp directory
@@ -160,7 +162,8 @@ describe('save-item', function() {
                 'test-id': {
                     store: false
                 }
-            }
+            },
+            sitemapData: {}
         };
 
         // the files that should have been created in the temp directory
@@ -189,7 +192,8 @@ describe('save-item', function() {
                     store: true,
                     additionalItems: { each: function(ecn, cb) { cb(); } }
                 }
-            }
+            },
+            sitemapData: {}
         };
 
         // the files that should have been created in the temp directory
@@ -228,7 +232,8 @@ describe('save-item', function() {
                         }
                     }
                 }
-            }
+            },
+            sitemapData: {}
         };
 
         // the files that should have been created in the temp directory
