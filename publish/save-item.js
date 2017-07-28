@@ -25,7 +25,7 @@ function createJson(context, content, fs, target, callback) {
     content.additionalItemUrls = [];
     var savePages = context.attributes[content.uuid].store;
     if (!context.attributes[content.uuid].additionalItems) {
-        saveItem(fs, target, content, savePages, true, callback);
+        saveItem(fs, target, content, context, savePages, true, callback);
         return;
     }
 
@@ -42,10 +42,11 @@ function createJson(context, content, fs, target, callback) {
                         item.uuid = item.uuid + '-' + index;
                     }
                     content.additionalItemUrls.push(item.url);
-                    saveItem(fs, target, item, savePages, false, cb);
+
+                    saveItem(fs, target, item, context, savePages, false, cb);
                     index++;
                 },
-                () => saveItem(fs, target, content, savePages, true, callback));
+                () => saveItem(fs, target, content, context, savePages, true, callback));
         });
 };
 
@@ -72,8 +73,17 @@ function deleteAdditionalItemsIfExists(content, fs, target, callback) {
     });
 }
 
+function getCategoryForItem(item) {
+    var category = 'root';
+    if (item.ancestors && item.ancestors.length > 1 ) {
+        var ancestorUrl = item.ancestors[1].url;
+        category = ancestorUrl.replace(/\//g, '');
+    }
+    return category;
+}
+
 // save an individual content item
-function saveItem(fs, target, content, savePages, saveContentItems, callback) {
+function saveItem(fs, target, content, context, savePages, saveContentItems, callback) {
 
     var jsonContent = JSON.stringify(content, null, 4);
 
@@ -93,8 +103,21 @@ function saveItem(fs, target, content, savePages, saveContentItems, callback) {
         });
     }
 
+    var format = content.contentItem._embedded.format;
+    var includeInSitemap = format._embedded.structural === false && format.name !== 'STATUS';
+    console.log(content.uuid + ' ' + format.name + ' ' +includeInSitemap);
+
+    if (includeInSitemap) {
+        context.sitemapData[content.uuid] = {
+            url: content.url,
+            category: getCategoryForItem(content),
+            lastmod: content.contentItem.dateModified
+                ? content.contentItem.dateModified : content.contentItem.dateCreated
+        };
+    }
+
     if (savePages) {
-        // store JSON under /pages/{url}/ by page url (i.e slug)
+        // store JSON under /pages/{url}/ by page url
         filesToWrite.push({
             path: pagePath,
             content: jsonContent

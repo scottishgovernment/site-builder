@@ -121,7 +121,7 @@ function flipAliases(grunt, config, site, done) {
     indexConfigurator.swapAliasTargets(err => {
         esClient.close();
         if (err) {
-            grunt.log.error(grunt.log.writeln('Flip aliases ', err['red']));
+            grunt.log.error('Flip aliases ' + err);
             done(false);
         } else {
             done(true);
