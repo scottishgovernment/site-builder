@@ -54,7 +54,6 @@ function formatTopics(item) {
 }
 
 function enrichRoleWithPersonData(item, formatted, callback) {
-    console.log('enrichRoleWithPersonData');
     if (item.relatedItems.hasIncumbent.length === 0) {
         // no incumbent to enrich with
         callback(formatted);
@@ -84,10 +83,6 @@ function enrichRoleWithPersonData(item, formatted, callback) {
     incumbent.contentItem.tags.forEach(function (tag) {
         formatted.tags.push(tag);
     });
-
-console.log('---');
-console.log(JSON.stringify(formatted, null, '\t'));
-console.log('---');
 
     callback(formatted);
 }
