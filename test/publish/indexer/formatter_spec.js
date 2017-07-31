@@ -1,4 +1,4 @@
-var sutPath = '../../../out/instrument/publish/indexer/formatter';
+var sutPath = '../../../publish/indexer/formatter';
 //var sutPath = '../../../publish/indexer/formatter';
 var sut = require(sutPath);
 
@@ -154,7 +154,7 @@ describe('formatter', function() {
         sut.format(input, '/tmp', function (actual) {
 
             // ASSERT
-            expect(actual instanceof Error).toBe(true);
+            expect(actual instanceof Error).toBe(false);
             done();
         });
     });
@@ -179,9 +179,7 @@ describe('formatter', function() {
                 tags: ['incumbent-tag1', 'incumbent-tag2']
             }
         };
-
-        // create a tmp directory and write out incumbent
-        createTempFile(incumbent);
+        input.incumbent = incumbent;
 
         var expected = JSON.parse(JSON.stringify(input)).contentItem;
         expected.url = 'url';
