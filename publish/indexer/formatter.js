@@ -30,7 +30,7 @@ function format(item, srcdir, callback) {
     removeExtraneousData(formatted);
 
     if (isRole) {
-        enrichRoleWithPersonData(item, formatted, srcdir, callback);
+        enrichRoleWithPersonData(item, formatted, callback);
     } else {
         callback(formatted);
     }
@@ -53,42 +53,43 @@ function formatTopics(item) {
     }
 }
 
-function enrichRoleWithPersonData(item, formatted, srcdir, callback) {
+function enrichRoleWithPersonData(item, formatted, callback) {
+    console.log('enrichRoleWithPersonData');
     if (item.relatedItems.hasIncumbent.length === 0) {
         // no incumbent to enrich with
         callback(formatted);
         return;
     }
 
-    var incumbentFilename = path.resolve(srcdir, item.relatedItems.hasIncumbent[0].uuid + '.json');
+    if (!item.incumbent) {
+        callback(formatted);
+        return;
+    }
 
-    fs.readFile(incumbentFilename, fileOptions, function (err, data) {
-        if (err) {
-         callback(err);
-         return;
-        }
+    var incumbent = item.incumbent;
 
-        var incumbent = JSON.parse(data);
-
-        // copy all content fields into the role content item
-        ['content', 'additionalContent'].forEach(
-            function (field) {
-                formatted[field] = [item.contentItem[field], incumbent.contentItem[field]].join('\n');
-            });
-
-        // copy the title to incumbentTitle
-        formatted['incumbentTitle'] = incumbent.contentItem.title;
-
-        // copy the incumbent image
-        formatted['image'] = incumbent.contentItem.image;
-
-        // append the incumbent tags to the role tags
-        incumbent.contentItem.tags.forEach(function (tag) {
-            formatted.tags.push(tag);
+    // copy all content fields into the role content item
+    ['content', 'additionalContent'].forEach(
+        function (field) {
+            formatted[field] = [item.contentItem[field], incumbent.contentItem[field]].join('\n');
         });
 
-        callback(formatted);
+    // copy the title to incumbentTitle
+    formatted['incumbentTitle'] = incumbent.contentItem.title;
+
+    // copy the incumbent image
+    formatted['image'] = incumbent.contentItem.image;
+
+    // append the incumbent tags to the role tags
+    incumbent.contentItem.tags.forEach(function (tag) {
+        formatted.tags.push(tag);
     });
+
+console.log('---');
+console.log(JSON.stringify(formatted, null, '\t'));
+console.log('---');
+
+    callback(formatted);
 }
 
 function removeExtraneousData(contentItem) {
