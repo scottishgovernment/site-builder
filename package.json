@@ -34,8 +34,7 @@
     "optimist": "^0.6.1",
     "restler": "^3.4.0",
     "simplecrawler-referrer-filter": "^0.3.1-1.2",
-    "sync-request": "^2.2.0",
-    "yfm": "^0.2.0"
+    "sync-request": "^2.2.0"
   },
   "devDependencies": {
     "body-parser": "^1.17.2",
