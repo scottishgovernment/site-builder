@@ -104,7 +104,11 @@ function saveItem(fs, target, content, context, savePages, saveContentItems, cal
     }
 
     var format = content.contentItem._embedded.format;
-    var includeInSitemap = format._embedded.structural === false && format.name !== 'STATUS';
+    var includeInSitemap =
+        savePages &&
+        format._embedded.structural === false &&
+        format.name !== 'STATUS';
+
     if (includeInSitemap) {
         context.sitemapData[content.uuid] = {
             url: content.url,
