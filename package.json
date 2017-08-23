@@ -1,7 +1,7 @@
 {
   "name": "site-builder",
   "version": "0.0.0",
-  "description": "Static site builder for mygov.scot",
+  "description": "Static site builder for rubric",
   "main": "index.js",
   "scripts": {
     "test": "grunt test",
@@ -50,9 +50,6 @@
     "xml2js": "^0.4.17"
   },
   "peerDependencies": {
-    "grunt": ">=0.4.5"
-  },
-  "publishConfig": {
-    "registry": "http://repo.digital.gov.uk/nexus/content/repositories/npm/"
+    "grunt": ">=1.0.1"
   }
 }
