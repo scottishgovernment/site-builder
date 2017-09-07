@@ -1,6 +1,6 @@
 {
   "name": "site-builder",
-  "version": "0.0.0",
+  "version": "1.0.534",
   "description": "Static site builder for rubric",
   "main": "index.js",
   "scripts": {
