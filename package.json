@@ -27,7 +27,6 @@
     "glob": "^7.0.5",
     "handlebars": "^4.0.5",
     "js-yaml": "^3.6.1",
-    "json-stable-stringify": "^1.0.1",
     "marked": "^0.3.3",
     "needle": "^1.0.0",
     "node.extend": "^1.1.5",

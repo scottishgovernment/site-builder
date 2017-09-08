@@ -1334,14 +1334,6 @@
         }
       }
     },
-    "json-stable-stringify": {
-      "version": "1.0.1",
-      "dependencies": {
-        "jsonify": {
-          "version": "0.0.0"
-        }
-      }
-    },
     "levn": {
       "version": "0.3.0",
       "dev": true
