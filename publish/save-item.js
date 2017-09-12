@@ -2,6 +2,7 @@
 
 var async = require('async');
 var path = require('path');
+var glob = require('glob');
 
 var indexerFilter = require('./indexer/filter');
 var indexerFormatter = require('./indexer/formatter');
@@ -93,7 +94,6 @@ function saveItem(fs, target, content, context, savePages, saveContentItems, cal
     // target directories
     var contentitemPath = path.join(target, 'contentitems', content.uuid + '.json');
     var pagePath = path.join(target, 'pages', content.url, 'index.json');
-    var indexablePath = indexableFilename(target, content);
 
     // store JSON files under /contentitems/{UUID}.json
     if (saveContentItems) {
@@ -131,6 +131,7 @@ function saveItem(fs, target, content, context, savePages, saveContentItems, cal
         var dir = path.join(target, 'contentitems');
         indexerFormatter.format(content, dir,
             formattedItem => {
+                var indexablePath = indexableFilename(target, content);
                 filesToWrite.push({
                     path: indexablePath,
                     content: JSON.stringify(formattedItem)
@@ -148,14 +149,28 @@ function writeFiles(fs, filesToWrite, callback) {
         callback);
 }
 
+
 function cleanup(content, fs, target, cb) {
-    var pageFile = path.join(target, 'pages', content.url, 'index.html');
-    fs.exists(pageFile, exists => {
-        if (exists) {
-            fs.unlink(pageFile, cb);
-        } else {
-            cb();
+    var indexableFilesSpec = path.join(target, 'indexable', content.uuid + '.*.json');
+    // delete any indexable files for this id.  This is to fix the case where a content item
+    // changes its formaat.
+    glob(indexableFilesSpec, (globErr, files) => {
+
+        if (globErr) {
+            cb(globErr);
+            return;
         }
+        async.each(files, fs.unlink, () => {
+            // now delete the page file
+            var pageFile = path.join(target, 'pages', content.url, 'index.html');
+            fs.exists(pageFile, exists => {
+                if (exists) {
+                    fs.unlink(pageFile, cb);
+                } else {
+                    cb();
+                }
+            });
+        });
     });
 };
 
